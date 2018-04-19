@@ -1,5 +1,5 @@
 from ccpi.framework import DataSetProcessor, ImageData, AcquisitionData
-from ccpi.astra.astra_utils import convert_geometry_to_astra
+from ccpi.astra.utils import convert_geometry_to_astra
 import astra
 
 

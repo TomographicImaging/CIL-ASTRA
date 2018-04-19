@@ -2,9 +2,9 @@
 #sys.path.append("..")
 
 from ccpi.framework import ImageData, AcquisitionData, ImageGeometry, AcquisitionGeometry
-from ccpi.reconstruction.algs import FISTA
-from ccpi.reconstruction.funcs import Norm2sq, Norm1
-from ccpi.astra.astra_ops import AstraProjectorMC
+from ccpi.optimisation.algs import FISTA
+from ccpi.optimisation.funcs import Norm2sq, Norm1
+from ccpi.astra.ops import AstraProjectorMC
 
 import numpy
 import matplotlib.pyplot as plt
