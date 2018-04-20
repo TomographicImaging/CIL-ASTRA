@@ -1,4 +1,12 @@
 
+# This demo shows how to load a Nikon XTek micro-CT data set and reconstruct
+# the central slice using the CGLS method. The SophiaBeads dataset with 256 
+# projections is used as test data and can be obtained from here:
+# https://zenodo.org/record/16474
+# The filename with full path to the .xtekct file should be given as string 
+# input to XTEKReader to  load in the data.
+
+# Do all imports
 from ccpi.io.reader import XTEKReader
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,7 +15,7 @@ from ccpi.astra.ops import AstraProjectorSimple
 from ccpi.optimisation.algs import CGLS
 
 # Set up reader object and read the data
-datareader = XTEKReader("C:/Users/mbbssjj2/Documents/SophiaBeads_256_averaged/SophiaBeads_256_averaged.xtekct")
+datareader = XTEKReader("REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_256_averaged.xtekct")
 data = datareader.getAcquisitionData()
 
 # Extract central slice, scale and negative-log transform
@@ -56,7 +64,7 @@ Aop = AstraProjectorSimple(ig2d, ag2d,"gpu")
 # Set initial guess for CGLS reconstruction
 x_init = ImageData(np.zeros((N,N)),geometry=ig2d)
 
-# Run CGLS reconstruction
+# Run 50-iteration CGLS reconstruction
 num_iter = 50
 x, it, timing, criter = CGLS(Aop,data2d,num_iter,x_init)
 

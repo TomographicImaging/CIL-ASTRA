@@ -3,7 +3,7 @@ from ccpi.astra.utils import convert_geometry_to_astra
 import astra
 
 
-class AstraForwardProjector(DataSetProcessor):
+class AstraForwardProjector(DataProcessor):
     '''AstraForwardProjector
     
     Forward project ImageData to AcquisitionData using ASTRA proj_id.
@@ -25,7 +25,7 @@ class AstraForwardProjector(DataSetProcessor):
                   'device'  : device
                   }
         
-        #DataSetProcessor.__init__(self, **kwargs)
+        #DataProcessor.__init__(self, **kwargs)
         super(AstraForwardProjector, self).__init__(**kwargs)
         
         self.set_ImageGeometry(volume_geometry)
@@ -77,7 +77,7 @@ class AstraForwardProjector(DataSetProcessor):
         #return AcquisitionData(array=DATA, geometry=self.sinogram_geometry)
         return DATA
 
-class AstraBackProjector(DataSetProcessor):
+class AstraBackProjector(DataProcessor):
     '''AstraBackProjector
     
     Back project AcquisitionData to ImageData using ASTRA proj_id.
@@ -99,7 +99,7 @@ class AstraBackProjector(DataSetProcessor):
                   'device'  : device
                   }
         
-        #DataSetProcessor.__init__(self, **kwargs)
+        #DataProcessor.__init__(self, **kwargs)
         super(AstraBackProjector, self).__init__(**kwargs)
         
         self.set_ImageGeometry(volume_geometry)
