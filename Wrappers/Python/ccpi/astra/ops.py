@@ -15,12 +15,12 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ccpi.reconstruction.ops import Operator
+from ccpi.optimisation.ops import Operator
 import numpy
 import astra
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
-from ccpi.reconstruction.ops import PowerMethodNonsquare
-from ccpi.astra.astra_processors import AstraForwardProjector, AstraBackProjector, \
+from ccpi.optimisation.ops import PowerMethodNonsquare
+from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
      AstraForwardProjectorMC, AstraBackProjectorMC
 
 class AstraProjectorSimple(Operator):

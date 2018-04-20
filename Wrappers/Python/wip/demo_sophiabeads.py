@@ -11,8 +11,8 @@ from ccpi.io.reader import XTEKReader
 import numpy as np
 import matplotlib.pyplot as plt
 from ccpi.framework import ImageGeometry, AcquisitionGeometry, AcquisitionData, ImageData
-from ccpi.astra.astra_ops import AstraProjectorSimple
-from ccpi.reconstruction.algs import CGLS
+from ccpi.astra.ops import AstraProjectorSimple
+from ccpi.optimisation.algs import CGLS
 
 # Set up reader object and read the data
 datareader = XTEKReader("REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_256_averaged.xtekct")
