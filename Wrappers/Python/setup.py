@@ -27,13 +27,8 @@ if  cil_version == '':
     print("Please set the environmental variable CIL_VERSION")
     sys.exit(1)
 
-cil_version=os.environ['CIL_VERSION']
-if  cil_version == '':
-    print("Please set the environmental variable CIL_VERSION")
-    sys.exit(1)
-
 setup(
-    name="ccpi-common",
+    name="ccpi-astra",
     version=cil_version,
     packages=['ccpi' , 'ccpi.astra'],
 
@@ -53,7 +48,7 @@ setup(
     author="Edoardo Pasca",
     author_email="edoardo.pasca@stfc.ac.uk",
     description='CCPi Core Imaging Library - Astra bindings',
-    license="Apache v2.0",
+    license="GPL v3",
     keywords="Python Framework",
     url="http://www.ccpi.ac.uk",   # project home page, if any
 
