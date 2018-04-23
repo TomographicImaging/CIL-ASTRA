@@ -153,16 +153,16 @@ plt.show()
 # The FBPD algorithm can also be used conveniently for TV regularisation:
 
 # Specify TV function object
-#lamtv = 1
-#gtv = TV2D(lamtv)
-#
-#x_fbpdtv,it_fbpdtv,timing_fbpdtv,criter_fbpdtv=FBPD(x_init,None,f,gtv,opt_FBPD)
-#
-#plt.imshow(x_fbpdtv.array)
-#plt.show()
-#
-#plt.semilogy(criter_fbpdtv)
-#plt.show()
+lamtv = 1
+gtv = TV2D(lamtv)
+
+x_fbpdtv,it_fbpdtv,timing_fbpdtv,criter_fbpdtv=FBPD(x_init,None,f,gtv,opt_FBPD)
+
+plt.imshow(x_fbpdtv.array)
+plt.show()
+
+plt.semilogy(criter_fbpdtv)
+plt.show()
 
 
 # Compare all reconstruction and criteria
@@ -201,11 +201,11 @@ a.set_title('FBPD LS+1')
 imgplot = plt.imshow(x_fbpd1.as_array(),vmin=clims[0],vmax=clims[1])
 plt.axis('off')
 
-#current = current + 1
-#a=fig.add_subplot(rows,cols,current)
-#a.set_title('FBPD TV')
-#imgplot = plt.imshow(x_fbpdtv.as_array(),vmin=clims[0],vmax=clims[1])
-#plt.axis('off')
+current = current + 1
+a=fig.add_subplot(rows,cols,current)
+a.set_title('FBPD TV')
+imgplot = plt.imshow(x_fbpdtv.as_array(),vmin=clims[0],vmax=clims[1])
+plt.axis('off')
 
 fig = plt.figure()
 b=fig.add_subplot(1,1,1)
@@ -214,6 +214,6 @@ imgplot = plt.loglog(criter_CGLS, label='CGLS')
 imgplot = plt.loglog(criter0 , label='FISTA LS')
 imgplot = plt.loglog(criter1 , label='FISTA LS+1')
 imgplot = plt.loglog(criter_fbpd1, label='FBPD LS+1')
-#imgplot = plt.loglog(criter_fbpdtv, label='FBPD TV')
+imgplot = plt.loglog(criter_fbpdtv, label='FBPD TV')
 b.legend(loc='lower left')
 plt.show()
