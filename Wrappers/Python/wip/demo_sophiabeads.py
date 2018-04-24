@@ -16,7 +16,7 @@ from ccpi.optimisation.algs import CGLS
 
 # Set up reader object and read the data
 datareader = XTEKReader("REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_256_averaged.xtekct")
-data = datareader.getAcquisitionData()
+data = datareader.get_acquisition_data()
 
 # Extract central slice, scale and negative-log transform
 sino = -np.log(data.as_array()[:,:,1000]/60000.0)
