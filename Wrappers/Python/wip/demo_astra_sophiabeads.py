@@ -16,7 +16,7 @@ from ccpi.optimisation.algs import CGLS
 
 # Set up reader object and read the data
 datareader = XTEKReader("REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_256_averaged.xtekct")
-data = datareader.getAcquisitionData()
+data = datareader.get_acquisition_data()
 
 # Extract central slice, scale and negative-log transform
 sino = -np.log(data.as_array()[:,:,1000]/60000.0)
@@ -65,8 +65,8 @@ Aop = AstraProjectorSimple(ig2d, ag2d,"gpu")
 x_init = ImageData(np.zeros((N,N)),geometry=ig2d)
 
 # Run 50-iteration CGLS reconstruction
-num_iter = 50
-x, it, timing, criter = CGLS(Aop,data2d,num_iter,x_init)
+opt = {'tol': 1e-4, 'iter': 100}
+x, it, timing, criter = CGLS(x_init,Aop,data2d,opt=opt)
 
 # Display reconstruction
 plt.figure()
