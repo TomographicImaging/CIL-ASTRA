@@ -65,8 +65,8 @@ Aop = AstraProjectorSimple(ig2d, ag2d,"gpu")
 x_init = ImageData(np.zeros((N,N)),geometry=ig2d)
 
 # Run 50-iteration CGLS reconstruction
-num_iter = 50
-x, it, timing, criter = CGLS(Aop,data2d,num_iter,x_init)
+opt = {'tol': 1e-4, 'iter': 100}
+x, it, timing, criter = CGLS(x_init,Aop,data2d,opt=opt)
 
 # Display reconstruction
 plt.figure()
