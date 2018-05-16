@@ -27,7 +27,7 @@ sino_pad = np.zeros((sino.shape[0],sino.shape[1]+cor_pad))
 sino_pad[:,cor_pad:] = sino
 
 # Simple beam hardening correction as done in SophiaBeads coda
-sino_pad = sino_pad**2
+#sino_pad = sino_pad**2
 
 # Extract AcquisitionGeometry for central slice for 2D fanbeam reconstruction
 ag2d = AcquisitionGeometry('cone',

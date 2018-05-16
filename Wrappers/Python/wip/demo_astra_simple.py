@@ -139,7 +139,7 @@ plt.show()
 # 1-norm functions should be given as the second and third function inputs. 
 # In this test case, this algorithm requires more iterations to converge, so
 # new options are specified.
-opt_FBPD = {'tol': 1e-4, 'iter': 7000}
+opt_FBPD = {'tol': 1e-4, 'iter': 20000}
 x_fbpd1, it_fbpd1, timing_fbpd1, criter_fbpd1 = FBPD(x_init,None,f,g0,opt_FBPD)
 
 plt.imshow(x_fbpd1.array)
@@ -153,7 +153,7 @@ plt.show()
 # The FBPD algorithm can also be used conveniently for TV regularisation:
 
 # Specify TV function object
-lamtv = 1
+lamtv = 10
 gtv = TV2D(lamtv)
 
 x_fbpdtv,it_fbpdtv,timing_fbpdtv,criter_fbpdtv=FBPD(x_init,None,f,gtv,opt_FBPD)
