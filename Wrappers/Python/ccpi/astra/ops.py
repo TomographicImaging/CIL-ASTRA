@@ -17,11 +17,11 @@
 
 from ccpi.optimisation.ops import Operator
 import numpy
-import astra
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
 from ccpi.optimisation.ops import PowerMethodNonsquare
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
-     AstraForwardProjectorMC, AstraBackProjectorMC
+     AstraForwardProjectorMC, AstraBackProjectorMC, AstraForwardProjector3D, \
+     AstraBackProjector3D
 
 class AstraProjectorSimple(Operator):
     """ASTRA projector modified to use DataSet and geometry."""
@@ -73,6 +73,58 @@ class AstraProjectorSimple(Operator):
         inputsize = self.size()[1]
         return DataContainer(numpy.random.randn(inputsize[0],
                                                 inputsize[1]))
+
+class AstraProjector3DSimple(Operator):
+    """ASTRA projector modified to use DataSet and geometry."""
+    def __init__(self, geomv, geomp):
+        super(AstraProjector3DSimple, self).__init__()
+        
+        # Store volume and sinogram geometries.
+        self.sinogram_geometry = geomp
+        self.volume_geometry = geomv
+        
+        self.fp = AstraForwardProjector3D(volume_geometry=geomv,
+                                        sinogram_geometry=geomp,
+                                        output_axes_order=['vertical','angle','horizontal'])
+        
+        self.bp = AstraBackProjector3D(volume_geometry=geomv,
+                                        sinogram_geometry=geomp,
+                                        output_axes_order=['vertical','horizontal_y','horizontal_x'])
+                
+        # Initialise empty for singular value.
+        self.s1 = None
+    
+    def direct(self, IM):
+        self.fp.set_input(IM)
+        out = self.fp.get_output()
+        return out
+    
+    def adjoint(self, DATA):
+        self.bp.set_input(DATA)
+        out = self.bp.get_output()
+        return out
+    
+    #def delete(self):
+    #    astra.data2d.delete(self.proj_id)
+    
+    def get_max_sing_val(self):
+        self.s1, sall, svec = PowerMethodNonsquare(self,10)
+        return self.s1
+    
+    def size(self):
+        # Only implemented for 2D
+        return ( (self.sinogram_geometry.angles.size, \
+                  self.sinogram_geometry.pixel_num_h, \
+                  self.sinogram_geometry.pixel_num_v,), \
+                 (self.volume_geometry.voxel_num_x, \
+                  self.volume_geometry.voxel_num_y, \
+                  self.volume_geometry.voxel_num_z) )
+    
+    def create_image_data(self):
+        inputsize = self.size()[1]
+        return DataContainer(numpy.random.randn(inputsize[2],
+                                                inputsize[1],
+                                                inputsize[0]))
 
 
 class AstraProjectorMC(Operator):
