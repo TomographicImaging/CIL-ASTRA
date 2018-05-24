@@ -74,8 +74,17 @@ class AstraForwardProjector(DataProcessor):
         sinogram_id, DATA.array = astra.create_sino(IM.as_array(), 
                                                            self.proj_id)
         astra.data2d.delete(sinogram_id)
-        #return AcquisitionData(array=DATA, geometry=self.sinogram_geometry)
-        return DATA
+        
+        if self.device == 'cpu':
+            return DATA
+        else:
+            if self.sinogram_geometry.geom_type == 'cone':
+                return DATA
+            else:
+                 scaling = self.volume_geometry.voxel_num_x / \
+                      (self.volume_geometry.get_max_x() - \
+                      self.volume_geometry.get_min_x())
+                 return scaling*DATA
 
 class AstraBackProjector(DataProcessor):
     '''AstraBackProjector
@@ -144,8 +153,26 @@ class AstraBackProjector(DataProcessor):
         IM = ImageData(geometry=self.volume_geometry)
         rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
                             self.proj_id)
+        IM.array = IM.array #244891.3969823732
         astra.data2d.delete(rec_id)
-        return IM
+        
+        if self.device == 'cpu':
+            return IM
+        else:
+            scaling = (self.volume_geometry.get_max_x() - self.volume_geometry.get_min_x())/self.volume_geometry.voxel_num_x
+            if self.sinogram_geometry.geom_type == 'cone':
+                scaling = ((self.volume_geometry.get_max_x() - \
+                           self.volume_geometry.get_min_x()) / \
+                           self.volume_geometry.voxel_num_x )**4 * \
+                          (self.sinogram_geometry.dist_source_center + \
+                           self.sinogram_geometry.dist_center_detector)* \
+                           self.sinogram_geometry.dist_source_center / \
+                           self.sinogram_geometry.pixel_size_h * 0.01
+            else:
+                scaling = ((self.volume_geometry.get_max_x() - \
+                            self.volume_geometry.get_min_x()) / \
+                              self.volume_geometry.voxel_num_x)**3
+            return scaling*IM
 
 class AstraForwardProjectorMC(AstraForwardProjector):
     '''AstraForwardProjector Multi channel
