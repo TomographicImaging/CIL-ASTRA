@@ -36,9 +36,6 @@ data_pad[:,cor_pad:,:] = data.array
 data.geometry.pixel_num_h = data.geometry.pixel_num_h + cor_pad
 data.array = data_pad
 
-# Simple beam hardening correction as done in SophiaBeads coda
-#data = data**2
-
 # Choose the number of voxels to reconstruct onto as number of detector pixels
 N = data.geometry.pixel_num_h
 

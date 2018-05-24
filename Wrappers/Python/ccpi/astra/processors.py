@@ -81,7 +81,7 @@ class AstraForwardProjector(DataProcessor):
             if self.sinogram_geometry.geom_type == 'cone':
                 return DATA
             else:
-                 scaling = (1.0/self.volume_geometry.voxel_size_x) 
+                 scaling = 1.0/self.volume_geometry.voxel_size_x
                  return scaling*DATA
 
 class AstraBackProjector(DataProcessor):
@@ -151,7 +151,6 @@ class AstraBackProjector(DataProcessor):
         IM = ImageData(geometry=self.volume_geometry)
         rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
                             self.proj_id)
-        IM.array = IM.array #244891.3969823732
         astra.data2d.delete(rec_id)
         
         if self.device == 'cpu':
@@ -359,6 +358,6 @@ class AstraBackProjector3D(DataProcessor):
                             self.vol_geom)
         astra.data3d.delete(rec_id)
         
-        # Scaling of ASTRA backprojector, works both parallel and cone.
+        # Scaling of 3D ASTRA backprojector, works both parallel and cone.
         scaling = 1/self.volume_geometry.voxel_size_x**2  
         return scaling*IM
