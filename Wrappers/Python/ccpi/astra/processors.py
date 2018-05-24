@@ -82,9 +82,6 @@ class AstraForwardProjector(DataProcessor):
                 return DATA
             else:
                  scaling = (1.0/self.volume_geometry.voxel_size_x) 
-                      #self.volume_geometry.voxel_num_x / \
-                      #(self.volume_geometry.get_max_x() - \
-                      #self.volume_geometry.get_min_x())
                  return scaling*DATA
 
 class AstraBackProjector(DataProcessor):
@@ -161,21 +158,6 @@ class AstraBackProjector(DataProcessor):
             return IM
         else:
             scaling = self.volume_geometry.voxel_size_x**3  
-            #  (self.volume_geometry.get_max_x() - self.volume_geometry.get_min_x())/self.volume_geometry.voxel_num_x
-            #if self.sinogram_geometry.geom_type == 'cone':
-            #    geo_mag = (self.sinogram_geometry.dist_source_center + \
-            #               self.sinogram_geometry.dist_center_detector)/ \
-            #               self.sinogram_geometry.dist_source_center
-            #    geo_sq = (self.sinogram_geometry.dist_source_center + \
-            #               self.sinogram_geometry.dist_center_detector)* \
-            #               self.sinogram_geometry.dist_source_center
-            #    scaling = self.volume_geometry.voxel_size_x**3 \
-            #              #geo_mag#\
-            #               #self.sinogram_geometry.pixel_size_h
-            #else:
-            #    scaling = ((self.volume_geometry.get_max_x() - \
-            #                self.volume_geometry.get_min_x()) / \
-            #                  self.volume_geometry.voxel_num_x)**3
             return scaling*IM
 
 class AstraForwardProjectorMC(AstraForwardProjector):
@@ -204,7 +186,15 @@ class AstraForwardProjectorMC(AstraForwardProjector):
             sinogram_id, DATA.as_array()[k] = astra.create_sino(IM.as_array()[k], 
                                                            self.proj_id)
             astra.data2d.delete(sinogram_id)
-        return DATA
+        
+        if self.device == 'cpu':
+            return DATA
+        else:
+            if self.sinogram_geometry.geom_type == 'cone':
+                return DATA
+            else:
+                 scaling = (1.0/self.volume_geometry.voxel_size_x) 
+                 return scaling*DATA
 
 class AstraBackProjectorMC(AstraBackProjector):
     '''AstraBackProjector Multi channel
@@ -233,7 +223,12 @@ class AstraBackProjectorMC(AstraBackProjector):
                     DATA.as_array()[k], 
                     self.proj_id)
             astra.data2d.delete(rec_id)
-        return IM
+        
+        if self.device == 'cpu':
+            return IM
+        else:
+            scaling = self.volume_geometry.voxel_size_x**3  
+            return scaling*IM
 
 class AstraForwardProjector3D(DataProcessor):
     '''AstraForwardProjector3D

@@ -97,7 +97,7 @@ plt.show()
 # Using the test data b, different reconstruction methods can now be set up as
 # demonstrated in the rest of this file. In general all methods need an initial 
 # guess and some algorithm options to be set:
-x_init = ImageData(np.zeros(x.shape),geometry=ig)
+x_init = ImageData(numpy.zeros(x.shape),geometry=ig)
 opt = {'tol': 1e-4, 'iter': 200}
 
 # Create least squares object instance with projector, test data and a constant 
@@ -120,7 +120,7 @@ plt.show()
 # FISTA can also solve regularised forms by specifying a second function object
 # such as 1-norm regularisation with choice of regularisation parameter lam. 
 # Again the regulariser is over all channels:
-lam = 0.1
+lam = 10
 g0 = Norm1(lam)
 
 # Run FISTA for least squares plus 1-norm function.
