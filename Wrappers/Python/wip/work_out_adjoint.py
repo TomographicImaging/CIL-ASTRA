@@ -19,9 +19,9 @@ test_case = 2
 # Set up phantom size NxN by creating ImageGeometry, initialising the 
 # ImageData object with this geometry and empty array and finally put some
 # data into its array, and display as image.
-N = 200
-x1 = -1.0
-x2 = 1.0
+N = 300
+x1 = -1
+x2 = 1
 dx = (x2-x1)/N
 ig = ImageGeometry(voxel_num_x=N,
                    voxel_num_y=N,
@@ -46,10 +46,10 @@ plt.show()
 # set to 0 to simulate a "virtual detector" with same detector pixel size as
 # object pixel size).
 angles_num = 40
-det_num = 250
+det_num = 400
 
-SourceOrig = 10
-OrigDetec = 5
+SourceOrig = 20
+OrigDetec = 100
 
 geo_mag = (SourceOrig+OrigDetec)/SourceOrig
 

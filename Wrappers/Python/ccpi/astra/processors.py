@@ -81,9 +81,10 @@ class AstraForwardProjector(DataProcessor):
             if self.sinogram_geometry.geom_type == 'cone':
                 return DATA
             else:
-                 scaling = self.volume_geometry.voxel_num_x / \
-                      (self.volume_geometry.get_max_x() - \
-                      self.volume_geometry.get_min_x())
+                 scaling = (1.0/self.volume_geometry.voxel_size_x) 
+                      #self.volume_geometry.voxel_num_x / \
+                      #(self.volume_geometry.get_max_x() - \
+                      #self.volume_geometry.get_min_x())
                  return scaling*DATA
 
 class AstraBackProjector(DataProcessor):
@@ -159,19 +160,22 @@ class AstraBackProjector(DataProcessor):
         if self.device == 'cpu':
             return IM
         else:
-            scaling = (self.volume_geometry.get_max_x() - self.volume_geometry.get_min_x())/self.volume_geometry.voxel_num_x
-            if self.sinogram_geometry.geom_type == 'cone':
-                scaling = ((self.volume_geometry.get_max_x() - \
-                           self.volume_geometry.get_min_x()) / \
-                           self.volume_geometry.voxel_num_x )**4 * \
-                          (self.sinogram_geometry.dist_source_center + \
-                           self.sinogram_geometry.dist_center_detector)* \
-                           self.sinogram_geometry.dist_source_center / \
-                           self.sinogram_geometry.pixel_size_h * 0.01
-            else:
-                scaling = ((self.volume_geometry.get_max_x() - \
-                            self.volume_geometry.get_min_x()) / \
-                              self.volume_geometry.voxel_num_x)**3
+            scaling = self.volume_geometry.voxel_size_x**3  
+            #  (self.volume_geometry.get_max_x() - self.volume_geometry.get_min_x())/self.volume_geometry.voxel_num_x
+            #if self.sinogram_geometry.geom_type == 'cone':
+            #    geo_mag = (self.sinogram_geometry.dist_source_center + \
+            #               self.sinogram_geometry.dist_center_detector)/ \
+            #               self.sinogram_geometry.dist_source_center
+            #    geo_sq = (self.sinogram_geometry.dist_source_center + \
+            #               self.sinogram_geometry.dist_center_detector)* \
+            #               self.sinogram_geometry.dist_source_center
+            #    scaling = self.volume_geometry.voxel_size_x**3 \
+            #              #geo_mag#\
+            #               #self.sinogram_geometry.pixel_size_h
+            #else:
+            #    scaling = ((self.volume_geometry.get_max_x() - \
+            #                self.volume_geometry.get_min_x()) / \
+            #                  self.volume_geometry.voxel_num_x)**3
             return scaling*IM
 
 class AstraForwardProjectorMC(AstraForwardProjector):

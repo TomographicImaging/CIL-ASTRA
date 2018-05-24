@@ -45,8 +45,8 @@ plt.show()
 # source-origin and origin-detector distance (here the origin-detector distance 
 # set to 0 to simulate a "virtual detector" with same detector pixel size as
 # object pixel size).
-angles_num = 255
-det_num = 2000
+angles_num = 4
+det_num = 2500
 
 SourceOrig = 80.6392412185669
 OrigDetec = 926.3637587814331
