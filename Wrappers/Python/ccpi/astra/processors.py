@@ -296,6 +296,7 @@ class AstraForwardProjector3D(DataProcessor):
                                                            self.proj_geom,
                                                            self.vol_geom)
         astra.data3d.delete(sinogram_id)
+        # 3D CUDA FP does not need scaling
         return DATA
 
 class AstraBackProjector3D(DataProcessor):
@@ -357,4 +358,7 @@ class AstraBackProjector3D(DataProcessor):
                             self.proj_geom,
                             self.vol_geom)
         astra.data3d.delete(rec_id)
-        return IM
+        
+        # Scaling of ASTRA backprojector, works both parallel and cone.
+        scaling = 1/self.volume_geometry.voxel_size_x**2  
+        return scaling*IM

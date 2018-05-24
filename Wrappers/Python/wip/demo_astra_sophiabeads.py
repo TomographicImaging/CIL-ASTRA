@@ -15,7 +15,7 @@ from ccpi.astra.ops import AstraProjectorSimple
 from ccpi.optimisation.algs import CGLS
 
 # Set up reader object and read the data
-datareader = XTEKReader("/media/jakob/050d8d45-fab3-4285-935f-260e6c5f162c1/Data/SophiaBeads/SophiaBeads_256_averaged/SophiaBeads_256_averaged.xtekct")
+datareader = XTEKReader("REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_256_averaged.xtekct")
 data = datareader.get_acquisition_data()
 
 # Extract central slice, scale and negative-log transform

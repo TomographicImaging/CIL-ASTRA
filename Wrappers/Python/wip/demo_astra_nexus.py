@@ -99,6 +99,7 @@ x_fista0, it0, timing0, criter0 = FISTA(x_init, f, None, opt=opt)
 
 plt.imshow(x_fista0.subset(horizontal_x=80).array)
 plt.title('FISTA LS')
+plt.colorbar()
 plt.show()
 
 # Set up 1-norm function for FISTA least squares plus 1-norm regularisation
@@ -111,6 +112,7 @@ x_fista1, it1, timing1, criter1 = FISTA(x_init, f, g0,opt=opt)
 
 plt.imshow(x_fista0.subset(horizontal_x=80).array)
 plt.title('FISTA LS+1')
+plt.colorbar()
 plt.show()
 
 # Run FBPD=Forward Backward Primal Dual method on least squares plus 1-norm
@@ -119,6 +121,7 @@ x_fbpd1, it_fbpd1, timing_fbpd1, criter_fbpd1 = FBPD(x_init,None,f,g0,opt=opt)
 
 plt.imshow(x_fbpd1.subset(horizontal_x=80).array)
 plt.title('FBPD LS+1')
+plt.colorbar()
 plt.show()
 
 # Run CGLS, which should agree with the FISTA least squares
@@ -126,6 +129,7 @@ print ("Run CGLS for least squares")
 x_CGLS, it_CGLS, timing_CGLS, criter_CGLS = CGLS(x_init, Cop, padded_data2, opt=opt)
 plt.imshow(x_CGLS.subset(horizontal_x=80).array)
 plt.title('CGLS')
+plt.colorbar()
 plt.show()
 
 # Display all reconstructions and decay of objective function

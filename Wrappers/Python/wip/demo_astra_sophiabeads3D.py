@@ -86,7 +86,7 @@ plt.show()
 x_init = ImageData(geometry=ig)
 
 # Run 50-iteration CGLS reconstruction
-opt = {'tol': 1e-4, 'iter': 1}
+opt = {'tol': 1e-4, 'iter': 20}
 x, it, timing, criter = CGLS(x_init,Aop,data2,opt=opt)
 
 # Display ortho slices of reconstruction
