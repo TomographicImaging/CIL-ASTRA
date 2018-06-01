@@ -1,4 +1,5 @@
 import astra
+import numpy as np
 
 def convert_geometry_to_astra(volume_geometry, sinogram_geometry):
     # Set up ASTRA Volume and projection geometry, not stored
@@ -20,8 +21,8 @@ def convert_geometry_to_astra(volume_geometry, sinogram_geometry):
                                                sinogram_geometry.pixel_size_h,
                                                sinogram_geometry.pixel_num_h,
                                                sinogram_geometry.angles,
-                                               sinogram_geometry.dist_source_center,
-                                               sinogram_geometry.dist_center_detector)
+                                               np.abs(sinogram_geometry.dist_source_center),
+                                               np.abs(sinogram_geometry.dist_center_detector))
         else:
             NotImplemented
             
@@ -50,8 +51,8 @@ def convert_geometry_to_astra(volume_geometry, sinogram_geometry):
                                                sinogram_geometry.pixel_num_v,
                                                sinogram_geometry.pixel_num_h,
                                                sinogram_geometry.angles,
-                                               sinogram_geometry.dist_source_center,
-                                               sinogram_geometry.dist_center_detector)
+                                               np.abs(sinogram_geometry.dist_source_center),
+                                               np.abs(sinogram_geometry.dist_center_detector))
         else:
             NotImplemented
             
