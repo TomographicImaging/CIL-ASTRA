@@ -20,8 +20,8 @@ import numpy
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
 from ccpi.optimisation.ops import PowerMethodNonsquare
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
-     AstraForwardProjectorMC, AstraBackProjectorMC, AstraForwardProjector3D, \
-     AstraBackProjector3D
+     AstraFilteredBackProjector, AstraForwardProjectorMC, AstraBackProjectorMC, \
+     AstraForwardProjector3D, AstraBackProjector3D
 
 class AstraProjectorSimple(Operator):
     """ASTRA projector modified to use DataSet and geometry."""
@@ -41,6 +41,12 @@ class AstraProjectorSimple(Operator):
                                         sinogram_geometry=geomp,
                                         proj_id=None,
                                         device=device)
+        
+        self.fbp = AstraFilteredBackProjector(volume_geometry=geomv,
+                                        sinogram_geometry=geomp,
+                                        proj_id=None,
+                                        filter_type=None,
+                                        device=device)
                 
         # Initialise empty for singular value.
         self.s1 = None
@@ -55,6 +61,11 @@ class AstraProjectorSimple(Operator):
         out = self.bp.get_output()
         return out
     
+    def FBP(self, DATA, filter_type):
+        self.fbp.filter_type = filter_type
+        self.fbp.set_input(DATA)
+        out = self.fbp.get_output()
+        return out
     #def delete(self):
     #    astra.data2d.delete(self.proj_id)
     
