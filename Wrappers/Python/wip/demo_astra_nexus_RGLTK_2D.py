@@ -21,7 +21,7 @@ from ccpi.astra.ops import AstraProjectorSimple
 # All external imports
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+#import os
 import h5py
 from astropy.io import fits
 
@@ -38,7 +38,7 @@ def avg_img(image):
 #%%
 # Read data once
 # Set up a reader object pointing to the Nexus data set. Revise path as needed.
-filename = '74143'
+filename = '74145'
 reader = NexusReader('{!s}{!s}.nxs'.format("/home/algol/Documents/DATA/",filename))
 #reader = NexusReader("/home/algol/Documents/DATA/24737_fd.nxs")
 dims = reader.get_sinogram_dimensions()
@@ -68,9 +68,11 @@ av_flats =av_flats/np.float32(shapeFl[0])
 #%%
 ##############################################################################
 N = 2000  # reconstruction size [N x N]
-SliceFirst = 500 # First (bottom) vertical slice of the dataset
-SliceLast = 502 # Last (top) vertical slice of the dataset
+SliceFirst = 300 # First (bottom) vertical slice of the dataset
+SliceLast = 1800 # Last (top) vertical slice of the dataset
 TotalSlices  = SliceLast-SliceFirst
+
+REC_VOL = np.zeros((TotalSlices, N, N), 'float32')
 
 counter = SliceFirst
 for i in range(TotalSlices):
@@ -100,7 +102,9 @@ for i in range(TotalSlices):
 ##############################################################################
     # Apply centering correction by zero padding, amount found manually
     # cor_pad = 110 # this value needs to be corrected (for 240 data)
-    cor_pad = 150 # this value needs to be corrected 
+    counterCOR = 0
+    #for j in range (20):
+    cor_pad = 153 + counterCOR # this value needs to be corrected 
     sino_pad = np.zeros((sino_norm_log.shape[0],sino_norm_log.shape[1]+cor_pad))
     sino_pad[:,cor_pad:] = sino_norm_log
     #sino_pad[:,: sino_norm_log.shape[1]] = sino_norm_log
@@ -115,12 +119,23 @@ for i in range(TotalSlices):
     Aop = AstraProjectorSimple(ig, ag, 'gpu')
 ##############################################################################
 # Reconstruction using Filtered BackProjection (FBP) Method (2D)
+    
+    #FBP = Aop.FBP(DataContainer(sino_pad), filter_type = 'Shepp-Logan')
     """
-    FBP = Aop.FBP(DataContainer(sino_pad), filter_type = 'Shepp-Logan')
     plt.figure()
     plt.imshow(FBP.array, vmin=0, vmax=1)
     plt.title('FBP reconstructed image')
     plt.show()
+    """
+    """
+    Im = FBP.array
+    add_val = np.min(Im[:])
+    Im += abs(add_val)
+    Im = Im/np.max(Im[:])*65535
+    outfile = '{!s}_{!s}.fits'.format(filename,str(counterCOR))
+    hdu = fits.PrimaryHDU(np.uint16(Im))
+    hdu.writeto(outfile, overwrite=True)
+    counterCOR += 1
     """
 ##############################################################################
     # Reconstruct iteratively using FISTA - TV algorithm
@@ -156,19 +171,25 @@ for i in range(TotalSlices):
     opt = {'tol': 1e-4, 'iter': 16}
     x_init = ImageData(geometry=ig)
     x_CGLS, it_CGLS, timing_CGLS, criter_CGLS = CGLS(x_init, Aop, DataContainer(sino_pad), opt=opt)
+    REC_VOL[i,:,:] = x_CGLS.array
+    """
     plt.figure()
     plt.imshow(x_CGLS.array,vmin=0, vmax=1)
     plt.title('CGLS')
     plt.show()
-##############################################################################
-    # Saving images into fits using astrapy if required
-    
-    outfile = '{!s}_{!s}.fits'.format(filename,str(counter))
-    im = x_CGLS.array
-    add_val = np.min(im[:])
-    im += abs(add_val)
-    im = im/np.max(im[:])*65535
-    hdu = fits.PrimaryHDU(np.uint16(im))
-    hdu.writeto(outfile, overwrite=True)
-    
+    """
     counter += 1
+##############################################################################
+
+    # Saving images into fits using astrapy if required
+add_val = np.min(REC_VOL[:])
+REC_VOL += abs(add_val)
+REC_VOL = REC_VOL/np.max(REC_VOL[:])*65535
+counter = SliceFirst
+for i in range(TotalSlices):
+    outfile = '{!s}_{!s}.fits'.format(filename,str(counter))
+    hdu = fits.PrimaryHDU(np.uint16(REC_VOL[i,:,:]))
+    hdu.writeto(outfile, overwrite=True)
+    counter += 1
+
+##############################################################################
