@@ -22,10 +22,12 @@ from distutils.core import setup
 import os
 import sys
 
-cil_version=os.environ['CIL_VERSION']
-if  cil_version == '':
-    print("Please set the environmental variable CIL_VERSION")
-    sys.exit(1)
+cil_version='0.12.0'
+
+#cil_version=os.environ['CIL_VERSION']
+#if  cil_version == '':
+#    print("Please set the environmental variable CIL_VERSION")
+#    sys.exit(1)
 
 setup(
     name="ccpi-astra",
