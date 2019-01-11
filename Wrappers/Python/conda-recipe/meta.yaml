@@ -12,7 +12,7 @@ build:
 requirements:
   build:
     - python
-    - numpy
+    - numpy {{ numpy }}
     - setuptools
 
   run:
