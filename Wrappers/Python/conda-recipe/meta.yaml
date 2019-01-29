@@ -2,7 +2,6 @@ package:
   name: ccpi-astra
   version: {{ environ['CIL_VERSION'] }}
 
-
 build:
   preserve_egg_dir: False
   script_env:
@@ -16,6 +15,7 @@ requirements:
     - setuptools
 
   run:
+    - {{ pin_compatible('numpy', max_pin='x.x') }}
     - python
     - numpy
     - scipy
