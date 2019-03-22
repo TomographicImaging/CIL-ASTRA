@@ -16,7 +16,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ccpi.optimisation.operators import Operator, LinearOperator
-from ccpi.optimisation.operators import LinearOperator
 import numpy
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
 from ccpi.optimisation.ops import PowerMethodNonsquare
