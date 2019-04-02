@@ -195,5 +195,20 @@ class AstraProjectorMC(Operator):
                                                 inputsize[1]))
         
     def allocate_direct(self):
-        return self.create_image_data()
+        return self.create_image_data()def domain_geometry(self):
+        return self.volume_geometry
     
+    def domain_geometry(self):
+        return self.volume_geometry
+    
+    def range_geometry(self):
+        return self.sinogram_geometry    
+    
+    def norm(self):
+
+        x0 = self.volume_geometry.allocate('random')
+        self.s1, sall, svec = PowerMethodNonsquare(self, 50, x0)
+        return self.s1
+    
+
+
