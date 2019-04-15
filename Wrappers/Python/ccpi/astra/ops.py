@@ -44,16 +44,34 @@ class AstraProjectorSimple(LinearOperator):
                 
         # Initialise empty for singular value.
         self.s1 = None
-    
-    def direct(self, IM):
+        
+    def direct(self, IM, out=None):
         self.fp.set_input(IM)
-        out = self.fp.get_output()
-        return out
+        
+        if out is None:
+            return self.fp.get_output()
+        else:
+            out.fill(self.fp.get_output())
     
-    def adjoint(self, DATA):
+    def adjoint(self, DATA, out=None):
         self.bp.set_input(DATA)
-        out = self.bp.get_output()
-        return out
+        
+        if out is None:
+            return self.bp.get_output()
+        else:
+            out.fill(self.bp.get_output())
+               
+        
+    
+#    def direct(self, IM):
+#        self.fp.set_input(IM)
+#        out = self.fp.get_output()
+#        return out
+#    
+#    def adjoint(self, DATA):
+#        self.bp.set_input(DATA)
+#        out = self.bp.get_output()
+#        return out
     
     #def delete(self):
     #    astra.data2d.delete(self.proj_id)
@@ -194,9 +212,9 @@ class AstraProjectorMC(Operator):
                                                 inputsize[0],
                                                 inputsize[1]))
         
-    def allocate_direct(self):
-        return self.create_image_data()def domain_geometry(self):
-        return self.volume_geometry
+#    def allocate_direct(self):
+#        return self.create_image_data()def domain_geometry(self):
+#        return self.volume_geometry
     
     def domain_geometry(self):
         return self.volume_geometry
