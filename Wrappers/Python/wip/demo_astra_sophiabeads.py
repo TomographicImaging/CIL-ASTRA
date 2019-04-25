@@ -69,3 +69,61 @@ x, it, timing, criter = CGLS(x_init,Aop,data2d,opt=opt)
 plt.figure()
 plt.imshow(x.as_array())
 plt.colorbar()
+plt.show()
+
+
+
+
+##############################################
+
+from ccpi.optimisation.algs import FISTA, FBPD, CGLS
+from ccpi.optimisation.funcs import Norm2sq, Norm1, TV2D
+
+opt = {'tol': 1e-4, 'iter': 100}
+
+# Create least squares object instance with projector, test data and a constant 
+# coefficient of 0.5:
+f = Norm2sq(Aop,data2d,c=0.5)
+
+# Run FISTA for least squares without regularization
+x_fista0, it0, timing0, criter0 = FISTA(x_init, f, None,opt)
+
+plt.imshow(x_fista0.array)
+plt.title('FISTA Least squares')
+plt.show()
+
+plt.semilogy(criter0)
+plt.title('FISTA Least squares criterion')
+plt.show()
+
+# FISTA can also solve regularised forms by specifying a second function object
+# such as 1-norm regularisation with choice of regularisation parameter lam:
+
+# Create 1-norm function object
+lam = 0.1
+g0 = Norm1(lam)
+
+# Run FISTA for least squares plus 1-norm function.
+x_fista1, it1, timing1, criter1 = FISTA(x_init, f, g0, opt)
+
+plt.imshow(x_fista1.array)
+plt.title('FISTA Least squares plus 1-norm regularisation')
+plt.show()
+
+plt.semilogy(criter1)
+plt.title('FISTA Least squares plus 1-norm regularisation criterion')
+plt.show()
+
+# Specify TV function object
+lamtv = 0.1
+gtv = TV2D(lamtv)
+
+optTV = {'tol': 1e-4, 'iter': 10000}
+
+x_fbpdtv,it_fbpdtv,timing_fbpdtv,criter_fbpdtv=FBPD(x_init,None,f,gtv,optTV)
+
+plt.imshow(x_fbpdtv.array)
+plt.show()
+
+plt.semilogy(criter_fbpdtv)
+plt.show()
