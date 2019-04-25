@@ -157,7 +157,7 @@ class AstraProjector3DSimple(Operator):
                                                 inputsize[0]))
 
 
-class AstraProjectorMC(Operator):
+class AstraProjectorMC(LinearOperator):
     """ASTRA Multichannel projector"""
     def __init__(self, geomv, geomp, device):
         super(AstraProjectorMC, self).__init__()
@@ -179,38 +179,55 @@ class AstraProjectorMC(Operator):
         # Initialise empty for singular value.
         self.s1 = None
     
-    def direct(self, IM):
-        self.fp.set_input(IM)
-        out = self.fp.get_output()
-        return out
+#    def direct(self, IM):
+#        self.fp.set_input(IM)
+#        out = self.fp.get_output()
+#        return out
+#    
+#    def adjoint(self, DATA):
+#        self.bp.set_input(DATA)
+#        out = self.bp.get_output()
+#        return out
     
-    def adjoint(self, DATA):
+    
+    def direct(self, IM, out=None):
+        self.fp.set_input(IM)
+        
+        if out is None:
+            return self.fp.get_output()
+        else:
+            out.fill(self.fp.get_output())
+    
+    def adjoint(self, DATA, out=None):
         self.bp.set_input(DATA)
-        out = self.bp.get_output()
-        return out
+        
+        if out is None:
+            return self.bp.get_output()
+        else:
+            out.fill(self.bp.get_output())    
     
     #def delete(self):
     #    astra.data2d.delete(self.proj_id)
     
-    def get_max_sing_val(self):
-        if self.s1 is None:
-            self.s1, sall, svec = PowerMethodNonsquare(self,10)
-            return self.s1
-        else:
-            return self.s1
-    
-    def size(self):
-        # Only implemented for 2D
-        return ( (self.sinogram_geometry.angles.size, \
-                  self.sinogram_geometry.pixel_num_h), \
-                 (self.volume_geometry.voxel_num_x, \
-                  self.volume_geometry.voxel_num_y) )
-    
-    def create_image_data(self):
-        inputsize = self.size()[1]
-        return DataContainer(numpy.random.randn(self.volume_geometry.channels,
-                                                inputsize[0],
-                                                inputsize[1]))
+#    def get_max_sing_val(self):
+#        if self.s1 is None:
+#            self.s1, sall, svec = PowerMethodNonsquare(self,10)
+#            return self.s1
+#        else:
+#            return self.s1
+#    
+#    def size(self):
+#        # Only implemented for 2D
+#        return ( (self.sinogram_geometry.angles.size, \
+#                  self.sinogram_geometry.pixel_num_h), \
+#                 (self.volume_geometry.voxel_num_x, \
+#                  self.volume_geometry.voxel_num_y) )
+#    
+#    def create_image_data(self):
+#        inputsize = self.size()[1]
+#        return DataContainer(numpy.random.randn(self.volume_geometry.channels,
+#                                                inputsize[0],
+#                                                inputsize[1]))
         
 #    def allocate_direct(self):
 #        return self.create_image_data()def domain_geometry(self):
