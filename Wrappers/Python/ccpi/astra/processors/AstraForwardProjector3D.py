@@ -57,10 +57,7 @@ class AstraForwardProjector3D(DataProcessor):
     def set_vol_geom(self, vol_geom):
         self.vol_geom = vol_geom
     
-    def set_AcquisitionGeometry(self, sinogram_geometry):
-        self.sinogram_geometry = sinogram_geometry
-    
-    def process(self):
+    def process(self, out=None):
         IM = self.get_input()
         DATA = AcquisitionData(geometry=self.sinogram_geometry,
                                dimension_labels=self.output_axes_order)
@@ -69,4 +66,8 @@ class AstraForwardProjector3D(DataProcessor):
                                                            self.vol_geom)
         astra.data3d.delete(sinogram_id)
         # 3D CUDA FP does not need scaling
-        return DATA
+        
+        if out is None:
+            return DATA
+        else:
+            out.fill(DATA)

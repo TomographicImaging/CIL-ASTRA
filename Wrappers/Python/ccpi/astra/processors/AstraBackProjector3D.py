@@ -53,7 +53,7 @@ class AstraBackProjector3D(DataProcessor):
     def set_AcquisitionGeometry(self, sinogram_geometry):
         self.sinogram_geometry = sinogram_geometry
     
-    def process(self):
+    def process(self, out=None):
         DATA = self.get_input()
         IM = ImageData(geometry=self.volume_geometry,
                        dimension_labels=self.output_axes_order)
@@ -64,4 +64,9 @@ class AstraBackProjector3D(DataProcessor):
         
         # Scaling of 3D ASTRA backprojector, works both parallel and cone.
         scaling = 1/self.volume_geometry.voxel_size_x**2  
-        return scaling*IM
+        ret = scaling*IM
+        
+        if out is None:
+            return ret
+        else:
+            out.fill(ret)

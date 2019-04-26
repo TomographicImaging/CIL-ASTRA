@@ -22,7 +22,8 @@ class AstraBackProjectorMC(AstraBackProjector):
         else:
             raise ValueError("Expected input dimensions is 2 or 3, got {0}"\
                              .format(dataset.number_of_dimensions))
-    def process(self):
+    
+    def process(self, out):
         DATA = self.get_input()
         
         IM = ImageData(geometry=self.volume_geometry)
@@ -34,7 +35,12 @@ class AstraBackProjectorMC(AstraBackProjector):
             astra.data2d.delete(rec_id)
         
         if self.device == 'cpu':
-            return IM
+            ret = IM
         else:
             scaling = self.volume_geometry.voxel_size_x**3  
-            return scaling*IM
+            ret = scaling*IM
+        
+        if out is None:
+            return ret
+        else:
+            out.fill(ret)

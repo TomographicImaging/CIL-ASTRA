@@ -22,7 +22,8 @@ class AstraForwardProjectorMC(AstraForwardProjector):
         else:
             raise ValueError("Expected input dimensions is 2 or 3, got {0}"\
                              .format(dataset.number_of_dimensions))
-    def process(self):
+    
+    def process(self, out=None):
         IM = self.get_input()
         #create the output AcquisitionData
         DATA = AcquisitionData(geometry=self.sinogram_geometry)
@@ -33,10 +34,15 @@ class AstraForwardProjectorMC(AstraForwardProjector):
             astra.data2d.delete(sinogram_id)
         
         if self.device == 'cpu':
-            return DATA
+            ret = DATA
         else:
             if self.sinogram_geometry.geom_type == 'cone':
-                return DATA
+                ret = DATA
             else:
                  scaling = (1.0/self.volume_geometry.voxel_size_x) 
-                 return scaling*DATA
+                 ret = scaling*DATA
+        
+        if out is None:
+            return ret
+        else:
+            out.fill(ret)
