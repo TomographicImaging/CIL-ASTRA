@@ -11,7 +11,7 @@ from ccpi.io.reader import XTEKReader
 import numpy as np
 import matplotlib.pyplot as plt
 from ccpi.framework import ImageGeometry, AcquisitionData, ImageData
-from ccpi.astra.ops import AstraProjector3DSimple
+from ccpi.astra.operators import AstraProjector3DSimple
 from ccpi.optimisation.algs import CGLS
 
 import numpy

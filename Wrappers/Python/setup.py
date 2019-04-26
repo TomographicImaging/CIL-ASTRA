@@ -32,7 +32,11 @@ cil_version='0.12.0'
 setup(
     name="ccpi-astra",
     version=cil_version,
-    packages=['ccpi' , 'ccpi.astra'],
+    packages=['ccpi' , 
+              'ccpi.astra',
+              'ccpi.astra.operators',
+              'ccpi.astra.processors',
+              'ccpi.astra.utils'],
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine

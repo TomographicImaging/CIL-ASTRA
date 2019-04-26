@@ -15,7 +15,7 @@ from ccpi.plugins.ops import CCPiProjectorSimple
 from ccpi.processors import Normalizer, CenterOfRotationFinder 
 from ccpi.plugins.processors import AcquisitionDataPadder
 from ccpi.io.reader import NexusReader
-from ccpi.astra.ops import AstraProjector3DSimple
+from ccpi.astra.operators import AstraProjector3DSimple
 
 # All external imports
 import numpy
