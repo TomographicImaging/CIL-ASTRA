@@ -16,7 +16,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ccpi.optimisation.operators import Operator, LinearOperator
-import numpy
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
 from ccpi.optimisation.ops import PowerMethodNonsquare
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
@@ -52,24 +51,17 @@ class AstraProjector3DSimple(LinearOperator):
         out = self.bp.get_output()
         return out
     
-    #def delete(self):
-    #    astra.data2d.delete(self.proj_id)
-    
     def get_max_sing_val(self):
         self.s1, sall, svec = PowerMethodNonsquare(self,10)
         return self.s1
     
-    def size(self):
-        # Only implemented for 2D
-        return ( (self.sinogram_geometry.angles.size, \
-                  self.sinogram_geometry.pixel_num_h, \
-                  self.sinogram_geometry.pixel_num_v,), \
-                 (self.volume_geometry.voxel_num_x, \
-                  self.volume_geometry.voxel_num_y, \
-                  self.volume_geometry.voxel_num_z) )
+    def domain_geometry(self):
+        return self.volume_geometry
     
-    def create_image_data(self):
-        inputsize = self.size()[1]
-        return DataContainer(numpy.random.randn(inputsize[2],
-                                                inputsize[1],
-                                                inputsize[0]))
+    def range_geometry(self):
+        return self.sinogram_geometry  
+    
+    def norm(self):
+        x0 = self.volume_geometry.allocate('random')
+        self.s1, sall, svec = PowerMethodNonsquare(self, 50, x0)
+        return self.s1
