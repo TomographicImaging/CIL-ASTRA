@@ -24,6 +24,7 @@ from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
      AstraBackProjector3D
 
 class AstraProjectorSimple(LinearOperator):
+    
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp, device):
         super(AstraProjectorSimple, self).__init__()
@@ -60,6 +61,16 @@ class AstraProjectorSimple(LinearOperator):
             return self.bp.get_output()
         else:
             out.fill(self.bp.get_output())
+            
+            
+    def sum_abs_row(self):
+        
+        return self.adjoint(self.sinogram_geometry.allocate(1))
+            
+    def sum_abs_col(self):
+
+        return self.direct(self.volume_geometry.allocate(1))
+                  
                
         
     
