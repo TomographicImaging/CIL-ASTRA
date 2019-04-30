@@ -23,7 +23,7 @@ class AstraBackProjectorMC(AstraBackProjector):
             raise ValueError("Expected input dimensions is 2 or 3, got {0}"\
                              .format(dataset.number_of_dimensions))
     
-    def process(self, out):
+    def process(self, out=None):
         DATA = self.get_input()
         
         IM = ImageData(geometry=self.volume_geometry)
