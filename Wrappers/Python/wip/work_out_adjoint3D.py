@@ -8,7 +8,7 @@
 from ccpi.framework import ImageData , ImageGeometry, AcquisitionGeometry, AcquisitionData
 from ccpi.optimisation.algs import FISTA, FBPD, CGLS
 from ccpi.optimisation.funcs import Norm2sq, Norm1, TV2D
-from ccpi.astra.ops import AstraProjector3DSimple
+from ccpi.astra.operators import AstraProjector3DSimple
 
 import numpy as np
 import matplotlib.pyplot as plt
