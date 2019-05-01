@@ -17,7 +17,7 @@
 
 from ccpi.optimisation.operators import Operator, LinearOperator
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
-from ccpi.optimisation.ops import PowerMethodNonsquare
+#from ccpi.optimisation.ops import PowerMethodNonsquare
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector
 
 class AstraProjectorSimple(LinearOperator):
@@ -66,5 +66,5 @@ class AstraProjectorSimple(LinearOperator):
     
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
-        self.s1, sall, svec = PowerMethodNonsquare(self, 50, x0)
+        self.s1, sall, svec = LinearOperator.PowerMethodNonsquare(self, 50, x0)
         return self.s1
