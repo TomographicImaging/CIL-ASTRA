@@ -17,7 +17,6 @@
 
 from ccpi.optimisation.operators import Operator, LinearOperator
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
-#from ccpi.optimisation.ops import PowerMethodNonsquare
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector
 
 class AstraProjectorSimple(LinearOperator):
