@@ -5,9 +5,10 @@
 # regularisation reconstructions.
 
 # Do all imports
-from ccpi.framework import ImageData, AcquisitionData, ImageGeometry, AcquisitionGeometry
-from ccpi.optimisation.algs import FISTA
-from ccpi.optimisation.funcs import Norm2sq, Norm1
+from ccpi.framework import ImageData, AcquisitionData, ImageGeometry, \
+                           AcquisitionGeometry
+from ccpi.optimisation.algorithms import FISTA
+from ccpi.optimisation.functions import Norm2Sq, L1Norm
 from ccpi.astra.operators import AstraProjectorMC
 
 import numpy
@@ -97,23 +98,28 @@ plt.show()
 # Using the test data b, different reconstruction methods can now be set up as
 # demonstrated in the rest of this file. In general all methods need an initial 
 # guess and some algorithm options to be set:
-x_init = ImageData(numpy.zeros(x.shape),geometry=ig)
+x_init = ig.allocate(0.0)
 opt = {'tol': 1e-4, 'iter': 200}
 
 # Create least squares object instance with projector, test data and a constant 
 # coefficient of 0.5. Note it is least squares over all channels:
-f = Norm2sq(Aop,b,c=0.5)
+f = Norm2Sq(Aop,b,c=0.5)
 
 # Run FISTA for least squares without regularization
-x_fista0, it0, timing0, criter0 = FISTA(x_init, f, None, opt)
+FISTA_alg = FISTA()
+FISTA_alg.set_up(x_init=x_init, f=f, opt=opt)
+FISTA_alg.max_iteration = 2000
+FISTA_alg.run(opt['iter'])
+x_FISTA = FISTA_alg.get_output()
 
-# Display reconstruction and criteration
+# Display reconstruction and criterion
 ff0, axarrf0 = plt.subplots(1,numchannels)
 for k in numpy.arange(3):
-    axarrf0[k].imshow(x_fista0.as_array()[k],vmin=0,vmax=2.5)
+    axarrf0[k].imshow(x_FISTA.as_array()[k],vmin=0,vmax=2.5)
 plt.show()
 
-plt.semilogy(criter0)
+plt.figure()
+plt.semilogy(FISTA_alg.objective)
 plt.title('Criterion vs iterations, least squares')
 plt.show()
 
@@ -121,17 +127,22 @@ plt.show()
 # such as 1-norm regularisation with choice of regularisation parameter lam. 
 # Again the regulariser is over all channels:
 lam = 10
-g0 = Norm1(lam)
+g1 = lam * L1Norm()
 
-# Run FISTA for least squares plus 1-norm function.
-x_fista1, it1, timing1, criter1 = FISTA(x_init, f, g0, opt)
+# Run FISTA for least squares plus 1-norm regularisation.
+FISTA_alg1 = FISTA()
+FISTA_alg1.set_up(x_init=x_init, f=f, g=g1, opt=opt)
+FISTA_alg1.max_iteration = 2000
+FISTA_alg1.run(opt['iter'])
+x_FISTA1 = FISTA_alg1.get_output()
 
-# Display reconstruction and criteration
+# Display reconstruction and criterion
 ff1, axarrf1 = plt.subplots(1,numchannels)
 for k in numpy.arange(3):
-    axarrf1[k].imshow(x_fista1.as_array()[k],vmin=0,vmax=2.5)
+    axarrf1[k].imshow(x_FISTA1.as_array()[k],vmin=0,vmax=2.5)
 plt.show()
 
-plt.semilogy(criter1)
+plt.figure()
+plt.semilogy(FISTA_alg1.objective)
 plt.title('Criterion vs iterations, least squares plus 1-norm regu')
 plt.show()
