@@ -77,6 +77,7 @@ plt.show()
 
 plt.imshow(z.array)
 plt.title('Backprojected data')
+plt.colorbar()
 plt.show()
 
 # Using the test data b, different reconstruction methods can now be set up as
@@ -187,10 +188,10 @@ imgplot = plt.imshow(x_FISTA1.as_array(),vmin=clims[0],vmax=clims[1])
 plt.axis('off')
 
 fig = plt.figure()
-b=fig.add_subplot(1,1,1)
-b.set_title('criteria')
+a=fig.add_subplot(1,1,1)
+a.set_title('criteria')
 imgplot = plt.loglog(CGLS_alg.objective, label='CGLS')
 imgplot = plt.loglog(FISTA_alg.objective , label='FISTA LS')
 imgplot = plt.loglog(FISTA_alg1.objective , label='FISTA LS+1')
-b.legend(loc='lower left')
+a.legend(loc='lower left')
 plt.show()
