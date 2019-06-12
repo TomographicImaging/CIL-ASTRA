@@ -15,7 +15,7 @@ from ccpi.astra.operators import AstraProjector3DSimple
 from ccpi.optimisation.algorithms import CGLS
 
 # Set up reader object and read the data
-datareader_new = NikonDataReader(xtek_file="/media/newhd/shared/Data/SophiaBeads/SophiaBeads_64_averaged/SophiaBeads_64_averaged.xtekct")
+datareader_new = NikonDataReader(xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct")
 data = datareader_new.load_projections()
 
 # Crop data and fix dimension labels
