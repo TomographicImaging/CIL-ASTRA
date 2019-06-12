@@ -83,8 +83,8 @@ plt.show()
 # Using the test data b, different reconstruction methods can now be set up as
 # demonstrated in the rest of this file. In general all methods need an initial 
 # guess and some algorithm options to be set:
-x_init = ImageData(np.zeros(x.shape),geometry=ig)
-opt = {'tol': 1e-4, 'iter': 1000}
+x_init = ImageData(geometry=ig)
+opt = {'tol': 1e-4, 'iter': 100}
 
 # First a CGLS reconstruction can be done:
 CGLS_alg = CGLS()
@@ -135,7 +135,7 @@ plt.show()
 # such as 1-norm regularisation with choice of regularisation parameter lam:
 
 # Create 1-norm function object
-lam = 0.1
+lam = 1.0
 g0 = lam * L1Norm()
 
 # Run FISTA for least squares plus 1-norm function.
