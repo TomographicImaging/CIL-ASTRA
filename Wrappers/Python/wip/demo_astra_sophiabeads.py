@@ -15,12 +15,14 @@ from ccpi.astra.operators import AstraProjectorSimple
 from ccpi.optimisation.algorithms import FISTA, CGLS
 from ccpi.optimisation.functions import Norm2Sq, L1Norm
 
-# Set up reader object and read the data
-datareader_new = NikonDataReader(xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct")
-data = datareader_new.load_projections()
+# Set up reader object and read in central slice the data
+datareader = NikonDataReader( \
+                             xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct", \
+                             roi=[(1000,1001),(0,2000)])
+data = datareader.load_projections()
 
 # Extract central slice, scale and negative-log transform
-sino = -np.log(data.as_array()[:,1000,:]/60000.0)
+sino = -np.log(data.as_array()[:,0,:]/60000.0)
 
 # Apply centering correction by zero padding, amount found manually
 cor_pad = 30

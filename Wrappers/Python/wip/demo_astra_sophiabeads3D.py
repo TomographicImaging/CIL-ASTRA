@@ -14,16 +14,11 @@ from ccpi.framework import ImageGeometry, AcquisitionData, ImageData
 from ccpi.astra.operators import AstraProjector3DSimple
 from ccpi.optimisation.algorithms import CGLS
 
-# Set up reader object and read the data
-datareader_new = NikonDataReader(xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct")
-data = datareader_new.load_projections()
-
-# Crop data and fix dimension labels
-data.geometry.pixel_num_v = 200
-data = AcquisitionData(data.array[:,901:1101,:],
-                            geometry=data.geometry)
-
-#datadimension_labels=['angle','horizontal','vertical']
+# Set up reader object and read in 200 central slices of the data
+datareader= NikonDataReader( \
+                            xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct", \
+                            roi=[(901,1101),(0,2000)])
+data = datareader.load_projections()
 
 # Scale and negative-log transform
 data.array = -np.log(data.as_array()/60000.0)
