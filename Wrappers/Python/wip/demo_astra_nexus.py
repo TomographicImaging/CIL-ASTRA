@@ -1,6 +1,6 @@
 
 # This script demonstrates how to load a parallel beam data set in Nexus 
-# format, apply dark and flat field correction and reconstruct using the
+# format and reconstruct using the
 # modular optimisation framework and the ASTRA Tomography toolbox.
 # 
 # The data set is available from
@@ -8,46 +8,24 @@
 # and should be downloaded to a local directory to be specified below.
 
 # All own imports
-from ccpi.framework import ImageData, AcquisitionData, ImageGeometry, AcquisitionGeometry
+from ccpi.framework import ImageData, ImageGeometry
 from ccpi.optimisation.algorithms import CGLS, FISTA
 from ccpi.optimisation.functions import Norm2Sq, L1Norm
-from ccpi.processors import Normalizer, CenterOfRotationFinder 
-from ccpi.io.reader import NexusReader
+from ccpi.processors import CenterOfRotationFinder 
+from ccpi.io import NEXUSDataReader
 from ccpi.astra.operators import AstraProjector3DSimple
 
 # All external imports
 import numpy
 import matplotlib.pyplot as plt
-import os
 
-# Define utility function to average over flat and dark images.
-def avg_img(image):
-    shape = list(numpy.shape(image))
-    l = shape.pop(0)
-    avg = numpy.zeros(shape)
-    for i in range(l):
-        avg += image[i] / l
-    return avg
-    
-# Set up a reader object pointing to the Nexus data set. Revise path as needed.
-reader = NexusReader(os.path.join(".." ,".." ,".." , "..", "CCPi-ReconstructionFramework","data" , "24737_fd.nxs" ))
+## Set up a reader object pointing to the Nexus data set. Revise path as needed.
+# The data is already  corrected for by flat and dark field.
+myreader = NEXUSDataReader(nexus_file="/media/newhd/shared/Data/nexus/24737_fd_normalised.nxs" )
+data= myreader.load_data()
 
-# Read and print the dimensions of the raw projections
-dims = reader.get_projection_dimensions()
-print (dims)
-
-# Load and average all flat and dark images in preparation for normalising data.
-flat = avg_img(reader.load_flat())
-dark = avg_img(reader.load_dark())
-
-# Set up normaliser object for normalising data by flat and dark images.
-norm = Normalizer(flat_field=flat, dark_field=dark)
-
-# Load the raw projections and pass as input to the normaliser and apply 
-# normlisation.
-norm.set_input(reader.get_acquisition_data())
-data = norm.get_output()
-data.array = -numpy.log(data.as_array())
+# Negative logarithm transoform.
+data.fill( -numpy.log(data.as_array() ))
 
 # Set up CenterOfRotationFinder object to center data.
 # Set the output of the normaliser as the input and execute to determine center.

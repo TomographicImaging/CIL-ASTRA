@@ -10,18 +10,17 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from ccpi.io import NikonDataReader
-from ccpi.framework import ImageGeometry, AcquisitionData, ImageData
+from ccpi.framework import ImageGeometry, ImageData
 from ccpi.astra.operators import AstraProjector3DSimple
 from ccpi.optimisation.algorithms import CGLS
 
 # Set up reader object and read in 200 central slices of the data
-datareader= NikonDataReader( \
-                            xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct", \
+datareader= NikonDataReader(xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct",
                             roi=[(901,1101),(0,2000)])
 data = datareader.load_projections()
 
 # Scale and negative-log transform
-data.array = -np.log(data.as_array()/60000.0)
+data.fill(-np.log(data.as_array()/60000.0))
 
 # Apply centering correction by zero padding, amount found manually
 cor_pad = 30
@@ -77,7 +76,7 @@ plt.show()
 x_init = ImageData(geometry=ig)
 
 # Set tolerance and number of iterations for reconstruction algorithms.
-opt = {'tol': 1e-4, 'iter': 20}
+opt = {'tol': 1e-4, 'iter': 30}
 
 # Run a CGLS reconstruction can be done:
 CGLS_alg = CGLS()

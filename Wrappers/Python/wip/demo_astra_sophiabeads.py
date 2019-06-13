@@ -16,8 +16,7 @@ from ccpi.optimisation.algorithms import FISTA, CGLS
 from ccpi.optimisation.functions import Norm2Sq, L1Norm
 
 # Set up reader object and read in central slice the data
-datareader = NikonDataReader( \
-                             xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct", \
+datareader = NikonDataReader(xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct",
                              roi=[(1000,1001),(0,2000)])
 data = datareader.load_projections()
 
