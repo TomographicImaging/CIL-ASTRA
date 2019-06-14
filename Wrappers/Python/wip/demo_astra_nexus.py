@@ -6,6 +6,7 @@
 # The data set is available from
 # https://github.com/DiamondLightSource/Savu/blob/master/test_data/data/24737_fd.nxs
 # and should be downloaded to a local directory to be specified below.
+# The data should be flat-field and dark-field corrected.
 
 # All own imports
 from ccpi.framework import ImageData, ImageGeometry
@@ -21,7 +22,7 @@ import matplotlib.pyplot as plt
 
 ## Set up a reader object pointing to the Nexus data set. Revise path as needed.
 # The data is already  corrected for by flat and dark field.
-myreader = NEXUSDataReader(nexus_file="/media/newhd/shared/Data/nexus/24737_fd_normalised.nxs" )
+myreader = NEXUSDataReader(nexus_file="REPLACE_THIS_BY_PATH_TO_DATASET/24737_fd_normalised.nxs" )
 data= myreader.load_data()
 
 # Negative logarithm transoform.
