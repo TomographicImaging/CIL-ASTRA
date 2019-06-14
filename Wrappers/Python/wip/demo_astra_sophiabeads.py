@@ -1,25 +1,27 @@
 
 # This demo shows how to load a Nikon XTek micro-CT data set and reconstruct
-# the central slice using the CGLS method. The SophiaBeads dataset with 256 
-# projections is used as test data and can be obtained from here:
+# the central slice using the CGLS and FISTA methods. The SophiaBeads dataset 
+# with 64 projections is used as test data and can be obtained from here:
 # https://zenodo.org/record/16474
 # The filename with full path to the .xtekct file should be given as string 
-# input to XTEKReader to  load in the data.
+# input to NikonDataReader to  load in the data.
 
 # Do all imports
-from ccpi.io.reader import XTEKReader
 import numpy as np
 import matplotlib.pyplot as plt
+from ccpi.io import NikonDataReader
 from ccpi.framework import ImageGeometry, AcquisitionGeometry, AcquisitionData, ImageData
 from ccpi.astra.operators import AstraProjectorSimple
-from ccpi.optimisation.algs import CGLS
+from ccpi.optimisation.algorithms import FISTA, CGLS
+from ccpi.optimisation.functions import Norm2Sq, L1Norm
 
-# Set up reader object and read the data
-datareader = XTEKReader("REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_256_averaged.xtekct")
-data = datareader.get_acquisition_data()
+# Set up reader object and read in central slice the data
+datareader = NikonDataReader(xtek_file="REPLACE_THIS_BY_PATH_TO_DATASET/SophiaBeads_64_averaged.xtekct",
+                             roi=[(1000,1001),(0,2000)])
+data = datareader.load_projections()
 
 # Extract central slice, scale and negative-log transform
-sino = -np.log(data.as_array()[:,:,1000]/60000.0)
+sino = -np.log(data.as_array()[:,0,:]/60000.0)
 
 # Apply centering correction by zero padding, amount found manually
 cor_pad = 30
@@ -59,13 +61,74 @@ ig2d = ImageGeometry(voxel_num_x=N,
 Aop = AstraProjectorSimple(ig2d, ag2d,"gpu")
 
 # Set initial guess for CGLS reconstruction
-x_init = ImageData(np.zeros((N,N)),geometry=ig2d)
+x_init = ImageData(geometry=ig2d)
 
-# Run 50-iteration CGLS reconstruction
+# Set tolerance and number of iterations for reconstruction algorithms.
 opt = {'tol': 1e-4, 'iter': 50}
-x, it, timing, criter = CGLS(x_init,Aop,data2d,opt=opt)
 
-# Display reconstruction
+# First a CGLS reconstruction can be done:
+CGLS_alg = CGLS()
+CGLS_alg.set_up(x_init, Aop, data2d)
+CGLS_alg.max_iteration = 2000
+CGLS_alg.run(opt['iter'])
+
+x_CGLS = CGLS_alg.get_output()
+
 plt.figure()
-plt.imshow(x.as_array())
+plt.imshow(x_CGLS.array)
+plt.title('CGLS')
 plt.colorbar()
+plt.show()
+
+plt.figure()
+plt.semilogy(CGLS_alg.objective)
+plt.title('CGLS criterion')
+plt.show()
+
+# CGLS solves the simple least-squares problem. The same problem can be solved 
+# by FISTA by setting up explicitly a least squares function object and using 
+# no regularisation:
+
+# Create least squares object instance with projector, test data and a constant 
+# coefficient of 0.5:
+f = Norm2Sq(Aop,data2d)
+
+# Run FISTA for least squares without constraints
+FISTA_alg = FISTA()
+FISTA_alg.set_up(x_init=x_init, f=f, opt=opt)
+FISTA_alg.max_iteration = 2000
+FISTA_alg.run(opt['iter'])
+x_FISTA = FISTA_alg.get_output()
+
+plt.figure()
+plt.imshow(x_FISTA.array)
+plt.title('FISTA Least squares reconstruction')
+plt.colorbar()
+plt.show()
+
+plt.figure()
+plt.semilogy(FISTA_alg.objective)
+plt.title('FISTA Least squares criterion')
+plt.show()
+
+# Create 1-norm function object
+lam = 1.0
+g0 = lam * L1Norm()
+
+# Run FISTA for least squares plus 1-norm function.
+FISTA_alg1 = FISTA()
+FISTA_alg1.set_up(x_init=x_init, f=f, g=g0, opt=opt)
+FISTA_alg1.max_iteration = 2000
+FISTA_alg1.run(opt['iter'])
+x_FISTA1 = FISTA_alg1.get_output()
+
+plt.figure()
+plt.imshow(x_FISTA1.array)
+plt.title('FISTA LS+L1Norm reconstruction')
+plt.colorbar()
+plt.show()
+
+plt.figure()
+plt.semilogy(FISTA_alg1.objective)
+plt.title('FISTA LS+L1norm criterion')
+plt.show()
