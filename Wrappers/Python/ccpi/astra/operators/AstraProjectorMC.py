@@ -19,7 +19,8 @@ from ccpi.optimisation.operators import Operator, LinearOperator
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
      AstraForwardProjectorMC, AstraBackProjectorMC, AstraForwardProjector3D, \
-     AstraBackProjector3D, AstraProjectorSimple
+     AstraBackProjector3D
+from ccpi.astra.operators import AstraProjectorSimple     
 
 class AstraProjectorMC(LinearOperator):
     """ASTRA Multichannel projector"""
