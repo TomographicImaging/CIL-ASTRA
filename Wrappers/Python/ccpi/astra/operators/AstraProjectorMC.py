@@ -19,7 +19,7 @@ from ccpi.optimisation.operators import Operator, LinearOperator
 from ccpi.framework import AcquisitionData, ImageData, DataContainer
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
      AstraForwardProjectorMC, AstraBackProjectorMC, AstraForwardProjector3D, \
-     AstraBackProjector3D
+     AstraBackProjector3D, AstraProjectorSimple
 
 class AstraProjectorMC(LinearOperator):
     """ASTRA Multichannel projector"""
@@ -63,9 +63,25 @@ class AstraProjectorMC(LinearOperator):
         return self.volume_geometry
     
     def range_geometry(self):
-        return self.sinogram_geometry    
+        return self.sinogram_geometry 
     
-    def norm(self):
-        x0 = self.volume_geometry.allocate('random')
-        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
-        return self.s1
+    def compute_norm(self, **kwargs):
+        igtmp = self.volume_geometry.clone()
+        igtmp.channels = 1
+        agtmp = self.sinogram_geometry.clone()
+        agtmp.channels = 1
+        Atmp = AstraProjectorSimple(igtmp, agtmp, self.fp.device)
+        
+        return Atmp.norm()
+        
+#        ImageGeometry(voxel_num_x = N, voxel_num_y = N)
+#        agtmp = AcquisitionGeometry('parallel','2D', angles, detectors) # No channels
+#        Atmp = AstraProjectorSimple(igtmp, agtmp, dev)
+#        pass
+        
+        
+    
+#    def norm(self):
+#        x0 = self.volume_geometry.allocate('random')
+#        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
+#        return self.s1
