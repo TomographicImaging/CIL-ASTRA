@@ -11,14 +11,11 @@ build:
 requirements:
   build:
     - python
-    - numpy {{ numpy }}
     - setuptools
 
   run:
     - {{ pin_compatible('numpy', max_pin='x.x') }}
     - python
-    - numpy
-    - scipy
     - ccpi-framework
     - astra-toolbox
 	
