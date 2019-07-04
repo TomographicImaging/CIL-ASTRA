@@ -2,12 +2,12 @@
 # This demo illustrates how ASTRA 2D projectors can be used with
 # the modular optimisation framework. The demo sets up a 2D test case and 
 # demonstrates reconstruction using CGLS, as well as FISTA for least squares 
-# and 1-norm regularisation and FBPD for 1-norm and TV regularisation.
+# and 1-norm regularisation.
 
 # First make all imports
 from ccpi.framework import ImageData , ImageGeometry, AcquisitionGeometry
-from ccpi.optimisation.algs import FISTA, FBPD, CGLS
-from ccpi.optimisation.funcs import Norm2sq, Norm1, TV2D
+from ccpi.optimisation.algorithms import FISTA, CGLS
+from ccpi.optimisation.functions import Norm2Sq, L1Norm
 from ccpi.astra.operators import AstraProjectorSimple
 
 import numpy as np
@@ -77,22 +77,30 @@ plt.show()
 
 plt.imshow(z.array)
 plt.title('Backprojected data')
+plt.colorbar()
 plt.show()
 
 # Using the test data b, different reconstruction methods can now be set up as
 # demonstrated in the rest of this file. In general all methods need an initial 
 # guess and some algorithm options to be set:
-x_init = ImageData(np.zeros(x.shape),geometry=ig)
-opt = {'tol': 1e-4, 'iter': 1000}
+x_init = ImageData(geometry=ig)
+opt = {'tol': 1e-4, 'iter': 100}
 
 # First a CGLS reconstruction can be done:
-x_CGLS, it_CGLS, timing_CGLS, criter_CGLS = CGLS(x_init, Aop, b, opt)
+CGLS_alg = CGLS()
+CGLS_alg.set_up(x_init, Aop, b )
+CGLS_alg.max_iteration = 2000
+CGLS_alg.run(opt['iter'])
 
+x_CGLS = CGLS_alg.get_output()
+
+plt.figure()
 plt.imshow(x_CGLS.array)
 plt.title('CGLS')
 plt.show()
 
-plt.semilogy(criter_CGLS)
+plt.figure()
+plt.semilogy(CGLS_alg.objective)
 plt.title('CGLS criterion')
 plt.show()
 
@@ -102,72 +110,56 @@ plt.show()
 
 # Create least squares object instance with projector, test data and a constant 
 # coefficient of 0.5:
-f = Norm2sq(Aop,b,c=0.5)
+f = Norm2Sq(Aop,b,c=0.5)
 
-# Run FISTA for least squares without regularization
-x_fista0, it0, timing0, criter0 = FISTA(x_init, f, None,opt)
+# Run FISTA for least squares without constraints
+FISTA_alg = FISTA()
+FISTA_alg.set_up(x_init=x_init, f=f, opt=opt)
+FISTA_alg.max_iteration = 2000
+FISTA_alg.run(opt['iter'])
+x_FISTA = FISTA_alg.get_output()
 
-plt.imshow(x_fista0.array)
-plt.title('FISTA Least squares')
+plt.figure()
+plt.imshow(x_FISTA.array)
+plt.title('FISTA Least squares reconstruction')
+plt.colorbar()
 plt.show()
 
-plt.semilogy(criter0)
+plt.figure()
+plt.semilogy(FISTA_alg.objective)
 plt.title('FISTA Least squares criterion')
 plt.show()
+
 
 # FISTA can also solve regularised forms by specifying a second function object
 # such as 1-norm regularisation with choice of regularisation parameter lam:
 
 # Create 1-norm function object
-lam = 0.1
-g0 = Norm1(lam)
+lam = 1.0
+g0 = lam * L1Norm()
 
 # Run FISTA for least squares plus 1-norm function.
-x_fista1, it1, timing1, criter1 = FISTA(x_init, f, g0, opt)
+FISTA_alg1 = FISTA()
+FISTA_alg1.set_up(x_init=x_init, f=f, g=g0, opt=opt)
+FISTA_alg1.max_iteration = 2000
+FISTA_alg1.run(opt['iter'])
+x_FISTA1 = FISTA_alg1.get_output()
 
-plt.imshow(x_fista1.array)
-plt.title('FISTA Least squares plus 1-norm regularisation')
+plt.figure()
+plt.imshow(x_FISTA1.array)
+plt.title('FISTA LS+L1Norm reconstruction')
+plt.colorbar()
 plt.show()
 
-plt.semilogy(criter1)
-plt.title('FISTA Least squares plus 1-norm regularisation criterion')
-plt.show()
-
-# The least squares plus 1-norm regularisation problem can also be solved by 
-# other algorithms such as the Forward Backward Primal Dual algorithm. This
-# algorithm minimises the sum of three functions and the least squares and 
-# 1-norm functions should be given as the second and third function inputs. 
-# In this test case, this algorithm requires more iterations to converge, so
-# new options are specified.
-opt_FBPD = {'tol': 1e-4, 'iter': 20000}
-x_fbpd1, it_fbpd1, timing_fbpd1, criter_fbpd1 = FBPD(x_init,None,f,g0,opt_FBPD)
-
-plt.imshow(x_fbpd1.array)
-plt.title('FBPD for least squares plus 1-norm regularisation')
-plt.show()
-
-plt.semilogy(criter_fbpd1)
-plt.title('FBPD for least squares plus 1-norm regularisation criterion')
-plt.show()
-
-# The FBPD algorithm can also be used conveniently for TV regularisation:
-
-# Specify TV function object
-lamtv = 10
-gtv = TV2D(lamtv)
-
-x_fbpdtv,it_fbpdtv,timing_fbpdtv,criter_fbpdtv=FBPD(x_init,None,f,gtv,opt_FBPD)
-
-plt.imshow(x_fbpdtv.array)
-plt.show()
-
-plt.semilogy(criter_fbpdtv)
+plt.figure()
+plt.semilogy(FISTA_alg1.objective)
+plt.title('FISTA LS+L1norm criterion')
 plt.show()
 
 
 # Compare all reconstruction and criteria
 clims = (0,1)
-cols = 3
+cols = 2
 rows = 2
 current = 1
 
@@ -186,34 +178,20 @@ plt.axis('off')
 current = current + 1
 a=fig.add_subplot(rows,cols,current)
 a.set_title('FISTA LS')
-imgplot = plt.imshow(x_fista0.as_array(),vmin=clims[0],vmax=clims[1])
+imgplot = plt.imshow(x_FISTA.as_array(),vmin=clims[0],vmax=clims[1])
 plt.axis('off')
 
 current = current + 1
 a=fig.add_subplot(rows,cols,current)
 a.set_title('FISTA LS+1')
-imgplot = plt.imshow(x_fista1.as_array(),vmin=clims[0],vmax=clims[1])
-plt.axis('off')
-
-current = current + 1
-a=fig.add_subplot(rows,cols,current)
-a.set_title('FBPD LS+1')
-imgplot = plt.imshow(x_fbpd1.as_array(),vmin=clims[0],vmax=clims[1])
-plt.axis('off')
-
-current = current + 1
-a=fig.add_subplot(rows,cols,current)
-a.set_title('FBPD TV')
-imgplot = plt.imshow(x_fbpdtv.as_array(),vmin=clims[0],vmax=clims[1])
+imgplot = plt.imshow(x_FISTA1.as_array(),vmin=clims[0],vmax=clims[1])
 plt.axis('off')
 
 fig = plt.figure()
-b=fig.add_subplot(1,1,1)
-b.set_title('criteria')
-imgplot = plt.loglog(criter_CGLS, label='CGLS')
-imgplot = plt.loglog(criter0 , label='FISTA LS')
-imgplot = plt.loglog(criter1 , label='FISTA LS+1')
-imgplot = plt.loglog(criter_fbpd1, label='FBPD LS+1')
-imgplot = plt.loglog(criter_fbpdtv, label='FBPD TV')
-b.legend(loc='lower left')
+a=fig.add_subplot(1,1,1)
+a.set_title('criteria')
+imgplot = plt.loglog(CGLS_alg.objective, label='CGLS')
+imgplot = plt.loglog(FISTA_alg.objective , label='FISTA LS')
+imgplot = plt.loglog(FISTA_alg1.objective , label='FISTA LS+1')
+a.legend(loc='lower left')
 plt.show()
