@@ -1,4 +1,3 @@
-
 # This demo illustrates how ASTRA 2D projectors can be used with
 # the modular optimisation framework. The demo sets up a 2D test case and 
 # demonstrates reconstruction using CGLS, as well as FISTA for least squares 
@@ -7,27 +6,39 @@
 # First make all imports
 from ccpi.framework import ImageData , ImageGeometry, AcquisitionGeometry
 from ccpi.optimisation.algorithms import FISTA, CGLS
-from ccpi.optimisation.functions import Norm2Sq, L1Norm
+from ccpi.optimisation.functions import Norm2Sq, L1Norm, FunctionOperatorComposition, L2NormSquared
 from ccpi.astra.operators import AstraProjectorSimple
 
 import numpy as np
 import matplotlib.pyplot as plt
+import tomophantom
+from tomophantom import TomoP2D
+import os
 
 # Choose either a parallel-beam (1=parallel2D) or fan-beam (2=cone2D) test case
 test_case = 1
 
+# Load  Shepp-Logan phantom 
+model = 1 # select a model number from the library
+N = 128 # set dimension of the phantom
+path = os.path.dirname(tomophantom.__file__)
+path_library2D = os.path.join(path, "Phantom2DLibrary.dat")
+phantom_2D = TomoP2D.Model(model, N, path_library2D)
+ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N)
+Phantom = ImageData(phantom_2D)
+
 # Set up phantom size NxN by creating ImageGeometry, initialising the 
 # ImageData object with this geometry and empty array and finally put some
 # data into its array, and display as image.
-N = 128
-ig = ImageGeometry(voxel_num_x=N,voxel_num_y=N)
-Phantom = ImageData(geometry=ig)
+#N = 128
+#ig = ImageGeometry(voxel_num_x=N,voxel_num_y=N)
+#Phantom = ImageData(geometry=ig)
+#
+#x = Phantom.as_array()
+#x[round(N/4):round(3*N/4),round(N/4):round(3*N/4)] = 0.5
+#x[round(N/8):round(7*N/8),round(3*N/8):round(5*N/8)] = 1
 
-x = Phantom.as_array()
-x[round(N/4):round(3*N/4),round(N/4):round(3*N/4)] = 0.5
-x[round(N/8):round(7*N/8),round(3*N/8):round(5*N/8)] = 1
-
-plt.imshow(x)
+plt.imshow(Phantom.as_array())
 plt.title('Phantom image')
 plt.show()
 
@@ -38,7 +49,7 @@ plt.show()
 # source-origin and origin-detector distance (here the origin-detector distance 
 # set to 0 to simulate a "virtual detector" with same detector pixel size as
 # object pixel size).
-angles_num = 20
+angles_num = 180
 det_w = 1.0
 det_num = N
 SourceOrig = 200
@@ -64,7 +75,7 @@ else:
 
 # Set up Operator object combining the ImageGeometry and AcquisitionGeometry
 # wrapping calls to ASTRA as well as specifying whether to use CPU or GPU.
-Aop = AstraProjectorSimple(ig, ag, 'gpu')
+Aop = AstraProjectorSimple(ig, ag, 'cpu')
 
 # Forward and backprojection are available as methods direct and adjoint. Here 
 # generate test data b and do simple backprojection to obtain z.
@@ -80,18 +91,18 @@ plt.title('Backprojected data')
 plt.colorbar()
 plt.show()
 
+#%%
 # Using the test data b, different reconstruction methods can now be set up as
 # demonstrated in the rest of this file. In general all methods need an initial 
 # guess and some algorithm options to be set:
 x_init = ImageData(geometry=ig)
-opt = {'tol': 1e-4, 'iter': 100}
+run_its = 500
 
 # First a CGLS reconstruction can be done:
-CGLS_alg = CGLS()
-CGLS_alg.set_up(x_init, Aop, b )
-CGLS_alg.max_iteration = 2000
-CGLS_alg.run(opt['iter'])
-
+CGLS_alg = CGLS(x_init = x_init, operator = Aop, data = b)
+#CGLS_alg.set_up(x_init, Aop, b )
+CGLS_alg.max_iteration = 1000
+CGLS_alg.run(run_its, verbose = False)
 x_CGLS = CGLS_alg.get_output()
 
 plt.figure()
@@ -101,7 +112,7 @@ plt.show()
 
 plt.figure()
 plt.semilogy(CGLS_alg.objective)
-plt.title('CGLS criterion')
+plt.title('CGLS objective')
 plt.show()
 
 # CGLS solves the simple least-squares problem. The same problem can be solved 
@@ -109,14 +120,14 @@ plt.show()
 # no regularisation:
 
 # Create least squares object instance with projector, test data and a constant 
-# coefficient of 0.5:
-f = Norm2Sq(Aop,b,c=0.5)
+# coefficient of 1:
+f = Norm2Sq(Aop,b,c=1)
 
 # Run FISTA for least squares without constraints
-FISTA_alg = FISTA()
-FISTA_alg.set_up(x_init=x_init, f=f, opt=opt)
-FISTA_alg.max_iteration = 2000
-FISTA_alg.run(opt['iter'])
+FISTA_alg = FISTA(x_init=x_init, f=f)
+#FISTA_alg.set_up(x_init=x_init, f=f, opt=opt)
+FISTA_alg.max_iteration = 1000
+FISTA_alg.run(run_its,verbose = False)
 x_FISTA = FISTA_alg.get_output()
 
 plt.figure()
@@ -127,9 +138,8 @@ plt.show()
 
 plt.figure()
 plt.semilogy(FISTA_alg.objective)
-plt.title('FISTA Least squares criterion')
+plt.title('FISTA Least squares objective')
 plt.show()
-
 
 # FISTA can also solve regularised forms by specifying a second function object
 # such as 1-norm regularisation with choice of regularisation parameter lam:
@@ -139,10 +149,10 @@ lam = 1.0
 g0 = lam * L1Norm()
 
 # Run FISTA for least squares plus 1-norm function.
-FISTA_alg1 = FISTA()
-FISTA_alg1.set_up(x_init=x_init, f=f, g=g0, opt=opt)
-FISTA_alg1.max_iteration = 2000
-FISTA_alg1.run(opt['iter'])
+FISTA_alg1 = FISTA(x_init=x_init, f=f, g=g0)
+#FISTA_alg1.set_up(x_init=x_init, f=f, g=g0, opt=opt)
+FISTA_alg1.max_iteration = 1000
+FISTA_alg1.run(run_its,verbose = False)
 x_FISTA1 = FISTA_alg1.get_output()
 
 plt.figure()
@@ -153,9 +163,8 @@ plt.show()
 
 plt.figure()
 plt.semilogy(FISTA_alg1.objective)
-plt.title('FISTA LS+L1norm criterion')
+plt.title('FISTA LS+L1norm objective')
 plt.show()
-
 
 # Compare all reconstruction and criteria
 clims = (0,1)
@@ -189,9 +198,13 @@ plt.axis('off')
 
 fig = plt.figure()
 a=fig.add_subplot(1,1,1)
-a.set_title('criteria')
+a.set_title('Objective')
 imgplot = plt.loglog(CGLS_alg.objective, label='CGLS')
 imgplot = plt.loglog(FISTA_alg.objective , label='FISTA LS')
 imgplot = plt.loglog(FISTA_alg1.objective , label='FISTA LS+1')
 a.legend(loc='lower left')
 plt.show()
+
+print('CGLS objective {}'.format(CGLS_alg.objective[-1]))
+print('FISTA objective {}'.format(FISTA_alg.objective[-1]))
+
