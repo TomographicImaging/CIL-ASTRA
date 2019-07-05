@@ -64,5 +64,5 @@ class AstraProjector3DSimple(LinearOperator):
     
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
-        self.s1, sall, svec = LinearOperator.PowerMethodNonsquare(self, 50, x0)
+        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
         return self.s1
