@@ -67,6 +67,7 @@ class AstraProjectorMC(LinearOperator):
         return self.sinogram_geometry 
     
     def compute_norm(self, **kwargs):
+        '''The operator norm is computed on one channel only'''
         igtmp = self.volume_geometry.clone()
         igtmp.channels = 1
         agtmp = self.sinogram_geometry.clone()
