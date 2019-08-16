@@ -39,9 +39,11 @@ class AstraProjectorMC(LinearOperator):
                                         device=device)
                 
         # Initialise empty for singular value.
-        self.s1 = None    
+        self.s1 = None  
+        self.device = device
     
     def direct(self, IM, out=None):
+        
         self.fp.set_input(IM)
         
         if out is None:
@@ -50,6 +52,7 @@ class AstraProjectorMC(LinearOperator):
             out.fill(self.fp.get_output())
     
     def adjoint(self, DATA, out=None):
+        
         self.bp.set_input(DATA)
         
         if out is None:
@@ -75,7 +78,7 @@ class AstraProjectorMC(LinearOperator):
         agtmp.dimension_labels = ['angle', 'horizontal']
         agtmp.channels = 1        
         
-        Atmp = AstraProjectorSimple(igtmp, agtmp, device = 'gpu')
+        Atmp = AstraProjectorSimple(igtmp, agtmp, device = self.device)
               
         #TODO Approach with clone should be better but it doesn't work atm
         
