@@ -50,7 +50,7 @@ class AstraProjectorMC(LinearOperator):
             out.fill(self.fp.get_output())
     
     def adjoint(self, DATA, out=None):
-#        self.bp.set_input(DATA)
+        self.bp.set_input(DATA)
         
         if out is None:
             return self.bp.get_output()
