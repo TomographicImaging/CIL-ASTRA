@@ -15,10 +15,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ccpi.optimisation.operators import Operator, LinearOperator
-from ccpi.framework import AcquisitionData, ImageData, DataContainer
-from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
-     AstraForwardProjector3D, AstraBackProjector3D
+from ccpi.optimisation.operators import LinearOperator
+from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
 
 class AstraProjector3DSimple(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
@@ -66,3 +64,17 @@ class AstraProjector3DSimple(LinearOperator):
         x0 = self.volume_geometry.allocate('random')
         self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
         return self.s1
+    
+    
+if __name__  == '__main__':
+    
+    from ccpi.framework import ImageGeometry, AcquisitionGeometry
+    import numpy as np
+    
+    N = 30
+    angles = np.linspace(0, np.pi, 180)
+    ig = ImageGeometry(N, N, N)
+    ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5)
+    
+    A = AstraProjector3DSimple(ig, ag)
+    print(A.norm())    
