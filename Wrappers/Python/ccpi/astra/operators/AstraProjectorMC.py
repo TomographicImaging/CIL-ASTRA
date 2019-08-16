@@ -15,11 +15,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ccpi.optimisation.operators import Operator, LinearOperator
-from ccpi.framework import AcquisitionData, ImageData, DataContainer, ImageGeometry, AcquisitionGeometry
-from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
-     AstraForwardProjectorMC, AstraBackProjectorMC, AstraForwardProjector3D, \
-     AstraBackProjector3D
+from ccpi.optimisation.operators import LinearOperator
+from ccpi.astra.processors import AstraForwardProjectorMC, AstraBackProjectorMC
 from ccpi.astra.operators import AstraProjectorSimple     
 
 class AstraProjectorMC(LinearOperator):
