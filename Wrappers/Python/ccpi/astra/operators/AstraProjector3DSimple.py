@@ -78,3 +78,13 @@ if __name__  == '__main__':
     
     A = AstraProjector3DSimple(ig, ag)
     print(A.norm())    
+    
+    x = ig.allocate('random_int')
+    sin = A.direct(x)
+    
+    y = ag.allocate('random_int')
+    im = A.adjoint(y)
+    
+    
+    
+    
