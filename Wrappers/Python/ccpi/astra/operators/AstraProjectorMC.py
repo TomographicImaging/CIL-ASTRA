@@ -67,17 +67,18 @@ class AstraProjectorMC(LinearOperator):
         return self.sinogram_geometry    
     
     def calculate_norm(self):
-                
-        voxel_num_x = self.volume_geometry.voxel_num_x
-        voxel_num_y = self.volume_geometry.voxel_num_y
-        igtmp = ImageGeometry(voxel_num_x = voxel_num_x, voxel_num_y = voxel_num_y)
         
-        geom_type = self.sinogram_geometry.geom_type
-        angles = self.sinogram_geometry.angles
-        pixels_num_h = self.sinogram_geometry.pixel_num_h
+        igtmp = self.volume_geometry.clone()
+        igtmp.shape = self.volume_geometry.shape[1:]
+        igtmp.dimension_labels = ['horizontal_y', 'horizontal_x']
+        igtmp.channels = 1
+
+        agtmp = self.sinogram_geometry.clone()
+        agtmp.shape = self.sinogram_geometry.shape[1:]
+        agtmp.dimension_labels = ['angle', 'horizontal']
+        agtmp.channels = 1        
         
-        agtmp = AcquisitionGeometry(geom_type, '2D',  angles, pixel_num_h = pixels_num_h)
-        Atmp = AstraProjectorSimple(igtmp, agtmp, 'gpu')
+        Atmp = AstraProjectorSimple(igtmp, agtmp, device = 'gpu')
               
         #TODO Approach with clone should be better but it doesn't work atm
         
@@ -90,10 +91,6 @@ class AstraProjectorMC(LinearOperator):
         #Atmp = AstraProjectorSimple(igtmp, agtmp, self.fp.device)
         
         
-        
         return Atmp.norm()    
     
-#    def norm(self):
-#        x0 = self.volume_geometry.allocate('random')
-#        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
-#        return self.s1
+
