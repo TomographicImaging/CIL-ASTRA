@@ -18,13 +18,15 @@ class AstraForwardProjector3D(DataProcessor):
                  sinogram_geometry=None,
                  proj_geom=None,
                  vol_geom=None,
-                 output_axes_order=None):
+                 output_axes_order=None, 
+                 device = 'gpu'):
         kwargs = {
                   'volume_geometry'  : volume_geometry,
                   'sinogram_geometry'  : sinogram_geometry,
                   'proj_geom'  : proj_geom,
                   'vol_geom'  : vol_geom,
-                  'output_axes_order'  : output_axes_order
+                  'output_axes_order'  : output_axes_order, 
+                  'device' : device
                   }
         
         #DataProcessor.__init__(self, **kwargs)
@@ -61,7 +63,12 @@ class AstraForwardProjector3D(DataProcessor):
         IM = self.get_input()
         DATA = AcquisitionData(geometry=self.sinogram_geometry,
                                dimension_labels=self.output_axes_order)
-        sinogram_id, DATA.array = astra.create_sino3d_gpu(IM.as_array(), 
+        if self.device == 'gpu':
+            sinogram_id, DATA.array = astra.create_sino3d_gpu(IM.as_array(), 
+                                                           self.proj_geom,
+                                                           self.vol_geom)
+        elif self.device == 'cpu':
+            sinogram_id, DATA.array = astra.create_sino(IM.as_array(), 
                                                            self.proj_geom,
                                                            self.vol_geom)
         astra.data3d.delete(sinogram_id)

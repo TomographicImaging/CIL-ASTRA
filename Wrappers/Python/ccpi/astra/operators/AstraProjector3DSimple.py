@@ -22,7 +22,7 @@ from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
 
 class AstraProjector3DSimple(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp):
+    def __init__(self, geomv, geomp, device='gpu'):
         super(AstraProjector3DSimple, self).__init__()
         
         # Store volume and sinogram geometries.
@@ -31,11 +31,13 @@ class AstraProjector3DSimple(LinearOperator):
         
         self.fp = AstraForwardProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
-                                        output_axes_order=['vertical','angle','horizontal'])
+                                        output_axes_order=['vertical','angle','horizontal'],
+                                        device=device)
         
         self.bp = AstraBackProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
-                                        output_axes_order=['vertical','horizontal_y','horizontal_x'])
+                                        output_axes_order=['vertical','horizontal_y','horizontal_x'],
+                                        device=device)
                 
         # Initialise empty for singular value.
         self.s1 = None

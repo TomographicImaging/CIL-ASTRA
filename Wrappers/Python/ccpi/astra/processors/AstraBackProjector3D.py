@@ -17,13 +17,16 @@ class AstraBackProjector3D(DataProcessor):
                  sinogram_geometry=None,
                  proj_geom=None,
                  vol_geom=None,
-                 output_axes_order=None):
+                 output_axes_order=None, 
+                 device='gpu'):
+
         kwargs = {
                   'volume_geometry'  : volume_geometry,
                   'sinogram_geometry'  : sinogram_geometry,
                   'proj_geom'  : proj_geom,
                   'vol_geom'  : vol_geom,
-                  'output_axes_order'  : output_axes_order
+                  'output_axes_order'  : output_axes_order,
+                  'device' : device
                   }
         
         #DataProcessor.__init__(self, **kwargs)
@@ -57,7 +60,12 @@ class AstraBackProjector3D(DataProcessor):
         DATA = self.get_input()
         IM = ImageData(geometry=self.volume_geometry,
                        dimension_labels=self.output_axes_order)
-        rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
+        if self.device == 'gpu':
+            rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
+                            self.proj_geom,
+                            self.vol_geom)
+        elif self.device == 'cpu':
+            rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
                             self.proj_geom,
                             self.vol_geom)
         astra.data3d.delete(rec_id)
