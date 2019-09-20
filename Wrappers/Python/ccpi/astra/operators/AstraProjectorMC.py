@@ -98,3 +98,7 @@ if __name__  == '__main__':
     
     A = AstraProjectorMC(ig, ag, 'gpu')
     print(A.norm())
+    
+    
+    
+    
