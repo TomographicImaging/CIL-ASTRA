@@ -24,8 +24,14 @@ class AstraProjector3DSimple(LinearOperator):
         super(AstraProjector3DSimple, self).__init__()
         
         # Store volume and sinogram geometries.
-        self.sinogram_geometry = geomp
-        self.volume_geometry = geomv
+        # The order of the ouput sinogram is not the default one from the acquistion geometry
+        # The order of the backprojection is the default one from the image geometry
+                
+        geomp.dimension_labels = ['vertical','angle','horizontal']
+        geomp.shape = (geomp.pixel_num_v, len(geomp.angles), geomp.pixel_num_h)  
+            
+        self.sinogram_geometry = geomp 
+        self.volume_geometry = geomv         
         
         self.fp = AstraForwardProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
@@ -34,7 +40,7 @@ class AstraProjector3DSimple(LinearOperator):
         self.bp = AstraBackProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
                                         output_axes_order=['vertical','horizontal_y','horizontal_x'])
-                
+                      
         # Initialise empty for singular value.
         self.s1 = None
     
