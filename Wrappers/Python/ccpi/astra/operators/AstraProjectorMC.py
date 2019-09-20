@@ -81,18 +81,7 @@ class AstraProjectorMC(LinearOperator):
         agtmp.channels = 1        
         
         Atmp = AstraProjectorSimple(igtmp, agtmp, device = self.device)
-              
-        #TODO Approach with clone should be better but it doesn't work atm
-        
-        #igtmp = self.volume_geometry.clone()
-        #agtmp = self.sinogram_geometry.clone()
-        #igtmp.channels=1
-        #agtmp.channels=1
-        #igtmp.dimension_labels = ['angle','vertical']
-        #agtmp.dimension_labels = ['angle','vertical']
-        #Atmp = AstraProjectorSimple(igtmp, agtmp, self.fp.device)
-        
-        
+                  
         return Atmp.norm()    
     
 
