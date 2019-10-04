@@ -67,10 +67,19 @@ class AstraProjectorMC(LinearOperator):
         return self.sinogram_geometry 
     
     def compute_norm(self, **kwargs):
+        
+        self.volume_geometry.channels = 1
         igtmp = self.volume_geometry.clone()
-        igtmp.channels = 1
+        
+        self.sinogram_geometry.channels = 1
         agtmp = self.sinogram_geometry.clone()
-        agtmp.channels = 1
+        
+        
+        
+#        igtmp = self.volume_geometry.clone()
+#        igtmp.channels = 1
+#        agtmp = self.sinogram_geometry.clone()
+#        agtmp.channels = 1
         Atmp = AstraProjectorSimple(igtmp, agtmp, self.fp.device)
         
         return Atmp.norm()
