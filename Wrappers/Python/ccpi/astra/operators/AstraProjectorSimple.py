@@ -15,9 +15,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ccpi.optimisation.operators import Operator, LinearOperator
-from ccpi.framework import AcquisitionData, ImageData, DataContainer
-from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector
+from ccpi.optimisation.operators import LinearOperator
+from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, AstraFilteredBackProjector
 
 class AstraProjectorSimple(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
@@ -30,14 +29,21 @@ class AstraProjectorSimple(LinearOperator):
         
         self.fp = AstraForwardProjector(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
-                                        proj_id=None,
+                                        proj_id = None,
                                         device=device)
         
-        self.bp = AstraBackProjector(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        proj_id=None,
-                                        device=device)
-                
+        self.bp = AstraBackProjector(volume_geometry = geomv,
+                                        sinogram_geometry = geomp,
+                                        proj_id = None,
+                                        device = device)
+        
+        self.fbp = AstraFilteredBackProjector(volume_geometry = geomv,
+                                        sinogram_geometry = geomp,
+                                        proj_id = None,
+                                        filter_type = None,
+                                        device=device)        
+         
+        
         # Initialise empty for singular value.
         self.s1 = None
         
@@ -62,6 +68,14 @@ class AstraProjectorSimple(LinearOperator):
     
     def range_geometry(self):
         return self.sinogram_geometry    
+    
+    def FBP(self, DATA, filter_type):
+        
+        self.fbp.filter_type = filter_type
+        self.fbp.set_input(DATA)
+        out = self.fbp.get_output()
+        
+        return out    
     
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
