@@ -89,7 +89,7 @@ class AstraFilteredBackProjector(DataProcessor):
         # Set up ASTRA Volume and projection geometry, not to be stored in self
         vol_geom, proj_geom = convert_geometry_to_astra(self.volume_geometry,
                                                         self.sinogram_geometry)
-
+               
         # Create a data object for the reconstruction
         rec_id = astra.data2d.create( '-vol', vol_geom)
        
@@ -117,11 +117,7 @@ class AstraFilteredBackProjector(DataProcessor):
         
         # Get the result
         IM.array = astra.data2d.get(rec_id)
-    
-        # Fix inconsistent scaling and orientation of GPU reconstruction
-        #cor_fac = proj_geom['DistanceOriginSource'] * \
-        #(proj_geom['DistanceOriginSource'] + proj_geom['DistanceOriginDetector'])
-        #rec = cor_fac*np.rot90(rec,2)
+
     
         # Clean up. 
         astra.algorithm.delete(alg_id)
