@@ -132,5 +132,5 @@ class AstraFilteredBackProjector(DataProcessor):
         if self.device == 'cpu':
             return IM
         else:
-            scaling = self.volume_geometry.voxel_size_x**3
+            scaling = self.volume_geometry.voxel_size_x
             return scaling*IM
