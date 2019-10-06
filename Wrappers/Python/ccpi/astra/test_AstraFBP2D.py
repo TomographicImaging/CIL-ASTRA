@@ -25,16 +25,16 @@ path = os.path.dirname(tomophantom.__file__)
 path_library2D = os.path.join(path, "Phantom2DLibrary.dat")
 phantom_2D = TomoP2D.Model(model, N, path_library2D)
 
-voxels = 0.25
+voxels = 0.0025
 
 ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
-                   voxel_size_x = voxels, voxel_size_y=voxels)
+                   voxel_size_x = voxels, voxel_size_y = voxels)
 data = ImageData(phantom_2D)
 
 detectors =  N
 angles = np.linspace(0, np.pi, 180, dtype=np.float32)
 
-ag = AcquisitionGeometry('parallel','2D', angles, detectors)
+ag = AcquisitionGeometry('parallel','2D', angles, detectors, pixel_size_h = voxels)
 
 # create astra geometries
 vol_geom, proj_geom = convert_geometry_to_astra(ig, ag)
@@ -64,23 +64,34 @@ plt.colorbar()
 plt.show()
 
 print('######################')
-print('There is a mismatch between CPU/GPU: https://github.com/astra-toolbox/astra-toolbox/issues/38')
+print('There is a mismatch between CPU/GPU with the voxel size')
+print('https://github.com/astra-toolbox/astra-toolbox/issues/38')
+print('It is better to have image pixels with 1 and change detector pixel')
 print('######################')
 
 #%% Check astra FBP and ccpi-astra
 
-devices = ['cpu','gpu']      
-            
-proj_id = astra.create_projector('line', proj_geom, vol_geom)
+filter_type = 'ram-lak'
+               
+dev = 'cpu'
+
+if dev == 'cpu':    
+    proj_id = astra.create_projector('line', proj_geom, vol_geom)
+else:
+    proj_id = astra.create_projector('cuda', proj_geom, vol_geom) 
+    
 sinogram_id, sinogram = astra.create_sino(data.as_array(), proj_id)
 rec_id = astra.data2d.create('-vol', vol_geom)
 
-cfg = astra.astra_dict('FBP')
+if dev =='cpu':
+    cfg = astra.astra_dict('FBP')
+    cfg['ProjectorId'] = proj_id
+else:
+    cfg = astra.astra_dict('FBP_CUDA')
+    
 cfg['ReconstructionDataId'] = rec_id
 cfg['ProjectionDataId'] = sinogram_id
-cfg['ProjectorId'] = proj_id
-cfg['FilterType'] = 'ram-lak'
-
+cfg['FilterType'] = filter_type
 alg_id = astra.algorithm.create(cfg)
 astra.algorithm.run(alg_id)
 
@@ -91,10 +102,67 @@ astra.data2d.delete(rec_id)
 astra.data2d.delete(sinogram_id)
 astra.projector.delete(proj_id)
 
-fbp_cpu = Aop_cpu.FBP(sin_cpu, 'ram-lak')
+if dev == 'cpu':
+    
+    fbp_cpu = Aop_cpu.FBP(sin_cpu, filter_type)
+    
+    plt.imshow(fbp_cpu.as_array())
+    plt.colorbar()
+    plt.show()
+    
+    plt.imshow(rec)
+    plt.colorbar()
+    plt.show()
+    
+    np.testing.assert_array_equal(rec, fbp_cpu.as_array())
+    
+    
+else:
+    
+    fbp_gpu = Aop_gpu.FBP(sin_gpu, filter_type)
+    
+    plt.imshow(fbp_gpu.as_array())
+    plt.colorbar()
+    plt.show()
+    
+    plt.imshow(rec)
+    plt.colorbar()
+    plt.show()
+    
+    plt.imshow(np.abs(rec - fbp_gpu.as_array()))
+    plt.colorbar()
+    plt.show()
+    
+    np.testing.assert_array_equal((ig.voxel_size_x**3)*rec, fbp_gpu.as_array())
+    
+    
+#   (ig.voxel_size_x**3) * 
+#%%
 
-np.testing.assert_array_equal(rec, fbp_cpu.as_array())
-   
+proj_id = astra.create_projector('cuda', proj_geom, vol_geom)
+sinogram_id, sinogram = astra.create_sino(data.as_array(), proj_id)
+rec_id = astra.data2d.create('-vol', vol_geom)
+
+cfg = astra.astra_dict('FBP_CUDA')
+cfg['ReconstructionDataId'] = rec_id
+cfg['ProjectionDataId'] = sinogram_id
+cfg['FilterType'] = filter_type
+alg_id = astra.algorithm.create(cfg)
+astra.algorithm.run(alg_id)
+
+rec_gpu = astra.data2d.get(rec_id)
+
+astra.algorithm.delete(alg_id)
+astra.data2d.delete(rec_id)
+astra.data2d.delete(sinogram_id)
+astra.projector.delete(proj_id)
+
+fbp_gpu = Aop_gpu.FBP(sin_gpu, filter_type)
+#%%
+
+#np.testing.assert_array_equal(sinogram, sin_gpu.as_array())  
+np.testing.assert_array_equal(rec_gpu, fbp_gpu.as_array())  
+
 #%%   
 
 print('######################')

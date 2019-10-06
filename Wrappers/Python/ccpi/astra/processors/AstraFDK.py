@@ -66,8 +66,7 @@ class AstraFDK(DataProcessor):
           
         rec_id = astra.data3d.create('-vol', vol_geom)
         sinogram_id = astra.data3d.create('-sino', proj_geom, DATA.as_array())
-       # sinogram_id = astra.create_sino3d_gpu(DATA.as_array(), proj_geom, vol_geom)
-#
+
         cfg = astra.astra_dict('FDK_CUDA')
         cfg['ReconstructionDataId'] = rec_id
         cfg['ProjectionDataId'] = sinogram_id

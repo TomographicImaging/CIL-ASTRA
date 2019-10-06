@@ -126,22 +126,7 @@ class AstraFilteredBackProjector(DataProcessor):
         IM.array = astra.data2d.get(rec_id)
         astra.data2d.delete(rec_id)
         astra.data2d.delete(sinogram_id)
-    
-#        elif self.sinogram_geometry.geom_type == 'cone':
-#            
-#            rec_id = astra.data3d.create('-vol', vol_geom)
-#            sinogram_id = astra.create_sino3d_gpu(DATA.as_array(), proj_geom, vol_geom)
-#
-#            cfg = astra.astra_dict('FDK_CUDA')
-#            cfg['ReconstructionDataId'] = rec_id
-#            cfg['ProjectionDataId'] = sinogram_id
-#            alg_id = astra.algorithm.create(cfg)
-#            astra.algorithm.run(alg_id)
-#            
-#            IM.array = astra.data3d.get(rec_id)
-#            astra.data3d.delete(rec_id)
-#            astra.data3d.delete(sinogram_id)
-                    
+                        
         astra.algorithm.delete(alg_id)
 
         if self.device == 'cpu':
