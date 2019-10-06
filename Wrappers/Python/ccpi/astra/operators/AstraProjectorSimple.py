@@ -72,8 +72,6 @@ class AstraProjectorSimple(LinearOperator):
     
     def FBP(self, DATA, filter_type):
     
-        print('Currently FPB with CPU uses only ram-lak filter by default\n')
-        print('For different filters you can do FBP GPU \n')
         self.fbp.filter_type = filter_type
         self.fbp.set_input(DATA)
         out = self.fbp.get_output()

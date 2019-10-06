@@ -71,32 +71,95 @@ ag2D = AcquisitionGeometry(geom_type = 'parallel', dimension = '2D',
                           dimension_labels=['angle','horizontal'])
 
 Aop = AstraProjector3DSimple(ig, ag)
-Aop2D = AstraProjectorSimple(ig2D, ag2D, 'gpu')
-# Add noise to the sinogram data
+
 X = ImageData(phantom_tm, geometry = ig)
-sin = Aop.direct(X)
-
-
-tmp = Aop.domain_geometry().allocate()
-#
-for i in range(sin.shape[0]):
-    print(i)
-    tmp1 = Aop2D.FBP(sin.subset(vertical=i), 'ram-lak')
-    np.copyto(tmp.array[i], tmp1.array)
-    
-
-#%%    
+sin = Aop.direct(X)  
+fbp = Aop.FBP(sin, 'ram-lak')
+   
 slice_ind = int(N_size/2)    
 plt.figure(figsize = (10,30)) 
 plt.subplot(131)
-plt.imshow(tmp.as_array()[slice_ind,:,:])
+plt.imshow(fbp.as_array()[slice_ind,:,:])
 plt.title('3D Phantom, axial view')
 
 plt.subplot(132)
-plt.imshow(tmp.as_array()[:,slice_ind,:])
+plt.imshow(fbp.as_array()[:,slice_ind,:])
 plt.title('3D Phantom, coronal view')
 
 plt.subplot(133)
-plt.imshow(tmp.as_array()[:,:,slice_ind])
+plt.imshow(fbp.as_array()[:,:,slice_ind])
 plt.title('3D Phantom, sagittal view')
 plt.show()
+
+ig_cone = ImageGeometry(voxel_num_x=N_size, voxel_num_y=N_size, voxel_num_z=N_size)
+
+ag_cone = AcquisitionGeometry(geom_type = 'cone', dimension = '3D', 
+                         angles = angles_rad, pixel_num_h=Horiz_det, 
+                         pixel_num_v=Vert_det, 
+                         dist_center_detector=N_size, 
+                         dist_source_center=5*N_size, 
+                         dimension_labels=['vertical','angle','horizontal'])
+Aop_cone = AstraProjector3DSimple(ig_cone, ag_cone)
+
+sin_cone = Aop_cone.direct(X)
+
+plt.imshow(sin_cone.as_array()[32])
+plt.show()
+#%%
+from ccpi.astra.processors import AstraFDK, AstraFilteredBackProjector
+
+#ttt = AstraFilteredBackProjector(ig, ag, 'ram-lak')
+fdk = Aop_cone.FDK(sin_cone, 'ram-lak')
+plt.imshow(fdk.as_array()[32])
+plt.show()
+#%%
+#from ccpi.astra.processors import AstraFilteredBackProjector, AstraFDK
+#
+#ttt = AstraFDK(ig_cone, ag_cone, 'ram-lak')
+
+#%%
+
+#import astra
+#
+#vol_geom = astra.create_vol_geom(N_size, N_size, N_size)
+#
+#proj_geom = astra.create_proj_geom('cone',  
+#                                   1, 
+#                                   1, 
+#                                   Vert_det, 
+#                                   Horiz_det, 
+#                                   angles_rad, 
+#                                   5*N_size, 
+#                                   N_size);
+#
+#sinogram_id, sinogram = astra.create_sino3d_gpu(phantom_tm, proj_geom, vol_geom)
+#
+#plt.imshow(sinogram[32])
+#plt.show()
+#
+#
+#
+##%%
+#### Create a data object for the reconstruction
+#rec_id = astra.data3d.create('-vol', vol_geom)
+###
+#### Set up the parameters for a reconstruction algorithm using the GPU
+#cfg = astra.astra_dict('FDK_CUDA')
+#cfg['ReconstructionDataId'] = rec_id
+#cfg['ProjectionDataId'] = sinogram_id
+#alg_id = astra.algorithm.create(cfg)
+#astra.algorithm.run(alg_id)
+#
+#res = astra.data3d.get(rec_id)
+#
+#astra.algorithm.delete(alg_id)
+#astra.data3d.delete(rec_id)
+#astra.data3d.delete(sinogram_id)
+#
+#plt.imshow(res[32])
+#plt.show()
+#
+##%%
+#
+#
+#

@@ -58,6 +58,7 @@ class AstraForwardProjector3D(DataProcessor):
         self.vol_geom = vol_geom
     
     def process(self, out=None):
+        
         IM = self.get_input()
         DATA = AcquisitionData(geometry=self.sinogram_geometry,
                                dimension_labels=self.output_axes_order)
