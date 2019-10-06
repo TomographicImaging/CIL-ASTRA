@@ -17,9 +17,11 @@
 
 from ccpi.optimisation.operators import LinearOperator
 from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D, AstraFDK
+from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
+     AstraForwardProjector3D, AstraBackProjector3D, AstraFDK, AstraFilteredBackProjector
 from ccpi.astra.operators import AstraProjectorSimple
 import numpy as np
+
 
 class AstraProjector3DSimple(LinearOperator):
     
@@ -127,7 +129,10 @@ class AstraProjector3DSimple(LinearOperator):
     
     
 if __name__  == '__main__':
-        
+    
+    from ccpi.framework import ImageGeometry, AcquisitionGeometry
+    import numpy as np
+    
     N = 30
     angles = np.linspace(0, np.pi, 180)
     ig = ImageGeometry(N, N, N)

@@ -19,11 +19,18 @@
 #
 #=========================================================================
 
-
+<<<<<<< HEAD
+from ccpi.optimisation.operators import Operator, LinearOperator
+from ccpi.framework import AcquisitionData, ImageData, DataContainer
+from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
+     AstraForwardProjectorMC, AstraBackProjectorMC, AstraForwardProjector3D, \
+     AstraBackProjector3D
+from ccpi.astra.operators import AstraProjectorSimple     
+=======
 from ccpi.optimisation.operators import LinearOperator
 from ccpi.astra.processors import AstraForwardProjectorMC, AstraBackProjectorMC
 from ccpi.astra.operators import AstraProjectorSimple
-
+>>>>>>> fix_Astra_ops
 
 class AstraProjectorMC(LinearOperator):
     """ASTRA Multichannel projector"""
@@ -70,6 +77,37 @@ class AstraProjectorMC(LinearOperator):
     def range_geometry(self):
         return self.sinogram_geometry 
     
+<<<<<<< HEAD
+    def compute_norm(self, **kwargs):
+        
+        self.volume_geometry.channels = 1
+        igtmp = self.volume_geometry.clone()
+        
+        self.sinogram_geometry.channels = 1
+        agtmp = self.sinogram_geometry.clone()
+        
+        
+        
+#        igtmp = self.volume_geometry.clone()
+#        igtmp.channels = 1
+#        agtmp = self.sinogram_geometry.clone()
+#        agtmp.channels = 1
+        Atmp = AstraProjectorSimple(igtmp, agtmp, self.fp.device)
+        
+        return Atmp.norm()
+        
+#        ImageGeometry(voxel_num_x = N, voxel_num_y = N)
+#        agtmp = AcquisitionGeometry('parallel','2D', angles, detectors) # No channels
+#        Atmp = AstraProjectorSimple(igtmp, agtmp, dev)
+#        pass
+        
+        
+    
+#    def norm(self):
+#        x0 = self.volume_geometry.allocate('random')
+#        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
+#        return self.s1
+=======
     def calculate_norm(self):
         
         igtmp = self.volume_geometry.clone()
@@ -104,4 +142,4 @@ if __name__  == '__main__':
     
     
     
-
+>>>>>>> fix_Astra_ops
