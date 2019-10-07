@@ -25,7 +25,7 @@ path = os.path.dirname(tomophantom.__file__)
 path_library2D = os.path.join(path, "Phantom2DLibrary.dat")
 phantom_2D = TomoP2D.Model(model, N, path_library2D)
 
-voxels = 2.5
+voxels = 0.25
 
 ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N,
                    voxel_size_x = voxels, voxel_size_y = voxels)
@@ -65,7 +65,6 @@ plt.show()
 print('######################')
 print('There is a mismatch between CPU/GPU with the voxel size')
 print('https://github.com/astra-toolbox/astra-toolbox/issues/38')
-print('It is better to have image pixels with 1 and change detector pixel')
 print('######################')
 
 #%% Check astra FBP and ccpi-astra

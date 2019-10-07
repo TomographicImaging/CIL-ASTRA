@@ -73,52 +73,61 @@ class AstraProjector3DSimple(LinearOperator):
         
     def FBP(self, DATA, filter_type):
         
-        if self.sinogram_geometry.geom_type != 'parallel':
-            raise ValueError('We need a parallel geometry')
+#        if self.sinogram_geometry.geom_type != 'parallel':
+#            raise ValueError('We need a parallel geometry')
 
-    
-        # if we have parallel geometry for 3D volume, astra has no implementation
-        # then we perform FBP for each slice, hence we need 2D acquisition geometry
-        # if we have cone geometry, then we perform FDK
+        if self.sinogram_geometry.geom_type == 'parallel':
+
+            # if we have parallel geometry for 3D volume, astra has no implementation
+            # then we perform FBP for each slice, hence we need 2D acquisition geometry
+            # if we have cone geometry, then we perform FDK
+            
+            ig2Dslice = ImageGeometry(voxel_num_x = self.volume_geometry.voxel_num_x,
+                                          voxel_num_y = self.volume_geometry.voxel_num_y,
+                                          voxel_size_x = self.volume_geometry.voxel_size_x,
+                                          voxel_size_y = self.volume_geometry.voxel_size_y)
+                
+            ag2Dslice = AcquisitionGeometry(geom_type = self.sinogram_geometry.geom_type,
+                                                dimension = '2D',
+                                                angles = self.sinogram_geometry.angles,
+                                                pixel_num_h=self.sinogram_geometry.pixel_num_h,
+                                                pixel_size_h=self.sinogram_geometry.pixel_size_h)
+                
+            # Since it is 3D we use device = 'gpu' for the AstraProjectorSimple
+            A2D_slice = AstraProjectorSimple(ig2Dslice, ag2Dslice, 'gpu')
+                            
+            out3D = self.domain_geometry().allocate()
+            num_slices = self.sinogram_geometry.pixel_num_v
+                
+            for i in range(num_slices):
+                tmp_fbp2D = A2D_slice.FBP(DATA.subset(vertical=i), filter_type)
+                np.copyto(out3D.array[i], tmp_fbp2D.array)
+                
+            return out3D
         
-        ig2Dslice = ImageGeometry(voxel_num_x = self.volume_geometry.voxel_num_x,
-                                      voxel_num_y = self.volume_geometry.voxel_num_y,
-                                      voxel_size_x = self.volume_geometry.voxel_size_x,
-                                      voxel_size_y = self.volume_geometry.voxel_size_y)
+        if self.sinogram_geometry.geom_type == 'cone':
             
-        ag2Dslice = AcquisitionGeometry(geom_type = self.sinogram_geometry.geom_type,
-                                            dimension = '2D',
-                                            angles = self.sinogram_geometry.angles,
-                                            pixel_num_h=self.sinogram_geometry.pixel_num_h,
-                                            pixel_num_v=self.sinogram_geometry.pixel_num_v,
-                                            pixel_size_h=self.sinogram_geometry.pixel_size_h,
-                                            pixel_size_v=self.sinogram_geometry.pixel_size_v)
-            
-        # Since it is 3D we use device = 'gpu' for the AstraProjectorSimple
-        A2D_slice = AstraProjectorSimple(ig2Dslice, ag2Dslice, 'gpu')
-                        
-        out3D = self.domain_geometry().allocate()
-        num_slices = self.sinogram_geometry.pixel_num_v
-            
-        for i in range(num_slices):
-            tmp_fbp2D = A2D_slice.FBP(DATA.subset(vertical=i), filter_type)
-            np.copyto(out3D.array[i], tmp_fbp2D.array)
-            
-        return out3D
-           
-            
-    def FDK(self, DATA, filter_type):
-        
-        if self.sinogram_geometry.geom_type != 'cone':
-            raise ValueError('We need cone geometry')
-            
-        self.fdk = AstraFDK(volume_geometry = self.volume_geometry,
+            self.fdk = AstraFDK(volume_geometry = self.volume_geometry,
                             sinogram_geometry = self.sinogram_geometry,
                             filter_type = filter_type)  
-        self.fdk.set_input(DATA)
-        out = self.fdk.get_output()
+            self.fdk.set_input(DATA)
+            out = self.fdk.get_output()
         
-        return out 
+            return out 
+           
+            
+#    def FDK(self, DATA, filter_type):
+        
+#        if self.sinogram_geometry.geom_type != 'cone':
+#            raise ValueError('We need cone geometry')
+#            
+#        self.fdk = AstraFDK(volume_geometry = self.volume_geometry,
+#                            sinogram_geometry = self.sinogram_geometry,
+#                            filter_type = filter_type)  
+#        self.fdk.set_input(DATA)
+#        out = self.fdk.get_output()
+#        
+#        return out 
             
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
