@@ -27,8 +27,8 @@ path = os.path.dirname(tomophantom.__file__)
 path_library2D = os.path.join(path, "Phantom2DLibrary.dat")
 phantom_2D = TomoP2D.Model(model, N, path_library2D)
 
-#vox = [0.03, 0.1, 3, 10]
-vox = [10]
+vox = [0.03, 0.1, 3, 10]
+#vox = [10]
 
 for voxels in vox: 
     
@@ -93,7 +93,7 @@ for voxels in vox:
     
     #%% Check astra FBP and ccpi-astra
     
-    filter_type = 'hamming'
+    filter_type = 'ram-lak'
                    
     dev = 'gpu'
     

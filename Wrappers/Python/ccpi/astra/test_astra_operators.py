@@ -57,7 +57,11 @@ N = 30
 channels = 5
 angles = np.linspace(0, np.pi, 180)
 ig3DMC = ImageGeometry(N, N, N, channels = channels)
-ag3DMC = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5, channels = channels)
+ag3DMC = AcquisitionGeometry('parallel','3D', angles, 
+                             pixel_num_h = N, 
+                             pixel_num_v = 5, 
+                             channels = channels,
+                             dimension_labels = ['channel','vertical','angle','horizontal'])
 
 A3DMC = AstraProjector3DMC(ig3DMC, ag3DMC)
 z3DMC = A3DMC.norm()

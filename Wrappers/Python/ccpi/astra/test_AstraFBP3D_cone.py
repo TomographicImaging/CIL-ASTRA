@@ -61,11 +61,17 @@ Vert_det = N_size # detector row count (vertical)
 angles_num = 100 # angles number
 angles_rad = np.linspace(-np.pi, np.pi, angles_num) #angles*(np.pi/180.0)
 
-param = 10.5
+#param = 10.5
+## Cone geometry details
+#distance_source_origin = 300 * param  # [mm]
+#distance_origin_detector = 100 * param # [mm]
+#detector_pixel_size = 1.5 * param  # [mm]
+
+param = 1
 # Cone geometry details
-distance_source_origin = 300 * param  # [mm]
-distance_origin_detector = 100 * param # [mm]
-detector_pixel_size = 1.5 * param  # [mm]
+distance_source_origin = 100 * param  # [mm]
+distance_origin_detector = 300 * param # [mm]
+detector_pixel_size = 0.05 * param  # [mm]
 
 # Compute magnification factor
 mag = (distance_source_origin + distance_origin_detector) / distance_source_origin
