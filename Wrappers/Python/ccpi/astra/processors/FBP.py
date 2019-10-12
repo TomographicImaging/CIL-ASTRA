@@ -2,6 +2,7 @@ from ccpi.framework import DataProcessor, ImageGeometry, AcquisitionGeometry
 from ccpi.astra.utils import convert_geometry_to_astra
 import astra
 import numpy as np
+import warnings
 
 class FBP(DataProcessor):
     
@@ -92,7 +93,9 @@ class FBP(DataProcessor):
             # Raise an error if the user select a filter other than ram-lak, for 2D case
             if self.filter_type !='ram-lak':
                 raise NotImplementedError('Currently in astra, 2D FBP is using only the ram-lak filter, switch to gpu for other filters')
-                    
+            
+            if (self.sinogram_geometry.geom_type == 'cone' and self.device == 'gpu') and self.sinogram_geometry.channels>=1:
+                warnings.warn("For FanFlat geometry there is a mismatch between CPU & GPU filtered back projection. Currently, only CPU case provides a reasonable result.") 
             
             self.set_ImageGeometry(volume_geometry)
             self.set_AcquisitionGeometry(sinogram_geometry)
