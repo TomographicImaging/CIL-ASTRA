@@ -42,15 +42,7 @@ class AstraProjectorSimple(LinearOperator):
                                         sinogram_geometry = geomp,
                                         proj_id = None,
                                         device = device)
-        
-        self.fbp = AstraFilteredBackProjector(volume_geometry = geomv,
-                                        sinogram_geometry = geomp,
-                                        proj_id = None,
-                                        filter_type = None,
-                                        device=device)  
-    
-         
-        
+                           
         # Initialise empty for singular value.
         self.s1 = None
         
