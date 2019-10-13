@@ -20,7 +20,7 @@
 #=========================================================================
 
 from ccpi.optimisation.operators import LinearOperator
-from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, AstraFilteredBackProjector
+from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector
 
 
 

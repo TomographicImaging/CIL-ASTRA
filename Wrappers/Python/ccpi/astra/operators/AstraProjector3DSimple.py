@@ -17,8 +17,7 @@
 
 from ccpi.optimisation.operators import LinearOperator
 from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D, AstraFDK
-from ccpi.astra.operators import AstraProjectorSimple
+from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
 import numpy as np
 
 class AstraProjector3DSimple(LinearOperator):
