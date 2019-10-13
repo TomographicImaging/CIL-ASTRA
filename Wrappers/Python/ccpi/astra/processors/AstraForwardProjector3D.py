@@ -27,7 +27,6 @@ class AstraForwardProjector3D(DataProcessor):
                   'output_axes_order'  : output_axes_order
                   }
         
-        #DataProcessor.__init__(self, **kwargs)
         super(AstraForwardProjector3D, self).__init__(**kwargs)
         
         self.set_ImageGeometry(volume_geometry)
