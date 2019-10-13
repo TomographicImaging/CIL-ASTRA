@@ -75,15 +75,7 @@ class AstraProjectorSimple(LinearOperator):
     
     def range_geometry(self):
         return self.sinogram_geometry    
-    
-    def FBP(self, DATA, filter_type):
-    
-        self.fbp.filter_type = filter_type
-        self.fbp.set_input(DATA)
-        out = self.fbp.get_output()
-        
-        return out    
-    
+           
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
         self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
