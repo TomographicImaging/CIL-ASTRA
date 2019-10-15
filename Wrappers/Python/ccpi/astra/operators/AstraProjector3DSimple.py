@@ -15,19 +15,27 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ccpi.optimisation.operators import Operator, LinearOperator
-from ccpi.framework import AcquisitionData, ImageData, DataContainer
-from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector, \
-     AstraForwardProjector3D, AstraBackProjector3D
+from ccpi.optimisation.operators import LinearOperator
+from ccpi.framework import ImageGeometry, AcquisitionGeometry
+from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
+import numpy as np
 
 class AstraProjector3DSimple(LinearOperator):
+    
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp):
+        
         super(AstraProjector3DSimple, self).__init__()
         
         # Store volume and sinogram geometries.
-        self.sinogram_geometry = geomp
-        self.volume_geometry = geomv
+        # The order of the ouput sinogram is not the default one from the acquistion geometry
+        # The order of the backprojection is the default one from the image geometry
+                
+        geomp.dimension_labels = ['vertical','angle','horizontal']
+        geomp.shape = (geomp.pixel_num_v, len(geomp.angles), geomp.pixel_num_h)  
+            
+        self.sinogram_geometry = geomp 
+        self.volume_geometry = geomv         
         
         self.fp = AstraForwardProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
@@ -36,7 +44,7 @@ class AstraProjector3DSimple(LinearOperator):
         self.bp = AstraBackProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
                                         output_axes_order=['vertical','horizontal_y','horizontal_x'])
-                
+                      
         # Initialise empty for singular value.
         self.s1 = None
     
@@ -60,9 +68,30 @@ class AstraProjector3DSimple(LinearOperator):
         return self.volume_geometry
     
     def range_geometry(self):
-        return self.sinogram_geometry  
-    
+        return self.sinogram_geometry 
+                    
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
         self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
         return self.s1
+    
+    
+if __name__  == '__main__':
+        
+    N = 30
+    angles = np.linspace(0, np.pi, 180)
+    ig = ImageGeometry(N, N, N)
+    ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5)
+    
+    A = AstraProjector3DSimple(ig, ag)
+    print(A.norm())    
+    
+    x = ig.allocate('random_int')
+    sin = A.direct(x)
+    
+    y = ag.allocate('random_int')
+    im = A.adjoint(y)
+    
+    
+    
+    

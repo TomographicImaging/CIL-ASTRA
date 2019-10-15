@@ -1,4 +1,4 @@
-from ccpi.framework import DataProcessor, ImageData, AcquisitionData
+from ccpi.framework import DataProcessor, AcquisitionData
 from ccpi.astra.utils import convert_geometry_to_astra
 import astra
 
@@ -27,7 +27,6 @@ class AstraForwardProjector3D(DataProcessor):
                   'output_axes_order'  : output_axes_order
                   }
         
-        #DataProcessor.__init__(self, **kwargs)
         super(AstraForwardProjector3D, self).__init__(**kwargs)
         
         self.set_ImageGeometry(volume_geometry)
@@ -58,6 +57,7 @@ class AstraForwardProjector3D(DataProcessor):
         self.vol_geom = vol_geom
     
     def process(self, out=None):
+        
         IM = self.get_input()
         DATA = AcquisitionData(geometry=self.sinogram_geometry,
                                dimension_labels=self.output_axes_order)

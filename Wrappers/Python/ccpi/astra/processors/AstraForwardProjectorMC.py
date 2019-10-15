@@ -1,5 +1,4 @@
-from ccpi.framework import DataProcessor, ImageData, AcquisitionData
-from ccpi.astra.utils import convert_geometry_to_astra
+from ccpi.framework import AcquisitionData
 
 from ccpi.astra.processors import AstraForwardProjector
 
