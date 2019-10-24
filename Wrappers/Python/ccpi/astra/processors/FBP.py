@@ -91,7 +91,7 @@ class FBP(DataProcessor):
                                       filter_type = filter_type)
             
             # Raise an error if the user select a filter other than ram-lak, for 2D case
-            if self.filter_type !='ram-lak':
+            if self.filter_type !='ram-lak' and self.device == 'cpu':
                 raise NotImplementedError('Currently in astra, 2D FBP is using only the ram-lak filter, switch to gpu for other filters')
             
             if (self.sinogram_geometry.geom_type == 'cone' and self.device == 'gpu') and self.sinogram_geometry.channels>=1:
