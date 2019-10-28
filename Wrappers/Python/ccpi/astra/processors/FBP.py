@@ -11,24 +11,20 @@ class FBP(DataProcessor):
     Input: Volume Geometry
            Sinogram Geometry
            Filter_type
-           Device = cpu/gpu. For 2D cases we have the option cpu/gpu 
+           Device = 'cpu' or 'gpu'. For 2D cases we have the option cpu/gpu 
                              For 3D cases we have the option of gpu
                              
     Cases:  1) Parallel 3D FBP:  using 2D FBP per slice ( CPU/GPU )
     
     
-    Example:  FBP(ig, ag, 'ram-lak', device = 'cpu')
+    Example:  FBP(ig, ag, 'ram-lak', device='cpu')
               FBP.set_input(sinogram)
               reconstruction = FBP.get_ouput()
               
-    Filters: ram-lak, shepp-logan, cosine, 
-             hamming, hann, none, tukey, 
-             lanczos, triangular, gaussian, 
-             barlett-hann, blackman, nuttall, 
-             blackman-harris, blackman-nuttall, 
-             flat-top, kaiser, parzen, 
-             projection, sinogram, 
-             rprojection, rsinogram.              
+    Filters: 'ram-lak', 'shepp-logan', 'cosine', 'hamming', 'hann', 'none', 'tukey', 
+             'lanczos', 'triangular', 'gaussian', 'barlett-hann', 'blackman', 'nuttall', 
+             'blackman-harris', 'blackman-nuttall', 'flat-top', 'kaiser', 'parzen', 
+             'projection', 'sinogram', 'rprojection', 'rsinogram'.              
     
     
                          
