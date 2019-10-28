@@ -22,6 +22,8 @@
 from ccpi.optimisation.operators import LinearOperator
 from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector
 
+
+
 class AstraProjectorSimple(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp, device):
@@ -33,14 +35,14 @@ class AstraProjectorSimple(LinearOperator):
         
         self.fp = AstraForwardProjector(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
-                                        proj_id=None,
+                                        proj_id = None,
                                         device=device)
         
-        self.bp = AstraBackProjector(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        proj_id=None,
-                                        device=device)
-                
+        self.bp = AstraBackProjector(volume_geometry = geomv,
+                                        sinogram_geometry = geomp,
+                                        proj_id = None,
+                                        device = device)
+                           
         # Initialise empty for singular value.
         self.s1 = None
         
@@ -65,7 +67,7 @@ class AstraProjectorSimple(LinearOperator):
     
     def range_geometry(self):
         return self.sinogram_geometry    
-    
+           
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
         self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)

@@ -16,11 +16,15 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ccpi.optimisation.operators import LinearOperator
+from ccpi.framework import ImageGeometry, AcquisitionGeometry
 from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
+import numpy as np
 
 class AstraProjector3DSimple(LinearOperator):
+    
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp):
+        
         super(AstraProjector3DSimple, self).__init__()
         
         # Store volume and sinogram geometries.
@@ -64,8 +68,8 @@ class AstraProjector3DSimple(LinearOperator):
         return self.volume_geometry
     
     def range_geometry(self):
-        return self.sinogram_geometry  
-    
+        return self.sinogram_geometry 
+                    
     def norm(self):
         x0 = self.volume_geometry.allocate('random')
         self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
@@ -73,10 +77,7 @@ class AstraProjector3DSimple(LinearOperator):
     
     
 if __name__  == '__main__':
-    
-    from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    import numpy as np
-    
+        
     N = 30
     angles = np.linspace(0, np.pi, 180)
     ig = ImageGeometry(N, N, N)

@@ -19,9 +19,11 @@
 #
 #=========================================================================
 
+
 from ccpi.optimisation.operators import LinearOperator
 from ccpi.astra.processors import AstraForwardProjectorMC, AstraBackProjectorMC
 from ccpi.astra.operators import AstraProjectorSimple
+
 
 class AstraProjectorMC(LinearOperator):
     """ASTRA Multichannel projector"""
@@ -66,7 +68,7 @@ class AstraProjectorMC(LinearOperator):
         return self.volume_geometry
     
     def range_geometry(self):
-        return self.sinogram_geometry    
+        return self.sinogram_geometry 
     
     def calculate_norm(self):
         

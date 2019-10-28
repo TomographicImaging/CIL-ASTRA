@@ -92,7 +92,6 @@ class AstraProjector3DMC(LinearOperator):
 if __name__  == '__main__':
     
     from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    import numpy as np
     
     N = 30
     channels = 5
