@@ -11,15 +11,22 @@ class FBP(DataProcessor):
     Input: Volume Geometry
            Sinogram Geometry
            Filter_type
-           Device = cpu/gpu. For 2D cases we have the option cpu/gpu 
+           Device = 'cpu' or 'gpu'. For 2D cases we have the option cpu/gpu 
                              For 3D cases we have the option of gpu
                              
     Cases:  1) Parallel 3D FBP:  using 2D FBP per slice ( CPU/GPU )
     
     
-    Example:  FBP(ig, ag, 'ram-lak', 'cpu')
+    Example:  FBP(ig, ag, 'ram-lak', device='cpu')
               FBP.set_input(sinogram)
               reconstruction = FBP.get_ouput()
+              
+    Filters: 'ram-lak', 'shepp-logan', 'cosine', 'hamming', 'hann', 'none', 'tukey', 
+             'lanczos', 'triangular', 'gaussian', 'barlett-hann', 'blackman', 'nuttall', 
+             'blackman-harris', 'blackman-nuttall', 'flat-top', 'kaiser', 'parzen', 
+             'projection', 'sinogram', 'rprojection', 'rsinogram'.              
+    
+    
                          
     Output: ImageData                             
 
@@ -91,7 +98,7 @@ class FBP(DataProcessor):
                                       filter_type = filter_type)
             
             # Raise an error if the user select a filter other than ram-lak, for 2D case
-            if self.filter_type !='ram-lak':
+            if self.filter_type !='ram-lak' and self.device == 'cpu':
                 raise NotImplementedError('Currently in astra, 2D FBP is using only the ram-lak filter, switch to gpu for other filters')
             
             if (self.sinogram_geometry.geom_type == 'cone' and self.device == 'gpu') and self.sinogram_geometry.channels>=1:
