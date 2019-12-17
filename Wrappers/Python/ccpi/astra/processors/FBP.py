@@ -242,9 +242,10 @@ class FBP(DataProcessor):
                         # since we run gpu we need to rescale and flip it
                         IM.array[i] = np.flip(astra.data2d.get(rec_id) *  self.volume_geometry.voxel_size_x,0)  
                     
-                    astra.algorithm.delete(alg_id)
+                        astra.algorithm.delete(alg_id)
+                        astra.data2d.delete(sinogram_id)                     
+                    
                     astra.data2d.delete(rec_id)
-                    astra.data2d.delete(sinogram_id)                     
                     
                     return IM                        
                         
