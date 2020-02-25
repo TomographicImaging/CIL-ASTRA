@@ -16,7 +16,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from ccpi.optimisation.operators import LinearOperator
-from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
+from ccpi.astra.processors import AstraForwardProjector3D_cupy as AstraForwardProjector3D
+from ccpi.astra.processors import AstraBackProjector3D_cupy as AstraBackProjector3D
 
 class AstraProjector3DSimple_cupy(LinearOperator):
     
