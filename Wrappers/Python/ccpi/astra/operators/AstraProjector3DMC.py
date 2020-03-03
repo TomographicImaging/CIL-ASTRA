@@ -24,48 +24,51 @@ class AstraProjector3DMC(LinearOperator):
     
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp):
-        super(AstraProjector3DMC, self).__init__()
+        super(AstraProjector3DMC, self).__init__(
+            geomv, range_geometry=geomp
+        )
         
-        # Store volume and sinogram geometries.
-        self.sinogram_geometry = geomp
-        self.volume_geometry = geomv
         
-        self.igtmp3D = self.volume_geometry.clone()
-        self.igtmp3D.channels = 1
-        self.igtmp3D.shape = self.volume_geometry.shape[1:]
-        self.igtmp3D.dimension_labels = ['vertical', 'horizontal_y', 'horizontal_x']
+        self.igtmp3D = self.domain_geometry().clone()
+        # self.igtmp3D.channels = 1
+        # self.igtmp3D.shape = self.volume_geometry.shape[1:]
+        # self.igtmp3D.dimension_labels = ['vertical', 'horizontal_y', 'horizontal_x']
         
-        self.agtmp3D = self.sinogram_geometry.clone()
-        self.agtmp3D.channels = 1
-        self.agtmp3D.shape = self.sinogram_geometry.shape[1:]
-        self.agtmp3D.dimension_labels = ['vertical', 'angle', 'horizontal']      
+        self.agtmp3D = self.range_geometry().clone()
+        # self.agtmp3D.channels = 1
+        # self.agtmp3D.shape = self.sinogram_geometry.shape[1:]
+        # self.agtmp3D.dimension_labels = ['vertical', 'angle', 'horizontal']      
         
         self.A3D = AstraProjector3DSimple(self.igtmp3D, self.agtmp3D)     
             
         self.s1 = None
-        self.channels = self.volume_geometry.channels
+        self.channels = self.domain_geometry().channels
         
     def direct(self, x, out = None):
         
         if out is None:
             
-            tmp = self.sinogram_geometry.allocate()
+            tmp = self.range_geometry().allocate()
             for k in range(self.channels):
                 t = self.A3D.direct(x.subset(channel=k))            
+                # this line is potentially leading to problems
+                # as it is strongly linked to a DataContainer
+                # wrapping NumPy arrays.
                 np.copyto(tmp.array[k], t.array) 
             return tmp
         
         else:
             
             for k in range(self.channels):
-                tmp = self.A3D.direct(x.subset(channel=k))            
-                np.copyto(out.array[k], tmp.array)                             
+                tmp = self.A3D.direct(x.subset(channel=k))
+                # as comment above
+                np.copyto(out.array[k], tmp.array)
         
     def adjoint(self, x, out = None):
         
         if out is None:
             
-            tmp = self.volume_geometry.allocate()
+            tmp = self.domain_geometry().allocate()
             for k in range(self.channels):
                 t = self.A3D.adjoint(x.subset(channel=k))            
                 np.copyto(tmp.array[k], t.array) 
@@ -76,13 +79,7 @@ class AstraProjector3DMC(LinearOperator):
             for k in range(self.channels):
                 tmp = self.A3D.adjoint(x.subset(channel=k))            
                 np.copyto(out.array[k], tmp.array)         
- 
-    def domain_geometry(self):
-        return self.volume_geometry
-    
-    def range_geometry(self):
-        return self.sinogram_geometry  
-    
+
     def calculate_norm(self):
 
         return self.A3D.norm()
