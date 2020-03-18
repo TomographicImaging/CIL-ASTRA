@@ -28,11 +28,9 @@ from ccpi.astra.operators import AstraProjectorSimple
 class AstraProjectorMC(LinearOperator):
     """ASTRA Multichannel projector"""
     def __init__(self, geomv, geomp, device):
-        super(AstraProjectorMC, self).__init__()
+        super(AstraProjectorMC, self).__init__(geomv, 
+                range_geometry=geomp)
         
-        # Store volume and sinogram geometries.
-        self.sinogram_geometry = geomp
-        self.volume_geometry = geomv
         
         self.fp = AstraForwardProjectorMC(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
@@ -64,23 +62,17 @@ class AstraProjectorMC(LinearOperator):
         else:
             out.fill(self.bp.get_output())    
     
-    def domain_geometry(self):
-        return self.volume_geometry
-    
-    def range_geometry(self):
-        return self.sinogram_geometry 
-    
     def calculate_norm(self):
         
-        igtmp = self.volume_geometry.clone()
-        igtmp.shape = self.volume_geometry.shape[1:]
-        igtmp.dimension_labels = ['horizontal_y', 'horizontal_x']
-        igtmp.channels = 1
+        igtmp = self.domain_geometry().clone()
+        # igtmp.shape = self.volume_geometry.shape[1:]
+        # igtmp.dimension_labels = ['horizontal_y', 'horizontal_x']
+        # igtmp.channels = 1
 
-        agtmp = self.sinogram_geometry.clone()
-        agtmp.shape = self.sinogram_geometry.shape[1:]
-        agtmp.dimension_labels = ['angle', 'horizontal']
-        agtmp.channels = 1        
+        agtmp = self.range_geometry().clone()
+        # agtmp.shape = self.sinogram_geometry.shape[1:]
+        # agtmp.dimension_labels = ['angle', 'horizontal']
+        # agtmp.channels = 1        
         
         Atmp = AstraProjectorSimple(igtmp, agtmp, device = self.device)
                   

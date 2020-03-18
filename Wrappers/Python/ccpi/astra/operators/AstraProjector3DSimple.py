@@ -25,7 +25,8 @@ class AstraProjector3DSimple(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp):
         
-        super(AstraProjector3DSimple, self).__init__()
+        super(AstraProjector3DSimple, self).__init__(geomv, 
+             range_geometry=geomp)
         
         # Store volume and sinogram geometries.
         # The order of the ouput sinogram is not the default one from the acquistion geometry
@@ -33,9 +34,6 @@ class AstraProjector3DSimple(LinearOperator):
                 
         geomp.dimension_labels = ['vertical','angle','horizontal']
         geomp.shape = (geomp.pixel_num_v, len(geomp.angles), geomp.pixel_num_h)  
-            
-        self.sinogram_geometry = geomp 
-        self.volume_geometry = geomv         
         
         self.fp = AstraForwardProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp,
@@ -63,17 +61,11 @@ class AstraProjector3DSimple(LinearOperator):
             return self.bp.get_output()
         else:
             out.fill(self.bp.get_output())    
-    
-    def domain_geometry(self):
-        return self.volume_geometry
-    
-    def range_geometry(self):
-        return self.sinogram_geometry 
-                    
-    def norm(self):
-        x0 = self.volume_geometry.allocate('random')
-        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
-        return self.s1
+
+    # def norm(self):
+    #     x0 = self.domain_geometry().allocate('random')
+    #     self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
+    #     return self.s1
     
     
 if __name__  == '__main__':
