@@ -58,11 +58,6 @@ class AstraProjectorSimple(LinearOperator):
         else:
             out.fill(self.bp.get_output())
 
-           
-    def norm(self):
-        x0 = self.domain_geometry().allocate('random')
-        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
-        return self.s1
 
 
 if __name__  == '__main__':
