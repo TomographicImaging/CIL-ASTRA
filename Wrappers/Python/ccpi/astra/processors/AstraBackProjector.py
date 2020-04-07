@@ -67,7 +67,8 @@ class AstraBackProjector(DataProcessor):
     
     def process(self, out=None):
         DATA = self.get_input()
-        IM = ImageData(geometry=self.volume_geometry)
+        # IM = ImageData(geometry=self.volume_geometry)
+        IM = self.volume_geometry.allocate(None)
         rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
                             self.proj_id)
         astra.data2d.delete(rec_id)

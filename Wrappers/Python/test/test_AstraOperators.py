@@ -30,6 +30,7 @@ from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple
 
 class TestAstraSimple(unittest.TestCase):
     def setUp(self): 
+        print ("TestAstraSimple")
         # Define image geometry.
         N = 256
 
@@ -76,13 +77,14 @@ class TestAstraSimple(unittest.TestCase):
 
     def test_norm_simple2D(self):
         # test exists
-    
+        print ("TestAstraSimple norm simple 2D")
         n = self.A.norm()
         print ("norm A", n)
         self.assertTrue(True)
         
     def skip_test_norm_simple3D(self):
         # test exists
+        print ("TestAstraSimple norm simple 3D")
         n = self.A3.norm()
         print ("norm A3", n)
         self.assertTrue(True)

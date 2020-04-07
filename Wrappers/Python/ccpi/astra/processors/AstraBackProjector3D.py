@@ -57,6 +57,7 @@ class AstraBackProjector3D(DataProcessor):
         DATA = self.get_input()
         IM = ImageData(geometry=self.volume_geometry,
                        dimension_labels=self.output_axes_order)
+        # IM = self.volume_geometry.allocate(None, dimension_labels=self.output_axes_order)
         rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
                             self.proj_geom,
                             self.vol_geom)

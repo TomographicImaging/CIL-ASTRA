@@ -68,7 +68,8 @@ class AstraForwardProjector(DataProcessor):
         
     def process(self, out=None):
         IM = self.get_input()
-        DATA = AcquisitionData(geometry=self.sinogram_geometry)
+        #DATA = AcquisitionData(geometry=self.sinogram_geometry)
+        DATA = self.sinogram_geometry.allocate(None)
         sinogram_id, DATA.array = astra.create_sino(IM.as_array(), 
                                                            self.proj_id)
         astra.data2d.delete(sinogram_id)

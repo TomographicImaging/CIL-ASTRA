@@ -26,7 +26,8 @@ class AstraBackProjectorMC(AstraBackProjector):
     def process(self, out=None):
         DATA = self.get_input()
         
-        IM = ImageData(geometry=self.volume_geometry)
+        # IM = ImageData(geometry=self.volume_geometry)
+        IM = self.volume_geometry.allocate(None)
         
         for k in range(IM.geometry.channels):
             rec_id, IM.as_array()[k] = astra.create_backprojection(

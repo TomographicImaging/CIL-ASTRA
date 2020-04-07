@@ -59,8 +59,9 @@ class AstraForwardProjector3D(DataProcessor):
     def process(self, out=None):
         
         IM = self.get_input()
-        DATA = AcquisitionData(geometry=self.sinogram_geometry,
-                               dimension_labels=self.output_axes_order)
+        # DATA = AcquisitionData(geometry=self.sinogram_geometry,
+        #                        dimension_labels=self.output_axes_order)
+        DATA = self.sinogram_geometry.allocate(None, dimension_labels=self.output_axes_order)
         sinogram_id, DATA.array = astra.create_sino3d_gpu(IM.as_array(), 
                                                            self.proj_geom,
                                                            self.vol_geom)

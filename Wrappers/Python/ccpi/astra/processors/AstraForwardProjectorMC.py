@@ -25,7 +25,8 @@ class AstraForwardProjectorMC(AstraForwardProjector):
     def process(self, out=None):
         IM = self.get_input()
         #create the output AcquisitionData
-        DATA = AcquisitionData(geometry=self.sinogram_geometry)
+        # DATA = AcquisitionData(geometry=self.sinogram_geometry)
+        DATA = self.sinogram_geometry.allocate(None)
         
         for k in range(DATA.geometry.channels):
             sinogram_id, DATA.as_array()[k] = astra.create_sino(IM.as_array()[k], 

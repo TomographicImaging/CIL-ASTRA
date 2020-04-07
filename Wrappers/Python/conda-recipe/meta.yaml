@@ -7,6 +7,15 @@ build:
   script_env:
     - CIL_VERSION   
 #  number: 0
+
+test:
+  source_files:
+    - ./test # [win]
+    - ./ccpi/Wrappers/Python/test # [not win] 
+  commands:
+    - python -c "import os; print (os.getcwd())"
+    - python -m unittest discover # [win]
+    - python -m unittest discover -s ccpi/Wrappers/Python/test # [not win]
   
 requirements:
   build:
