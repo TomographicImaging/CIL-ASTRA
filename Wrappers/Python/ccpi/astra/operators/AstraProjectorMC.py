@@ -65,14 +65,14 @@ class AstraProjectorMC(LinearOperator):
     def calculate_norm(self):
         
         igtmp = self.domain_geometry().clone()
-        # igtmp.shape = self.volume_geometry.shape[1:]
-        # igtmp.dimension_labels = ['horizontal_y', 'horizontal_x']
-        # igtmp.channels = 1
+        igtmp.shape = self.domain_geometry().shape[1:]
+        igtmp.dimension_labels = ['horizontal_y', 'horizontal_x']
+        igtmp.channels = 1
 
         agtmp = self.range_geometry().clone()
-        # agtmp.shape = self.sinogram_geometry.shape[1:]
-        # agtmp.dimension_labels = ['angle', 'horizontal']
-        # agtmp.channels = 1        
+        agtmp.shape = self.range_geometry().shape[1:]
+        agtmp.dimension_labels = ['angle', 'horizontal']
+        agtmp.channels = 1        
         
         Atmp = AstraProjectorSimple(igtmp, agtmp, device = self.device)
                   
