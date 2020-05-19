@@ -1,6 +1,8 @@
 
 from .AstraForwardProjector import AstraForwardProjector
+# from .AstraForwardProjector_cupy import AstraForwardProjector_cupy
 from .AstraBackProjector import AstraBackProjector
+# from .AstraBackProjector_cupy import AstraBackProjector_cupy
 from .AstraForwardProjectorMC import AstraForwardProjectorMC
 from .AstraBackProjectorMC import AstraBackProjectorMC
 from .AstraForwardProjector3D import AstraForwardProjector3D

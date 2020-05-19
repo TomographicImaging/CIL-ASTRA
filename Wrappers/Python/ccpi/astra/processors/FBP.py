@@ -1,7 +1,16 @@
+import ccpi.cfg as cfg_tmp
+if cfg_tmp.run_with_cupy:
+    try:
+        import cupy
+        import cupy as xp
+    except:
+        print("There is no cupy installed")        
+else:
+    import numpy as xp 
+
 from ccpi.framework import DataProcessor, ImageGeometry, AcquisitionGeometry
 from ccpi.astra.utils import convert_geometry_to_astra
 import astra
-import numpy as np
 import warnings
 
 class FBP(DataProcessor):
@@ -187,7 +196,11 @@ class FBP(DataProcessor):
                 
                 # Create a data object for the reconstruction and to hold sinogram for 2D
                 rec_id = astra.data2d.create( '-vol', vol_geom)
-                sinogram_id = astra.data2d.create('-sino', proj_geom, DATA.as_array())
+                if cfg_tmp.run_with_cupy:
+                    sinogram_id = astra.data2d.create('-sino', proj_geom, cupy.asnumpy(DATA.as_array()))
+                else:
+                    sinogram_id = astra.data2d.create('-sino', proj_geom, DATA.as_array())
+                    
                 
                 # ASTRA configuration for reconstruction algorithm
                 if self.device == 'cpu':
@@ -252,7 +265,11 @@ class FBP(DataProcessor):
                 elif self.sinogram_geometry.geom_type == 'cone':
                     
                     rec_id = astra.data3d.create('-vol', vol_geom)
-                    sinogram_id = astra.data3d.create('-sino', proj_geom, DATA.as_array())
+                    if cfg_tmp.run_with_cupy:
+                      sinogram_id = astra.data3d.create('-sino', proj_geom, cupy.asnumpy(DATA.as_array()))
+                    else:
+                      sinogram_id = astra.data3d.create('-sino', proj_geom, DATA.as_array())  
+                    
                     
                     cfg = astra.astra_dict('FDK_CUDA')
                     cfg['ReconstructionDataId'] = rec_id
@@ -282,8 +299,11 @@ class FBP(DataProcessor):
                 cfg['FilterType'] = self.filter_type
                 
                 for i in range(num_chan):
-                     
-                    sinogram_id = astra.data2d.create('-sino', proj_geom, DATA.as_array()[i])
+                    
+                    if cfg_tmp.run_with_cupy:
+                        sinogram_id = astra.data2d.create('-sino', proj_geom, cupy.asnumpy(DATA.as_array()[i]))
+                    else:
+                        sinogram_id = astra.data2d.create('-sino', proj_geom, DATA.as_array()[i])
                     rec_id = astra.data2d.create( '-vol', vol_geom)
                     
                     cfg['ReconstructionDataId'] = rec_id

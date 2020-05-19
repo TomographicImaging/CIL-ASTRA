@@ -1,3 +1,10 @@
+import ccpi.cfg as cfg
+if cfg.run_with_cupy:
+    try:
+        import cupy
+    except:
+        print("There is no cupy installed")  
+
 from ccpi.framework import DataProcessor, ImageData
 from ccpi.astra.utils import convert_geometry_to_astra
 import astra
@@ -68,7 +75,12 @@ class AstraBackProjector(DataProcessor):
     def process(self, out=None):
         DATA = self.get_input()
         IM = ImageData(geometry=self.volume_geometry)
-        rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
+        if cfg.run_with_cupy:
+            rec_id, IM.array = astra.create_backprojection(cupy.asnumpy(DATA.as_array()),
+                                self.proj_id)
+            IM.array = cupy.array(IM.array)            
+        else:  
+            rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
                             self.proj_id)
         astra.data2d.delete(rec_id)
         
