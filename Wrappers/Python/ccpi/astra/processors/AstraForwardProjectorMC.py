@@ -1,8 +1,16 @@
+import ccpi.cfg as cfg
+if cfg.run_with_cupy:
+    try:
+        import cupy
+    except:
+        print("There is no cupy installed")  
+
 from ccpi.framework import AcquisitionData
 
 from ccpi.astra.processors import AstraForwardProjector
 
 import astra
+
 
 class AstraForwardProjectorMC(AstraForwardProjector):
     '''AstraForwardProjector Multi channel
@@ -27,10 +35,19 @@ class AstraForwardProjectorMC(AstraForwardProjector):
         #create the output AcquisitionData
         DATA = AcquisitionData(geometry=self.sinogram_geometry)
         
-        for k in range(DATA.geometry.channels):
-            sinogram_id, DATA.as_array()[k] = astra.create_sino(IM.as_array()[k], 
-                                                           self.proj_id)
-            astra.data2d.delete(sinogram_id)
+        if cfg.run_with_cupy:        
+            tmp_IM = cupy.asnumpy(IM.as_array())
+            tmp_DATA = cupy.asnumpy(DATA.as_array())
+        
+            for k in range(DATA.geometry.channels):
+                sinogram_id, tmp_DATA[k] = astra.create_sino(tmp_IM[k], 
+                                                            self.proj_id)
+                astra.data2d.delete(sinogram_id)
+            DATA.array = cupy.array(tmp_DATA)                                               
+        else:  
+            for k in range(DATA.geometry.channels):                                              
+                sinogram_id, DATA.as_array()[k] = astra.create_sino(IM.as_array()[k], self.proj_id)
+        astra.data2d.delete(sinogram_id)
         
         if self.device == 'cpu':
             ret = DATA
