@@ -294,7 +294,10 @@ class FBP(DataProcessor):
                                                       
                     # Get the result
                     IM.array[i] =  astra.data2d.get(rec_id)
-                    
+
+                    astra.algorithm.delete(alg_id)
+                    astra.data2d.delete(rec_id)
+                    astra.data2d.delete(sinogram_id)  
                     
                     if self.device == 'cpu':
                         IM.array[i] /= (self.volume_geometry.voxel_size_x**2)
