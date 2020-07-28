@@ -8,10 +8,21 @@ build:
     - CIL_VERSION   
 #  number: 0
   
+
+test:
+  source_files:
+    - ./Wrappers/Python/test # [win]
+    - ./ccpi/test # [not win]
+
+  commands:
+    - python -c "import os; print ('TESTING IN THIS DIRECTORY' , os.getcwd())"
+    - python -m unittest discover Wrappers/Python/test # [win]
+    - python -m unittest discover -s ccpi/test # [not win]
+    
 requirements:
   build:
     - python
-    - numpy
+    - {{ pin_compatible('numpy', max_pin='x.x') }}
     - setuptools
 
   run:

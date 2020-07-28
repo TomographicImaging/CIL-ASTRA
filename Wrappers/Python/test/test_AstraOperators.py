@@ -27,63 +27,83 @@ from ccpi.optimisation.operators import LinearOperator
 
 from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple
 
+import astra
+use_cuda = True
+try:
+    astra.test_CUDA()
+except RuntimeError as re:
+    print (re)
+    use_cuda = False
+except:
+    use_cuda = False
+
+
 
 class TestAstraSimple(unittest.TestCase):
     def setUp(self): 
         # Define image geometry.
-        N = 256
-
-        loader = TestData()
-        ph = loader.load(TestData.SIMPLE_PHANTOM_2D,size=(N,N))
+        N = 128
 
         ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
                         voxel_size_x = 0.1,
                         voxel_size_y = 0.1)
-        im_data = ig.allocate()
-        im_data.fill(ph.as_array())
-
-        # show(im_data, title = 'TomoPhantom', cmap = 'inferno')
-        # Create AcquisitionGeometry and AcquisitionData 
+        
         detectors = N
         angles = np.linspace(0, np.pi, 180, dtype='float32')
-        ag = AcquisitionGeometry('parallel','2D', angles, detectors,
-                                pixel_size_h = 0.1)
-        # Create projection operator using Astra-Toolbox. Available CPU/CPU
-        device = 'gpu'
-        A = AstraProjectorSimple(ig, ag, device = device)
-
-        data = A.direct(im_data)
-
+        ag = AcquisitionGeometry(geom_type='parallel',
+                                 dimension='2D', 
+                                 angles=angles, 
+                                 pixel_num_h=detectors,
+                                 pixel_size_h = 0.1)
+        
         ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
                         voxel_size_x = 0.1,
                         voxel_size_y = 0.1,
                         voxel_size_z = 0.1)
-        # im_data3 = ig3.allocate()
-
         
-        ag3 = AcquisitionGeometry('parallel','3D', angles, detectors,
-                                pixel_size_h = 0.1,
-                                pixel_size_v = 0.1)
-        A3 = AstraProjector3DSimple(ig3, ag3)
-        self.im_data = im_data
-        self.data = data
-        self.A = A
+        
+        ag3 = AcquisitionGeometry(geom_type = 'parallel',
+                                 dimension= '3D', 
+                                 angles=angles, 
+                                 pixel_num_h = detectors,
+                                 pixel_num_v = detectors,
+                                 pixel_size_h = 0.1,
+                                 pixel_size_v = 0.1)
         self.ig = ig
         self.ag = ag
-        self.A3 = A3
         self.ig3 = ig3
         self.ag3 = ag3
+        self.norm = 14.85
 
-    def test_norm_simple2D(self):
+    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    def test_norm_simple2D_gpu(self):
         # test exists
-    
-        n = self.A.norm()
-        print ("norm A", n)
+        # Create projection operator using Astra-Toolbox. Available CPU/CPU
+        device = 'gpu'
+        A = AstraProjectorSimple(self.ig, self.ag, device = device)
+
+        n = A.norm()
+        print ("norm A GPU", n)
         self.assertTrue(True)
-        
-    def skip_test_norm_simple3D(self):
+        self.assertAlmostEqual(n, self.norm, places=2)
+
+    def test_norm_simple2D_cpu(self):
         # test exists
-        n = self.A3.norm()
+        # Create projection operator using Astra-Toolbox. Available CPU/CPU
+        device = 'cpu'
+        A = AstraProjectorSimple(self.ig, self.ag, device = device)
+
+        n = A.norm()
+        print ("norm A CPU", n)
+        self.assertTrue(True)
+        self.assertAlmostEqual(n, self.norm, places=2)
+    
+    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    def test_norm_simple3D_gpu(self):
+        # test exists
+        A3 = AstraProjector3DSimple(self.ig3, self.ag3)
+        n = A3.norm()
         print ("norm A3", n)
         self.assertTrue(True)
+        self.assertAlmostEqual(n, self.norm, places=2)
     
