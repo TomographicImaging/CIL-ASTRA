@@ -21,7 +21,7 @@ test:
 
   build:
     - python
-    - numpy
+    - {{ pin_compatible('numpy', max_pin='x.x') }}
     - setuptools
 
   run:

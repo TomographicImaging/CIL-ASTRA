@@ -2,8 +2,12 @@ if [ -z "$CIL_VERSION" ]; then
     echo "Need to set CIL_VERSION"
     exit 1
 fi  
+set -ex
 mkdir ${SRC_DIR}/ccpi
-cp -r "${RECIPE_DIR}/../../../" ${SRC_DIR}/ccpi
+cp -rv "${RECIPE_DIR}/../ccpi/" ${SRC_DIR}/ccpi
+cp -rv "${RECIPE_DIR}/../test/" ${SRC_DIR}/ccpi
+cp -v ${RECIPE_DIR}/../setup.py ${SRC_DIR}/ccpi
 
-cd ${SRC_DIR}/ccpi/Wrappers/Python
-$PYTHON setup.py install
+cd ${SRC_DIR}/ccpi
+echo "Python command is ${PYTHON}"
+${PYTHON} setup.py install
