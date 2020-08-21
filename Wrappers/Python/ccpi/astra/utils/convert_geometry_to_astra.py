@@ -10,15 +10,12 @@ def convert_geometry_to_astra(volume_geometry, sinogram_geometry):
        :returns ASTRA volume and sinogram geometry'''
 
     # determine if the geometry is 2D or 3D
-    horiz = sinogram_geometry.pixel_num_h
-    vert  = sinogram_geometry.pixel_num_v
-    if vert >= 1:
+
+    if sinogram_geometry.pixel_num_v > 1:
         dimension = '3D'
-    elif vert == 0:
-        dimension = '2D'
     else:
-        raise ValueError('Number of pixels at detector on the vertical axis must be >= 0. Got {}'.format(vert))
-    
+        dimension = '2D'
+
     if dimension == '2D':
         vol_geom = astra.create_vol_geom(volume_geometry.voxel_num_y, 
                                          volume_geometry.voxel_num_x, 
