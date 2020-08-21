@@ -1,2 +1,3 @@
 
 from .convert_geometry_to_astra import convert_geometry_to_astra
+from .convert_geometry_to_astra_vec import convert_geometry_to_astra_vec

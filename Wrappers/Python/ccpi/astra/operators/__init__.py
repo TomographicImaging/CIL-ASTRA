@@ -3,3 +3,4 @@ from .AstraProjectorSimple import AstraProjectorSimple
 from .AstraProjector3DSimple import AstraProjector3DSimple
 from .AstraProjector3DMC import AstraProjector3DMC
 from .AstraProjectorMC import AstraProjectorMC
+from .AstraProjectorFlexible import AstraProjectorFlexible
