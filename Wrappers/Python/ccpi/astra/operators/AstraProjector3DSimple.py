@@ -53,12 +53,6 @@ class AstraProjector3DSimple(LinearOperator):
         else:
             out.fill(self.bp.get_output())    
 
-    def norm(self):
-        x0 = self.domain_geometry().allocate('random')
-        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
-        return self.s1
-    
-    
 if __name__  == '__main__':
         
     # N = 30
@@ -74,36 +68,4 @@ if __name__  == '__main__':
     
     # y = ag.allocate('random_int')
     # im = A.adjoint(y)
-
-    N = 128
-
-    ig = ImageGeometry(voxel_num_x=N, voxel_num_y=N,
-                       voxel_size_x=0.1,
-                       voxel_size_y=0.1)
-
-    detectors = N
-    angles = np.linspace(0, np.pi, 180, dtype='float32')
-    ag = AcquisitionGeometry(geom_type='parallel',
-                             dimension='2D',
-                             angles=angles,
-                             pixel_num_h=detectors,
-                             pixel_size_h=0.1,
-                             dimension_labels=['angle', 'horizontal'])
-
-    ig3 = ImageGeometry(voxel_num_x=N, voxel_num_y=N, voxel_num_z=N,
-                        voxel_size_x=0.1,
-                        voxel_size_y=0.1,
-                        voxel_size_z=0.1)
-
-    ag3 = AcquisitionGeometry(geom_type='parallel',
-                              dimension='3D',
-                              angles=angles,
-                              pixel_num_h=detectors,
-                              pixel_num_v=detectors,
-                              pixel_size_h=0.1,
-                              pixel_size_v=0.1,
-                              dimension_labels=['vertical', 'angle', 'horizontal'])
-    
-    A3 = AstraProjector3DSimple(ig3, ag3)
-    n = A3.norm()
 

@@ -25,7 +25,7 @@ import functools
 from ccpi.optimisation.operators import Gradient, Identity, BlockOperator
 from ccpi.optimisation.operators import LinearOperator
 
-from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple
+from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
 
 import astra
 use_cuda = True
@@ -55,7 +55,8 @@ class TestAstraSimple(unittest.TestCase):
                                  angles=angles, 
                                  pixel_num_h=detectors,
                                  pixel_size_h = 0.1,
-                                 dimension_labels=['angle','horizontal'])
+                                 dimension_labels=['angle','horizontal'],
+                                 angle_unit = 'radian')
         
         ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
                         voxel_size_x = 0.1,
@@ -70,7 +71,8 @@ class TestAstraSimple(unittest.TestCase):
                                  pixel_num_v = detectors,
                                  pixel_size_h = 0.1,
                                  pixel_size_v = 0.1,
-                                 dimension_labels=['vertical','angle','horizontal'])
+                                 dimension_labels=['vertical','angle','horizontal'],
+                                 angle_unit = 'radian')
         self.ig = ig
         self.ag = ag
         self.ig3 = ig3
@@ -108,4 +110,22 @@ class TestAstraSimple(unittest.TestCase):
         print ("norm A3", n)
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
+
+    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    def test_norm_flexible2D_gpu(self):
+        # test exists
+        # Create projection operator using Astra-Toolbox. Available CPU/CPU
+        A = AstraProjectorFlexible(self.ig, self.ag)
+        n = A.norm()
+        print ("norm A GPU", n)
+        self.assertTrue(True)
+        self.assertAlmostEqual(n, self.norm, places=2)
     
+    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    def test_norm_flexible3D_gpu(self):
+        # test exists
+        A3 = AstraProjectorFlexible(self.ig3, self.ag3)
+        n = A3.norm()
+        print ("norm A3", n)
+        self.assertTrue(True)
+        self.assertAlmostEqual(n, self.norm, places=2)    
