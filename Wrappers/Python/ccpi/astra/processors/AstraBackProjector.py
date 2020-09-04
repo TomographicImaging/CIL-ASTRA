@@ -30,8 +30,8 @@ class AstraBackProjector(DataProcessor):
         
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
-        
-                # Set up ASTRA Volume and projection geometry, not to be stored in self
+                
+        # Set up ASTRA Volume and projection geometry, not to be stored in self
         vol_geom, proj_geom = convert_geometry_to_astra(self.volume_geometry,
                                                         self.sinogram_geometry)
         
@@ -66,19 +66,15 @@ class AstraBackProjector(DataProcessor):
         self.sinogram_geometry = sinogram_geometry
     
     def process(self, out=None):
+
         DATA = self.get_input()
-        IM = ImageData(geometry=self.volume_geometry)
-        rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
-                            self.proj_id)
+        data_temp = DATA.as_array()
+
+        rec_id, arr_out = astra.create_backprojection(data_temp, self.proj_id)
         astra.data2d.delete(rec_id)
         
-        if self.device == 'cpu':
-            ret = IM
-        else:
-            scaling = self.volume_geometry.voxel_size_x**3  
-            ret = scaling*IM
-        
         if out is None:
-            return ret
+            out = ImageData(arr_out, deep_copy=False, geometry=self.volume_geometry.copy(), suppress_warning=True)
+            return out
         else:
-            out.fill(ret)
+            out.fill(arr_out)

@@ -24,24 +24,16 @@ class AstraForwardProjectorMC(AstraForwardProjector):
     
     def process(self, out=None):
         IM = self.get_input()
-        #create the output AcquisitionData
-        DATA = AcquisitionData(geometry=self.sinogram_geometry)
-        
-        for k in range(DATA.geometry.channels):
-            sinogram_id, DATA.as_array()[k] = astra.create_sino(IM.as_array()[k], 
-                                                           self.proj_id)
-            astra.data2d.delete(sinogram_id)
-        
-        if self.device == 'cpu':
-            ret = DATA
-        else:
-            if self.sinogram_geometry.geom_type == 'cone':
-                ret = DATA
-            else:
-                 scaling = (1.0/self.volume_geometry.voxel_size_x) 
-                 ret = scaling*DATA
-        
+     
         if out is None:
-            return ret
+            DATA = AcquisitionData(geometry=self.sinogram_geometry)
         else:
-            out.fill(ret)
+            DATA = out
+
+        for k in range(DATA.geometry.channels):
+            vol_temp = IM.as_array()[k]
+            sinogram_id, DATA.as_array()[k] = astra.create_sino(vol_temp, self.proj_id)
+            astra.data2d.delete(sinogram_id)
+                
+        if out is None:
+            return DATA

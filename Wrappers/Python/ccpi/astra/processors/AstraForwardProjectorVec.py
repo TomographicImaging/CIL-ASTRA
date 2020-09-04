@@ -98,7 +98,6 @@ class AstraForwardProjectorVec(DataProcessor):
                                                            self.vol_geom)
 
         astra.data3d.delete(sinogram_id)
-        # 3D CUDA FP does not need scaling
         
         if pad is True:
             arr_out = numpy.squeeze(arr_out, axis=0)

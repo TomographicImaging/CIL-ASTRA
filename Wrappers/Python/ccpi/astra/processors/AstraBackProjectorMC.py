@@ -26,21 +26,15 @@ class AstraBackProjectorMC(AstraBackProjector):
     def process(self, out=None):
         DATA = self.get_input()
         
-        IM = ImageData(geometry=self.volume_geometry)
-        
-        for k in range(IM.geometry.channels):
-            rec_id, IM.as_array()[k] = astra.create_backprojection(
-                    DATA.as_array()[k], 
-                    self.proj_id)
-            astra.data2d.delete(rec_id)
-        
-        if self.device == 'cpu':
-            ret = IM
-        else:
-            scaling = self.volume_geometry.voxel_size_x**3  
-            ret = scaling*IM
-        
         if out is None:
-            return ret
+            IM = ImageData(self.volume_geometry.copy())
         else:
-            out.fill(ret)
+            IM = out
+
+        for k in range(IM.geometry.channels):
+            data_temp = DATA.as_array()[k]
+            rec_id, IM.as_array()[k] = astra.create_backprojection(data_temp, self.proj_id)     
+            astra.data2d.delete(rec_id)
+             
+        if out is None:
+            return IM   
