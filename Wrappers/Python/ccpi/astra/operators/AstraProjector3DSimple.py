@@ -27,21 +27,12 @@ class AstraProjector3DSimple(LinearOperator):
         
         super(AstraProjector3DSimple, self).__init__(geomv, 
              range_geometry=geomp)
-        
-        # Store volume and sinogram geometries.
-        # The order of the ouput sinogram is not the default one from the acquistion geometry
-        # The order of the backprojection is the default one from the image geometry
                 
-        geomp.dimension_labels = ['vertical','angle','horizontal']
-        geomp.shape = (geomp.pixel_num_v, len(geomp.angles), geomp.pixel_num_h)  
-        
         self.fp = AstraForwardProjector3D(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        output_axes_order=['vertical','angle','horizontal'])
+                                        sinogram_geometry=geomp)
         
         self.bp = AstraBackProjector3D(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        output_axes_order=['vertical','horizontal_y','horizontal_x'])
+                                        sinogram_geometry=geomp)
                       
         # Initialise empty for singular value.
         self.s1 = None
@@ -62,28 +53,57 @@ class AstraProjector3DSimple(LinearOperator):
         else:
             out.fill(self.bp.get_output())    
 
-    # def norm(self):
-    #     x0 = self.domain_geometry().allocate('random')
-    #     self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
-    #     return self.s1
+    def norm(self):
+        x0 = self.domain_geometry().allocate('random')
+        self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
+        return self.s1
     
     
 if __name__  == '__main__':
         
-    N = 30
-    angles = np.linspace(0, np.pi, 180)
-    ig = ImageGeometry(N, N, N)
-    ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5)
+    # N = 30
+    # angles = np.linspace(0, np.pi, 180)
+    # ig = ImageGeometry(N, N, N)
+    # ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5)
     
-    A = AstraProjector3DSimple(ig, ag)
-    print(A.norm())    
+    # A = AstraProjector3DSimple(ig, ag)
+    # print(A.norm())    
     
-    x = ig.allocate('random_int')
-    sin = A.direct(x)
+    # x = ig.allocate('random_int')
+    # sin = A.direct(x)
     
-    y = ag.allocate('random_int')
-    im = A.adjoint(y)
+    # y = ag.allocate('random_int')
+    # im = A.adjoint(y)
+
+    N = 128
+
+    ig = ImageGeometry(voxel_num_x=N, voxel_num_y=N,
+                       voxel_size_x=0.1,
+                       voxel_size_y=0.1)
+
+    detectors = N
+    angles = np.linspace(0, np.pi, 180, dtype='float32')
+    ag = AcquisitionGeometry(geom_type='parallel',
+                             dimension='2D',
+                             angles=angles,
+                             pixel_num_h=detectors,
+                             pixel_size_h=0.1,
+                             dimension_labels=['angle', 'horizontal'])
+
+    ig3 = ImageGeometry(voxel_num_x=N, voxel_num_y=N, voxel_num_z=N,
+                        voxel_size_x=0.1,
+                        voxel_size_y=0.1,
+                        voxel_size_z=0.1)
+
+    ag3 = AcquisitionGeometry(geom_type='parallel',
+                              dimension='3D',
+                              angles=angles,
+                              pixel_num_h=detectors,
+                              pixel_num_v=detectors,
+                              pixel_size_h=0.1,
+                              pixel_size_v=0.1,
+                              dimension_labels=['vertical', 'angle', 'horizontal'])
     
-    
-    
-    
+    A3 = AstraProjector3DSimple(ig3, ag3)
+    n = A3.norm()
+

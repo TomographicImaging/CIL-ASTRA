@@ -33,10 +33,12 @@ class AstraProjectorFlexible(LinearOperator):
         self.sinogram_geometry = geomp 
         self.volume_geometry = geomv         
         
-        self.fp = AstraForwardProjectorVec(volume_geometry=geomv, sinogram_geometry=geomp)
-            
+        self.fp = AstraForwardProjectorVec(volume_geometry=geomv, sinogram_geometry=geomp)       
         self.bp = AstraBackProjectorVec(volume_geometry=geomv, sinogram_geometry=geomp)
-              
+
+        # Initialise empty for singular value.
+        self.s1 = None
+                      
     def direct(self, IM, out=None):
         self.fp.set_input(IM)
         

@@ -43,16 +43,10 @@ class AstraForwardProjectorVec(DataProcessor):
             order = [dataset.dimension_labels[0],dataset.dimension_labels[1],dataset.dimension_labels[2]]
             if order != AstraForwardProjectorVec.ASTRA_LABELS_VOL_3D:
                 raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjectorVec.ASTRA_LABELS_PROJ_3D, order))  
-
-                #dataset.subset(dimensions = AstraForwardProjectorVec.ASTRA_LABELS_VOL_3D)
-                #print("Transposing data for ASTRA compatibility")
         elif dim == 2:
             order = [dataset.dimension_labels[0],dataset.dimension_labels[1]]
             if order != AstraForwardProjectorVec.ASTRA_LABELS_VOL_2D:
                 raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjectorVec.ASTRA_LABELS_PROJ_2D, order))  
-
-                #dataset.subset(dimensions = AstraForwardProjectorVec.ASTRA_LABELS_VOL_2D)
-                #print("Transposing data for ASTRA compatibility")
         else:
             raise ValueError("Supports 2D and 3D data only, got {0}".format(dataset.number_of_dimensions))  
 

@@ -12,7 +12,6 @@ class AstraForwardProjector3D(DataProcessor):
     Parameter: proj_geom, vol_geom
     Output: AcquisitionData
     '''
-
     ASTRA_LABELS_VOL = ['vertical','horizontal_y','horizontal_x']
     ASTRA_LABELS_PROJ = ['vertical','angle','horizontal']
 
@@ -44,8 +43,7 @@ class AstraForwardProjector3D(DataProcessor):
 
         order = [dataset.dimension_labels[0],dataset.dimension_labels[1],dataset.dimension_labels[2]]
         if order != AstraForwardProjector3D.ASTRA_LABELS_VOL:
-            dataset.subset(dimensions = AstraForwardProjector3D.ASTRA_LABELS_VOL)
-            print("Transposing the data for ASTRA compatibility")
+            raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjector3D.ASTRA_LABELS_PROJ_3D, order))  
 
         return True       
     

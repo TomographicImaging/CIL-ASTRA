@@ -54,7 +54,8 @@ class TestAstraSimple(unittest.TestCase):
                                  dimension='2D', 
                                  angles=angles, 
                                  pixel_num_h=detectors,
-                                 pixel_size_h = 0.1)
+                                 pixel_size_h = 0.1,
+                                 dimension_labels=['angle','horizontal'])
         
         ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
                         voxel_size_x = 0.1,
@@ -68,7 +69,8 @@ class TestAstraSimple(unittest.TestCase):
                                  pixel_num_h = detectors,
                                  pixel_num_v = detectors,
                                  pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1)
+                                 pixel_size_v = 0.1,
+                                 dimension_labels=['vertical','angle','horizontal'])
         self.ig = ig
         self.ag = ag
         self.ig3 = ig3

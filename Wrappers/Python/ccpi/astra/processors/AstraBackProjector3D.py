@@ -48,8 +48,7 @@ class AstraBackProjector3D(DataProcessor):
 
         order = [dataset.dimension_labels[0],dataset.dimension_labels[1],dataset.dimension_labels[2]]
         if order != AstraBackProjector3D.ASTRA_LABELS_PROJ:
-            dataset.subset(dimensions = AstraBackProjector3D.ASTRA_LABELS_PROJ)
-            print("Transposing the data for ASTRA compatibility")
+            raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_PROJ_3D, order))  
 
         return True
 
@@ -61,13 +60,13 @@ class AstraBackProjector3D(DataProcessor):
     def set_AcquisitionGeometry(self, sinogram_geometry):
         self.sinogram_geometry = sinogram_geometry.copy()
         self.sinogram_geometry.dimension_labels = AstraBackProjector3D.ASTRA_LABELS_PROJ
-        
+
     def process(self, out=None):
 
         DATA = self.get_input()
         data_temp = DATA.as_array()
 
-        rec_id, arr_out = astra.create_backprojection(data_temp, self.proj_id)
+        rec_id, arr_out = astra.create_backprojection3d_gpu(data_temp, self.proj_geom, self.vol_geom)
         astra.data2d.delete(rec_id)
         
         if out is None:
