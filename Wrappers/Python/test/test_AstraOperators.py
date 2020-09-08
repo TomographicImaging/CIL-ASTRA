@@ -111,6 +111,46 @@ class TestAstraSimple(unittest.TestCase):
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
 
+class TestAstraFlexible(unittest.TestCase):
+    def setUp(self): 
+        # Define image geometry.
+        N = 128
+
+        ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
+                        voxel_size_x = 0.1,
+                        voxel_size_y = 0.1)
+        
+        detectors = N
+        angles = np.linspace(0, np.pi, 180, dtype='float32')
+        ag = AcquisitionGeometry(geom_type='parallel',
+                                 dimension='2D', 
+                                 angles=angles, 
+                                 pixel_num_h=detectors,
+                                 pixel_size_h = 0.1,
+                                 dimension_labels=['angle','horizontal'],
+                                 angle_unit = 'radian')
+        
+        ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
+                        voxel_size_x = 0.1,
+                        voxel_size_y = 0.1,
+                        voxel_size_z = 0.1)
+        
+        
+        ag3 = AcquisitionGeometry(geom_type = 'parallel',
+                                 dimension= '3D', 
+                                 angles=angles, 
+                                 pixel_num_h = detectors,
+                                 pixel_num_v = detectors,
+                                 pixel_size_h = 0.1,
+                                 pixel_size_v = 0.1,
+                                 dimension_labels=['vertical','angle','horizontal'],
+                                 angle_unit = 'radian')
+        self.ig = ig
+        self.ag = ag
+        self.ig3 = ig3
+        self.ag3 = ag3
+        self.norm = 14.85
+
     @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
     def test_norm_flexible2D_gpu(self):
         # test exists
@@ -121,6 +161,16 @@ class TestAstraSimple(unittest.TestCase):
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
     
+        ag_2 = self.ag.copy()
+        ag_2.dimension_labels = ['horizontal','angle']
+        with self.assertRaises(ValueError):
+            A = AstraProjectorFlexible(self.ig, ag_2)
+
+        ig_2 = self.ig3.copy()
+        ig_2.dimension_labels = ['horizontal_x','horizontal_y']
+        with self.assertRaises(ValueError):
+            A = AstraProjectorFlexible(ig_2, self.ag)
+
     @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
     def test_norm_flexible3D_gpu(self):
         # test exists
@@ -129,3 +179,13 @@ class TestAstraSimple(unittest.TestCase):
         print ("norm A3", n)
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)    
+
+        ag3_2 = self.ag3.copy()
+        ag3_2.dimension_labels = ['angle','vertical','horizontal']
+        with self.assertRaises(ValueError):
+            A3 = AstraProjectorFlexible(self.ig3, ag3_2)
+
+        ig3_2 = self.ig3.copy()
+        ig3_2.dimension_labels = ['horizontal_y','vertical','horizontal_x']
+        with self.assertRaises(ValueError):
+            A3 = AstraProjectorFlexible(ig3_2, self.ag3)
