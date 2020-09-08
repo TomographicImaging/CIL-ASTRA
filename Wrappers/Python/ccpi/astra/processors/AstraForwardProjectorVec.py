@@ -53,27 +53,38 @@ class AstraForwardProjectorVec(DataProcessor):
         return True
     
     def set_ImageGeometry(self, volume_geometry):
-        self.volume_geometry = volume_geometry.copy()
-
+        
         dim = len(volume_geometry.dimension_labels)
-        if dim == 3:        
-            self.volume_geometry.dimension_labels = AstraForwardProjectorVec.ASTRA_LABELS_VOL_3D
-        elif dim == 2: 
-            self.volume_geometry.dimension_labels = AstraForwardProjectorVec.ASTRA_LABELS_VOL_2D
+        if dim == 3:
+            order = [volume_geometry.dimension_labels[0],volume_geometry.dimension_labels[1],volume_geometry.dimension_labels[2]]
+            if order != AstraForwardProjectorVec.ASTRA_LABELS_VOL_3D:
+                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjectorVec.ASTRA_LABELS_PROJ_3D, order))  
+        elif dim == 2:
+            order = [volume_geometry.dimension_labels[0],volume_geometry.dimension_labels[1]]
+            if order != AstraForwardProjectorVec.ASTRA_LABELS_VOL_2D:
+                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjectorVec.ASTRA_LABELS_PROJ_2D, order))  
         else:
             raise ValueError("Supports 2D and 3D data only, got {0}".format(volume_geometry.number_of_dimensions))  
 
+        self.volume_geometry = volume_geometry.copy()
+
     def set_AcquisitionGeometry(self, sinogram_geometry):
-        self.sinogram_geometry = sinogram_geometry.copy()
 
         dim = len(sinogram_geometry.dimension_labels)
 
-        if dim == 3:  
-            self.sinogram_geometry.dimension_labels = AstraForwardProjectorVec.ASTRA_LABELS_PROJ_3D
-        elif dim == 2:  
-            self.sinogram_geometry.dimension_labels = AstraForwardProjectorVec.ASTRA_LABELS_PROJ_2D
+        if dim == 3:
+            order = [sinogram_geometry.dimension_labels[0],sinogram_geometry.dimension_labels[1],sinogram_geometry.dimension_labels[2]]
+            if order != AstraForwardProjectorVec.ASTRA_LABELS_PROJ_3D:
+                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjectorVec.ASTRA_LABELS_PROJ_3D, order))  
+        elif dim == 2:
+            order = [sinogram_geometry.dimension_labels[0],sinogram_geometry.dimension_labels[1]]
+            if order != AstraForwardProjectorVec.ASTRA_LABELS_PROJ_2D:
+                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjectorVec.ASTRA_LABELS_PROJ_2D, order))  
         else:
-            raise ValueError("Supports 2D and 3D data only, got {0}".format(sinogram_geometry.dimensions))  
+            raise ValueError("Supports 2D and 3D data only, got {0}".format(sinogram_geometry.number_of_dimensions))  
+
+        self.sinogram_geometry = sinogram_geometry.copy()
+
 
     def process(self, out=None):
 
