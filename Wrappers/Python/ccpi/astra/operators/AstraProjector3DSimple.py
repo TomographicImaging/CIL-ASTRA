@@ -55,17 +55,16 @@ class AstraProjector3DSimple(LinearOperator):
 
 if __name__  == '__main__':
         
-    # N = 30
-    # angles = np.linspace(0, np.pi, 180)
-    # ig = ImageGeometry(N, N, N)
-    # ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5)
+    N = 30
+    angles = np.linspace(0, np.pi, 180)
+    ig = ImageGeometry(N, N, N)
+    ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5)
     
-    # A = AstraProjector3DSimple(ig, ag)
-    # print(A.norm())    
+    A = AstraProjector3DSimple(ig, ag)
+    print(A.norm())    
     
-    # x = ig.allocate('random_int')
-    # sin = A.direct(x)
+    x = ig.allocate('random_int')
+    sin = A.direct(x)
     
-    # y = ag.allocate('random_int')
-    # im = A.adjoint(y)
-
+    y = ag.allocate('random_int')
+    im = A.adjoint(y)
