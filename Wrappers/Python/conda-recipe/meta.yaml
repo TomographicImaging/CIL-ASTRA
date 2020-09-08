@@ -21,13 +21,12 @@ test:
     
 requirements:
   build:
-    - python
-    - {{ pin_compatible('numpy', max_pin='x.x') }}
+    - python {{ python }}
     - setuptools
 
   run:
-    - {{ pin_compatible('numpy', max_pin='x.x') }}
-    - python
+    - python {{ python }}
+    - numpy {{ numpy }}
     - ccpi-framework
     - astra-toolbox
 	
