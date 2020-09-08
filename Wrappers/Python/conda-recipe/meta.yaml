@@ -21,12 +21,12 @@ test:
     
 requirements:
   build:
-    - python
+    - python {{ python }}
     - setuptools
 
   run:
-    - python
-    - numpy
+    - python {{ python }}
+    - numpy {{ numpy }}
     - ccpi-framework
     - astra-toolbox
 	
