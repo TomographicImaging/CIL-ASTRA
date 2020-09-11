@@ -1,3 +1,10 @@
+import ccpi.cfg as cfg
+if cfg.run_with_cupy:
+    try:
+        import cupy
+    except:
+        print("There is no cupy installed") 
+
 from ccpi.framework import DataProcessor, ImageData
 from ccpi.astra.utils import convert_geometry_to_astra
 import astra
@@ -51,19 +58,30 @@ class AstraBackProjector3D(DataProcessor):
         self.volume_geometry = volume_geometry
         
     def set_AcquisitionGeometry(self, sinogram_geometry):
-        self.sinogram_geometry = sinogram_geometry
+        self.sinogram_geometry = sinogram_geometry        
     
     def process(self, out=None):
         DATA = self.get_input()
         IM = ImageData(geometry=self.volume_geometry,
                        dimension_labels=self.output_axes_order)
-        rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
+        
+        if cfg.run_with_cupy:
+            
+            rec_id, IM.array = astra.create_backprojection3d_gpu(cupy.asnumpy(DATA.as_array()),
                             self.proj_geom,
                             self.vol_geom)
-        astra.data3d.delete(rec_id)
+            IM.array = cupy.array(IM.array)
+            astra.data3d.delete(rec_id)            
+            
+        else:
+            
+            rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
+                            self.proj_geom,
+                            self.vol_geom)
+            astra.data3d.delete(rec_id)
         
         # Scaling of 3D ASTRA backprojector, works both parallel and cone.
-        scaling = 1/self.volume_geometry.voxel_size_x**2  
+        scaling = 1.0 #1/self.volume_geometry.voxel_size_x**2  
         ret = scaling*IM
         
         if out is None:

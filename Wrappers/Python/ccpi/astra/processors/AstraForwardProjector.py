@@ -93,7 +93,7 @@ class AstraForwardProjector(DataProcessor):
             if self.sinogram_geometry.geom_type == 'cone':
                 ret = DATA
             else:
-                 scaling = 1.0/self.volume_geometry.voxel_size_x
+                 scaling = 1.0 #1.0/self.volume_geometry.voxel_size_x
                  ret = scaling*DATA
         
         if out is None:

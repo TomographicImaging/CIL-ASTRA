@@ -2,4 +2,5 @@
 from .AstraProjectorSimple import AstraProjectorSimple
 from .AstraProjector3DSimple import AstraProjector3DSimple
 from .AstraProjector3DMC import AstraProjector3DMC
+from .AstraProjector3DMC_memory import AstraProjector3DMC_memory
 from .AstraProjectorMC import AstraProjectorMC

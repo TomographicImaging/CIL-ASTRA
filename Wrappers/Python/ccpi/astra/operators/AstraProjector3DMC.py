@@ -30,55 +30,61 @@ class AstraProjector3DMC(LinearOperator):
         
         
         self.igtmp3D = self.domain_geometry().clone()
-        # self.igtmp3D.channels = 1
-        # self.igtmp3D.shape = self.volume_geometry.shape[1:]
-        # self.igtmp3D.dimension_labels = ['vertical', 'horizontal_y', 'horizontal_x']
+        self.igtmp3D.channels = 1
+        self.igtmp3D.shape = self.domain_geometry().shape[1:]
+        self.igtmp3D.dimension_labels = ['vertical', 'horizontal_y', 'horizontal_x']
         
         self.agtmp3D = self.range_geometry().clone()
-        # self.agtmp3D.channels = 1
-        # self.agtmp3D.shape = self.sinogram_geometry.shape[1:]
-        # self.agtmp3D.dimension_labels = ['vertical', 'angle', 'horizontal']      
+        self.agtmp3D.channels = 1
+        self.agtmp3D.shape = self.range_geometry().shape[1:]
+        self.agtmp3D.dimension_labels = ['vertical', 'angle', 'horizontal']      
         
         self.A3D = AstraProjector3DSimple(self.igtmp3D, self.agtmp3D)     
             
         self.s1 = None
-        self.channels = self.domain_geometry().channels
+        self.channels1 = self.domain_geometry().channels
+        self.channels2 = self.range_geometry().channels
         
     def direct(self, x, out = None):
         
         if out is None:
             
             tmp = self.range_geometry().allocate()
-            for k in range(self.channels):
+            for k in range(self.channels2):
                 t = self.A3D.direct(x.subset(channel=k))            
                 # this line is potentially leading to problems
                 # as it is strongly linked to a DataContainer
                 # wrapping NumPy arrays.
-                np.copyto(tmp.array[k], t.array) 
+                np.copyto(tmp.array[k], t.array)                 
             return tmp
         
         else:
             
-            for k in range(self.channels):
+            for k in range(self.channels2):
+#                 self.A3D.direct(x.subset(channel=k), out.subset(channel=k))
                 tmp = self.A3D.direct(x.subset(channel=k))
-                # as comment above
+#                 as comment above
                 np.copyto(out.array[k], tmp.array)
+                # this fill tmp in out for each channel
+#                 out.fill(tmp, channel = k)
         
     def adjoint(self, x, out = None):
         
         if out is None:
             
             tmp = self.domain_geometry().allocate()
-            for k in range(self.channels):
+            for k in range(self.channels2):
                 t = self.A3D.adjoint(x.subset(channel=k))            
                 np.copyto(tmp.array[k], t.array) 
             return tmp
         
         else:
             
-            for k in range(self.channels):
+            for k in range(self.channels2):
+#                 self.A3D.adjoint(x.subset(channel=k), out.subset(channel=k))
                 tmp = self.A3D.adjoint(x.subset(channel=k))            
                 np.copyto(out.array[k], tmp.array)         
+#                 out.fill(tmp, channel = k)
 
     def calculate_norm(self):
 

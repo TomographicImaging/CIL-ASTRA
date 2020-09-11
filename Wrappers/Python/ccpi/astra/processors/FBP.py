@@ -222,13 +222,13 @@ class FBP(DataProcessor):
                  
                 if self.sinogram_geometry.geom_type == 'parallel':                                       
                     if self.device == 'cpu':
-                        return IM / (self.volume_geometry.voxel_size_x**2)
+                        return IM #/ (self.volume_geometry.voxel_size_x**2)
                     else:
-                        scaling = self.volume_geometry.voxel_size_x
+                        scaling = 1.0 #self.volume_geometry.voxel_size_x
                         return scaling * IM       
                 else:
                     if self.device == 'cpu':
-                        return IM / (self.volume_geometry.voxel_size_x**2)
+                        return IM #/ (self.volume_geometry.voxel_size_x**2)
                     else:
                         return IM
                     
@@ -280,7 +280,7 @@ class FBP(DataProcessor):
                     astra.data3d.delete(rec_id)
                     astra.data3d.delete(sinogram_id)                    
                     astra.algorithm.delete(alg_id)
-                    return  IM/(self.volume_geometry.voxel_size_x**4)
+                    return  IM#/(self.volume_geometry.voxel_size_x**4)
         
         #######################################################################
         #######################################################################
@@ -317,9 +317,9 @@ class FBP(DataProcessor):
                     
                     
                     if self.device == 'cpu':
-                        IM.array[i] /= (self.volume_geometry.voxel_size_x**2)
+                        IM.array[i] /= 1.0#(self.volume_geometry.voxel_size_x**2)
                     else:
-                        IM.array[i] *= self.volume_geometry.voxel_size_x 
+                        IM.array[i] *= 1.0#self.volume_geometry.voxel_size_x 
                 return IM        
                
             elif self.sinogram_geometry.dimension == '3D':
@@ -363,7 +363,7 @@ class FBP(DataProcessor):
                         cfg['ProjectionDataId'] = sinogram_id
                         alg_id = astra.algorithm.create(cfg)
                         astra.algorithm.run(alg_id)            
-                        IM.array[i] = astra.data3d.get(rec_id) /  self.volume_geometry.voxel_size_x ** 4
+                        IM.array[i] = astra.data3d.get(rec_id) #/  self.volume_geometry.voxel_size_x ** 4
                         
                     astra.data3d.delete(rec_id)
                     astra.data3d.delete(sinogram_id)                    

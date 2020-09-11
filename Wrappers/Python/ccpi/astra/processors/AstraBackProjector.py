@@ -87,7 +87,7 @@ class AstraBackProjector(DataProcessor):
         if self.device == 'cpu':
             ret = IM
         else:
-            scaling = self.volume_geometry.voxel_size_x**3  
+            scaling = 1.0 #self.volume_geometry.voxel_size_x**3  
             ret = scaling*IM
         
         if out is None:

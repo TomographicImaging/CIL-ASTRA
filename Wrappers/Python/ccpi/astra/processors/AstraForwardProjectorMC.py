@@ -47,7 +47,7 @@ class AstraForwardProjectorMC(AstraForwardProjector):
         else:  
             for k in range(DATA.geometry.channels):                                              
                 sinogram_id, DATA.as_array()[k] = astra.create_sino(IM.as_array()[k], self.proj_id)
-        astra.data2d.delete(sinogram_id)
+                astra.data2d.delete(sinogram_id)
         
         if self.device == 'cpu':
             ret = DATA
@@ -55,7 +55,7 @@ class AstraForwardProjectorMC(AstraForwardProjector):
             if self.sinogram_geometry.geom_type == 'cone':
                 ret = DATA
             else:
-                 scaling = (1.0/self.volume_geometry.voxel_size_x) 
+                 scaling = 1.0 #(1.0/self.volume_geometry.voxel_size_x) 
                  ret = scaling*DATA
         
         if out is None:
