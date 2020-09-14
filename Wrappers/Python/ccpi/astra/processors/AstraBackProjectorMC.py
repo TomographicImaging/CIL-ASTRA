@@ -1,10 +1,3 @@
-import ccpi.cfg as cfg
-if cfg.run_with_cupy:
-    try:
-        import cupy
-    except:
-        print("There is no cupy installed")  
-
 from ccpi.framework import  ImageData
 from ccpi.astra.processors import AstraBackProjector
 import astra

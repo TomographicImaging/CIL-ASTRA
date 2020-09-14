@@ -1,12 +1,4 @@
-import ccpi.cfg as cfg_tmp
-if cfg_tmp.run_with_cupy:
-    try:
-        import cupy
-        import cupy as xp
-    except:
-        print("There is no cupy installed")        
-else:
-    import numpy as xp 
+import numpy as xp 
 
 from ccpi.framework import DataProcessor, ImageGeometry, AcquisitionGeometry
 from ccpi.astra.utils import convert_geometry_to_astra

@@ -1,10 +1,3 @@
-import ccpi.cfg as cfg
-if cfg.run_with_cupy:
-    try:
-        import cupy
-    except:
-        print("There is no cupy installed")
-
 from ccpi.optimisation.operators import LinearOperator
 from ccpi.astra.operators import AstraProjector3DSimple
 import numpy as np
