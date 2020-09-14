@@ -68,12 +68,7 @@ class AstraBackProjector(DataProcessor):
     def process(self, out=None):
         DATA = self.get_input()
         IM = ImageData(geometry=self.volume_geometry)
-        if cfg.run_with_cupy:
-            rec_id, IM.array = astra.create_backprojection(cupy.asnumpy(DATA.as_array()),
-                                self.proj_id)
-            IM.array = cupy.array(IM.array)            
-        else:  
-            rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
+        rec_id, IM.array = astra.create_backprojection(DATA.as_array(),
                             self.proj_id)
         astra.data2d.delete(rec_id)
         

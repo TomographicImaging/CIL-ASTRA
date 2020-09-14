@@ -62,18 +62,10 @@ class AstraForwardProjector3D(DataProcessor):
         DATA = AcquisitionData(geometry=self.sinogram_geometry,
                                dimension_labels=self.output_axes_order)
         
-        if cfg.run_with_cupy:
-            sinogram_id, DATA.array = astra.create_sino3d_gpu(cupy.asnumpy(IM.as_array()), 
-                                                           self.proj_geom,
-                                                           self.vol_geom) 
-            DATA.array = cupy.array(DATA.array)
-            astra.data3d.delete(sinogram_id)
-            
-        else:    
-            sinogram_id, DATA.array = astra.create_sino3d_gpu(IM.as_array(), 
+        sinogram_id, DATA.array = astra.create_sino3d_gpu(IM.as_array(), 
                                                            self.proj_geom,
                                                            self.vol_geom)
-            astra.data3d.delete(sinogram_id)
+        astra.data3d.delete(sinogram_id)
         # 3D CUDA FP does not need scaling
         
         if out is None:

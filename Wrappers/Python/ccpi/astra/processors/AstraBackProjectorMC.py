@@ -25,19 +25,7 @@ class AstraBackProjectorMC(AstraBackProjector):
         
         IM = ImageData(geometry=self.volume_geometry)
         
-        if cfg.run_with_cupy:
-            tmp_IM = cupy.asnumpy(IM.as_array())
-            tmp_DATA = cupy.asnumpy(DATA.as_array())
-            
-            for k in range(IM.geometry.channels):
-                rec_id, tmp_IM[k] = astra.create_backprojection(
-                        tmp_DATA[k], 
-                        self.proj_id)
-                astra.data2d.delete(rec_id)
-            
-            IM.array = cupy.array(tmp_IM)  
-        else:
-            for k in range(IM.geometry.channels):
+        for k in range(IM.geometry.channels):
                 rec_id, IM.as_array()[k] = astra.create_backprojection(
                         DATA.as_array()[k], 
                         self.proj_id)

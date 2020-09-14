@@ -71,12 +71,7 @@ class AstraForwardProjector(DataProcessor):
         IM = self.get_input()
         DATA = AcquisitionData(geometry=self.sinogram_geometry)
 
-        if cfg.run_with_cupy:
-            sinogram_id, DATA.array = astra.create_sino(cupy.asnumpy(IM.as_array()), 
-                                                           self.proj_id)
-            DATA.array = cupy.array(DATA.array)
-        else:
-            sinogram_id, DATA.array = astra.create_sino(IM.as_array(), 
+        sinogram_id, DATA.array = astra.create_sino(IM.as_array(), 
                                                            self.proj_id)
         astra.data2d.delete(sinogram_id)
         

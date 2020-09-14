@@ -58,20 +58,10 @@ class AstraBackProjector3D(DataProcessor):
         IM = ImageData(geometry=self.volume_geometry,
                        dimension_labels=self.output_axes_order)
         
-        if cfg.run_with_cupy:
-            
-            rec_id, IM.array = astra.create_backprojection3d_gpu(cupy.asnumpy(DATA.as_array()),
+        rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
                             self.proj_geom,
                             self.vol_geom)
-            IM.array = cupy.array(IM.array)
-            astra.data3d.delete(rec_id)            
-            
-        else:
-            
-            rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
-                            self.proj_geom,
-                            self.vol_geom)
-            astra.data3d.delete(rec_id)
+        astra.data3d.delete(rec_id)
         
         # Scaling of 3D ASTRA backprojector, works both parallel and cone.
         scaling = 1.0 #1/self.volume_geometry.voxel_size_x**2  
