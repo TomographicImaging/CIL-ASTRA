@@ -63,8 +63,8 @@ class TestConvertGeometry(unittest.TestCase):
                                  angles=angles_rad, 
                                  pixel_num_h=pixels_x,
                                  pixel_size_h = 0.1,
-                                 dist_source_center=500,
-                                 dist_center_detector=1000,
+                                 dist_source_center=1.0,
+                                 dist_center_detector=2.0,  
                                  dimension_labels=['angle','horizontal'],
                                  angle_unit = 'radian')
 
@@ -91,8 +91,8 @@ class TestConvertGeometry(unittest.TestCase):
                                  pixel_num_v = pixels_y,
                                  pixel_size_h = 0.1,
                                  pixel_size_v = 0.1,
-                                 dist_source_center=500,
-                                 dist_center_detector=1000,                         
+                                 dist_source_center=1.0,
+                                 dist_center_detector=2.0,                         
                                  dimension_labels=['vertical','angle','horizontal'],
                                  angle_unit = 'radian')
 
@@ -188,7 +188,7 @@ class TestConvertGeometry(unittest.TestCase):
         vectors[2][6] = -self.ag.pixel_size_h
         vectors[2][11] = self.ag.pixel_size_h
 
-        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-5)
+        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
 
         self.assertEqual(astra_vol['GridRowCount'], self.ig.voxel_num_x)
@@ -204,7 +204,7 @@ class TestConvertGeometry(unittest.TestCase):
 
         #2D parallel degrees
         astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_deg)
-        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-5)
+        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #2D cone
         astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_cone)
@@ -228,6 +228,29 @@ class TestConvertGeometry(unittest.TestCase):
         vectors[2][6] = -self.ag_cone.pixel_size_h
         vectors[2][11] = self.ag_cone.pixel_size_h       
 
-        #loose tolerance to be investigated
-        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-4)
- 
+        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
+
+        #3D cone
+        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig3, self.ag_cone3)
+
+        self.assertEqual(astra_sino['type'], 'cone_vec')
+
+        vectors = numpy.zeros((3,12),dtype='float64')
+
+        vectors[0][1] = -self.ag_cone.dist_source_center
+        vectors[0][4] = self.ag_cone.dist_center_detector
+        vectors[0][6] = self.ag_cone.pixel_size_h
+        vectors[0][11] = self.ag_cone.pixel_size_h
+
+        vectors[1][0] = self.ag_cone.dist_source_center
+        vectors[1][3] = -self.ag_cone.dist_center_detector
+        vectors[1][7] = self.ag_cone.pixel_size_h
+        vectors[1][11] = self.ag_cone.pixel_size_h
+
+        vectors[2][1] = self.ag_cone.dist_source_center
+        vectors[2][4] = -self.ag_cone.dist_center_detector
+        vectors[2][6] = -self.ag_cone.pixel_size_h
+        vectors[2][11] = self.ag_cone.pixel_size_h       
+
+        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
+        
