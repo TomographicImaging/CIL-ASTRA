@@ -301,4 +301,5 @@ class TestAstraOperator(unittest.TestCase):
         A3_channel = AstraOperator(self.ig3_channel, self.ag3_channel)
         n = A3_channel.norm()
         print ("norm A4", n)
-        self.assertAlmostEqual(n, self.norm, places=2)    
+        self.assertAlmostEqual(n, self.norm, places=2)  
+          

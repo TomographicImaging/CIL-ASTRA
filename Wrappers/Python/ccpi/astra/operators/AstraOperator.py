@@ -20,8 +20,9 @@
 #=========================================================================
 
 from ccpi.optimisation.operators import LinearOperator, ChannelwiseOperator
-from ccpi.astra.operators.AstraProjectorFlexible import AstraProjectorFlexible
-from ccpi.astra.operators.AstraProjectorSimple import AstraProjectorSimple
+from ccpi.astra.operators import AstraProjectorFlexible
+from ccpi.astra.operators import AstraProjectorSimple
+
 class AstraOperator(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp, device='gpu'):
@@ -41,7 +42,7 @@ class AstraOperator(LinearOperator):
             if self.sinogram_geometry.dimension == '2D':
                 operator = AstraProjectorSimple(volume_geometry_sc, sinogram_geometry_sc,  device='cpu') 
             else:
-                raise NotImplementedError("Cannot process 3D data without a gpu")
+                raise NotImplementedError("Cannot process 3D data without a GPU")
 
         if geomp.channels > 1: 
             operator_full = ChannelwiseOperator(operator, self.sinogram_geometry.channels, dimension='prepend')
@@ -89,4 +90,4 @@ if __name__  == '__main__':
     ig = ImageGeometry(N, N, N, channels=2)
     ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_v=N, pixel_num_h=N, channels=2,dimension_labels=['vertical', 'angle', 'horizontal'])
     A = AstraOperator(ig, ag, 'gpu')
-    print(A.norm())    
+    print(A.norm())
