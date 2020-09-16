@@ -231,7 +231,7 @@ class TestConvertGeometry(unittest.TestCase):
         numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #3D cone
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig3, self.ag_cone3)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig3, self.ag3_cone)
 
         self.assertEqual(astra_sino['type'], 'cone_vec')
 
