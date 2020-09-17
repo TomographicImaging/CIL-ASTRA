@@ -27,7 +27,7 @@ requirements:
   run:
     - python {{ python }}
     - numpy
-    - scipy
+    - scipy >=1.2
     - ccpi-framework
     - astra-toolbox # > 1.9.9
 	
