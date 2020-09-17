@@ -12,7 +12,7 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
        :returns ASTRA volume and sinogram geometry'''
  
     sinogram_geometry = sinogram_geometry_in.copy()
-    sinogram_geometry.config.system.set_origin()
+    sinogram_geometry.config.system.update_reference_frame()
 
     angles = sinogram_geometry.config.angles
     system = sinogram_geometry.config.system

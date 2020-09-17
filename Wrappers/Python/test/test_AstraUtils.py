@@ -35,9 +35,9 @@ class TestConvertGeometry(unittest.TestCase):
         pixels_x = 128
         pixels_y = 3
 
-        ig = ImageGeometry(voxel_num_x = pixels_x, voxel_num_y = pixels_x, 
+        ig = ImageGeometry(voxel_num_x = 128, voxel_num_y = 64, 
                         voxel_size_x = 0.1,
-                        voxel_size_y = 0.1)
+                        voxel_size_y = 0.2)
         
         angles_deg = np.asarray([0,90.0,180.0], dtype='float32')
         angles_rad = angles_deg * np.pi /180.0
@@ -68,10 +68,10 @@ class TestConvertGeometry(unittest.TestCase):
                                  dimension_labels=['angle','horizontal'],
                                  angle_unit = 'radian')
 
-        ig3 = ImageGeometry(voxel_num_x = pixels_x, voxel_num_y = pixels_x, voxel_num_z=pixels_y, 
+        ig3 = ImageGeometry(voxel_num_x = 128, voxel_num_y = 64, voxel_num_z=pixels_y, 
                         voxel_size_x = 0.1,
-                        voxel_size_y = 0.1,
-                        voxel_size_z = 0.1)
+                        voxel_size_y = 0.2,
+                        voxel_size_z = 0.3)
         
         ag3 = AcquisitionGeometry(geom_type = 'parallel',
                                  dimension= '3D', 
@@ -106,7 +106,7 @@ class TestConvertGeometry(unittest.TestCase):
         self.ag3 = ag3
         self.ag3_cone = ag3_cone
 
-    def test_simple(self):
+    def test_convert_geometry_to_astra(self):
         
         #2D parallel radians
         astra_vol, astra_sino = convert_geometry_to_astra(self.ig, self.ag)
@@ -116,8 +116,8 @@ class TestConvertGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorWidth'], self.ag.pixel_size_h)
         numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag.angles)
 
-        self.assertEqual(astra_vol['GridRowCount'], self.ig.voxel_num_x)
-        self.assertEqual(astra_vol['GridColCount'], self.ig.voxel_num_y)
+        self.assertEqual(astra_vol['GridColCount'], self.ig.voxel_num_x)
+        self.assertEqual(astra_vol['GridRowCount'], self.ig.voxel_num_y)
         self.assertEqual(astra_vol['option']['WindowMinX'], -self.ig.voxel_num_x * self.ig.voxel_size_x * 0.5)
         self.assertEqual(astra_vol['option']['WindowMaxX'], self.ig.voxel_num_x * self.ig.voxel_size_x * 0.5)
         self.assertEqual(astra_vol['option']['WindowMinY'], -self.ig.voxel_num_y * self.ig.voxel_size_y * 0.5)
@@ -144,8 +144,8 @@ class TestConvertGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
         numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag3.angles) 
 
-        self.assertEqual(astra_vol['GridRowCount'], self.ig3.voxel_num_x)
-        self.assertEqual(astra_vol['GridColCount'], self.ig3.voxel_num_y)
+        self.assertEqual(astra_vol['GridColCount'], self.ig3.voxel_num_x)
+        self.assertEqual(astra_vol['GridRowCount'], self.ig3.voxel_num_y)
         self.assertEqual(astra_vol['GridSliceCount'], self.ig3.voxel_num_z)
 
         self.assertEqual(astra_vol['option']['WindowMinX'], -self.ig3.voxel_num_x * self.ig3.voxel_size_x * 0.5)
@@ -166,7 +166,7 @@ class TestConvertGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
         numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag3.angles)
 
-    def test_vec(self):
+    def test_convert_geometry_to_astra_vec(self):
         #2D parallel radians
         astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag)
 
@@ -191,8 +191,8 @@ class TestConvertGeometry(unittest.TestCase):
         numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
 
-        self.assertEqual(astra_vol['GridRowCount'], self.ig.voxel_num_x)
-        self.assertEqual(astra_vol['GridColCount'], self.ig.voxel_num_y)
+        self.assertEqual(astra_vol['GridColCount'], self.ig.voxel_num_x)
+        self.assertEqual(astra_vol['GridRowCount'], self.ig.voxel_num_y)
         self.assertEqual(astra_vol['GridSliceCount'], 1)
 
         self.assertEqual(astra_vol['option']['WindowMinX'], -self.ig.voxel_num_x * self.ig.voxel_size_x * 0.5)
