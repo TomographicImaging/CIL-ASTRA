@@ -27,7 +27,7 @@ class AstraBackProjectorMC(AstraBackProjector):
         DATA = self.get_input()
         
         if out is None:
-            IM = ImageData(self.volume_geometry.copy())
+            IM = ImageData(geometry=self.volume_geometry.copy())
         else:
             IM = out
 
