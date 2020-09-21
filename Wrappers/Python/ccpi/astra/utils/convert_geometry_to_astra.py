@@ -63,16 +63,16 @@ def convert_geometry_to_astra(volume_geometry, sinogram_geometry):
                                                sinogram_geometry.pixel_size_v,
                                                sinogram_geometry.pixel_num_v,
                                                sinogram_geometry.pixel_num_h,
-                                               angles_rad)
+                                               -angles_rad)
         elif sinogram_geometry.geom_type == 'cone':
             proj_geom = astra.create_proj_geom('cone',
                                                sinogram_geometry.pixel_size_h,
                                                sinogram_geometry.pixel_size_v,
                                                sinogram_geometry.pixel_num_v,
                                                sinogram_geometry.pixel_num_h,
-                                               angles_rad,
-                                               np.abs(sinogram_geometry.dist_source_center),
-                                               np.abs(sinogram_geometry.dist_center_detector))
+                                               -angles_rad,
+                                               -np.abs(sinogram_geometry.dist_source_center),
+                                               -np.abs(sinogram_geometry.dist_center_detector))
         else:
             NotImplemented
             

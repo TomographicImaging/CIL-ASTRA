@@ -74,14 +74,18 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
         ang = -angles.initial_angle + theta
         rotation_matrix = Rotation.from_euler('z', ang, degrees=degrees).as_dcm()
 
-        vectors[i, :3]  = rotation_matrix.dot(src).reshape(3)
-        vectors[i, 3:6] = rotation_matrix.dot(det).reshape(3)
-        vectors[i, 6:9] = rotation_matrix.dot(row).reshape(3)
-        vectors[i, 9:]  = rotation_matrix.dot(col).reshape(3)
+        new_src = rotation_matrix.dot(src).reshape(3) * [1,-1,1]
+        new_det = rotation_matrix.dot(det).reshape(3) * [1,-1,1]
+        new_row = rotation_matrix.dot(row).reshape(3) * [1,-1,1]
+        new_col = rotation_matrix.dot(col).reshape(3) * [1,-1,1]
 
+        vectors[i, :3]  = new_src
+        vectors[i, 3:6] = new_det
+        vectors[i, 6:9] = new_row
+        vectors[i, 9:]  = new_col
     
     proj_geom = astra.creators.create_proj_geom(projector, panel.num_pixels[1], panel.num_pixels[0], vectors)    
-    vol_geom = astra.create_vol_geom(   volume_geometry_temp.voxel_num_y,
+    vol_geom = astra.create_vol_geom(volume_geometry_temp.voxel_num_y,
                                     volume_geometry_temp.voxel_num_x,
                                     volume_geometry_temp.voxel_num_z,
                                     volume_geometry_temp.get_min_x(),
@@ -90,7 +94,7 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
                                     volume_geometry_temp.get_max_y(),
                                     volume_geometry_temp.get_min_z(),
                                     volume_geometry_temp.get_max_z()
-                                )
+                                    )
 
 
     return vol_geom, proj_geom
