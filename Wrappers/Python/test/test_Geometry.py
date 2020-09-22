@@ -29,7 +29,7 @@ from ccpi.astra.utils import convert_geometry_to_astra
 from ccpi.astra.utils import convert_geometry_to_astra_vec
 import numpy
 
-class TestConvertGeometry(unittest.TestCase):
+class TestGeometry(unittest.TestCase):
     def setUp(self): 
         # Define image geometry.
         pixels_x = 128
@@ -142,7 +142,7 @@ class TestConvertGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorRowCount'], self.ag3.pixel_num_v)
         self.assertEqual(astra_sino['DetectorSpacingX'], self.ag3.pixel_size_h)
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
-        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag3.angles) 
+        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles) 
 
         self.assertEqual(astra_vol['GridColCount'], self.ig3.voxel_num_x)
         self.assertEqual(astra_vol['GridRowCount'], self.ig3.voxel_num_y)
@@ -158,13 +158,13 @@ class TestConvertGeometry(unittest.TestCase):
         #3D cone
         astra_vol, astra_sino = convert_geometry_to_astra(self.ig3, self.ag3_cone)
         self.assertEqual(astra_sino['type'], 'cone')
-        self.assertEqual(astra_sino['DistanceOriginSource'], self.ag_cone.dist_source_center)
-        self.assertEqual(astra_sino['DistanceOriginDetector'], self.ag_cone.dist_center_detector)
+        self.assertEqual(astra_sino['DistanceOriginSource'], -self.ag_cone.dist_source_center)
+        self.assertEqual(astra_sino['DistanceOriginDetector'], -self.ag_cone.dist_center_detector)
         self.assertEqual(astra_sino['DetectorColCount'], self.ag3.pixel_num_h)
         self.assertEqual(astra_sino['DetectorRowCount'], self.ag3.pixel_num_v)
         self.assertEqual(astra_sino['DetectorSpacingX'], self.ag3.pixel_size_h)
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
-        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag3.angles)
+        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles)
 
     def test_convert_geometry_to_astra_vec(self):
         #2D parallel radians
@@ -176,15 +176,15 @@ class TestConvertGeometry(unittest.TestCase):
 
         vectors = numpy.zeros((3,12),dtype='float64')
 
-        vectors[0][1] = 1.0
+        vectors[0][1] = -1.0
         vectors[0][6] = self.ag.pixel_size_h
         vectors[0][11] = self.ag.pixel_size_h
 
         vectors[1][0] = -1.0
-        vectors[1][7] = self.ag.pixel_size_h
+        vectors[1][7] = -self.ag.pixel_size_h
         vectors[1][11] = self.ag.pixel_size_h
     
-        vectors[2][1] = -1.0
+        vectors[2][1] = 1.0
         vectors[2][6] = -self.ag.pixel_size_h
         vectors[2][11] = self.ag.pixel_size_h
 
@@ -213,18 +213,18 @@ class TestConvertGeometry(unittest.TestCase):
 
         vectors = numpy.zeros((3,12),dtype='float64')
 
-        vectors[0][1] = -self.ag_cone.dist_source_center
-        vectors[0][4] = self.ag_cone.dist_center_detector
+        vectors[0][1] = self.ag_cone.dist_source_center
+        vectors[0][4] = -self.ag_cone.dist_center_detector
         vectors[0][6] = self.ag_cone.pixel_size_h
         vectors[0][11] = self.ag_cone.pixel_size_h
 
         vectors[1][0] = self.ag_cone.dist_source_center
         vectors[1][3] = -self.ag_cone.dist_center_detector
-        vectors[1][7] = self.ag_cone.pixel_size_h
+        vectors[1][7] = -self.ag_cone.pixel_size_h
         vectors[1][11] = self.ag_cone.pixel_size_h
 
-        vectors[2][1] = self.ag_cone.dist_source_center
-        vectors[2][4] = -self.ag_cone.dist_center_detector
+        vectors[2][1] = -self.ag_cone.dist_source_center
+        vectors[2][4] = self.ag_cone.dist_center_detector
         vectors[2][6] = -self.ag_cone.pixel_size_h
         vectors[2][11] = self.ag_cone.pixel_size_h       
 
@@ -237,18 +237,18 @@ class TestConvertGeometry(unittest.TestCase):
 
         vectors = numpy.zeros((3,12),dtype='float64')
 
-        vectors[0][1] = -self.ag_cone.dist_source_center
-        vectors[0][4] = self.ag_cone.dist_center_detector
+        vectors[0][1] = self.ag_cone.dist_source_center
+        vectors[0][4] = -self.ag_cone.dist_center_detector
         vectors[0][6] = self.ag_cone.pixel_size_h
         vectors[0][11] = self.ag_cone.pixel_size_h
 
         vectors[1][0] = self.ag_cone.dist_source_center
         vectors[1][3] = -self.ag_cone.dist_center_detector
-        vectors[1][7] = self.ag_cone.pixel_size_h
+        vectors[1][7] = -self.ag_cone.pixel_size_h
         vectors[1][11] = self.ag_cone.pixel_size_h
 
-        vectors[2][1] = self.ag_cone.dist_source_center
-        vectors[2][4] = -self.ag_cone.dist_center_detector
+        vectors[2][1] = -self.ag_cone.dist_source_center
+        vectors[2][4] = self.ag_cone.dist_center_detector
         vectors[2][6] = -self.ag_cone.pixel_size_h
         vectors[2][11] = self.ag_cone.pixel_size_h       
 
