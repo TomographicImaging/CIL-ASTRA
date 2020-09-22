@@ -22,14 +22,18 @@ test:
 requirements:
   build:
     - python {{ python }}
-    - setuptools
+
+  test:
+    - numpy
+    - ccpi-framework
+    - astra-toolbox=1.9.9.dev4
 
   run:
     - python {{ python }}
     - numpy
     - scipy >=1.2
     - ccpi-framework
-    - astra-toolbox # > 1.9.9
+    - astra-toolbox=1.9.9.dev4
 	
 about:
   home: http://www.ccpi.ac.uk
