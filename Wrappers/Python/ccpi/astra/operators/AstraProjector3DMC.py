@@ -29,12 +29,12 @@ class AstraProjector3DMC(LinearOperator):
         )
         
         
-        self.igtmp3D = self.domain_geometry().clone()
+        self.igtmp3D = self.domain_geometry().subset(channel=0)
         # self.igtmp3D.channels = 1
         # self.igtmp3D.shape = self.volume_geometry.shape[1:]
         # self.igtmp3D.dimension_labels = ['vertical', 'horizontal_y', 'horizontal_x']
         
-        self.agtmp3D = self.range_geometry().clone()
+        self.agtmp3D = self.range_geometry().subset(channel=0)
         # self.agtmp3D.channels = 1
         # self.agtmp3D.shape = self.sinogram_geometry.shape[1:]
         # self.agtmp3D.dimension_labels = ['vertical', 'angle', 'horizontal']      
