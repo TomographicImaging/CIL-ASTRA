@@ -41,8 +41,8 @@ def convert_geometry_to_astra(volume_geometry, sinogram_geometry):
                                                sinogram_geometry.pixel_size_h,
                                                sinogram_geometry.pixel_num_h,
                                                angles_rad,
-                                               np.abs(sinogram_geometry.dist_source_center),
-                                               np.abs(sinogram_geometry.dist_center_detector))
+                                               -np.abs(sinogram_geometry.dist_source_center),
+                                               -np.abs(sinogram_geometry.dist_center_detector))
         else:
             NotImplemented
             
@@ -71,8 +71,8 @@ def convert_geometry_to_astra(volume_geometry, sinogram_geometry):
                                                sinogram_geometry.pixel_num_v,
                                                sinogram_geometry.pixel_num_h,
                                                -angles_rad,
-                                               -np.abs(sinogram_geometry.dist_source_center),
-                                               -np.abs(sinogram_geometry.dist_center_detector))
+                                               np.abs(sinogram_geometry.dist_source_center),
+                                               np.abs(sinogram_geometry.dist_center_detector))
         else:
             NotImplemented
             
