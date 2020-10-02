@@ -10,6 +10,10 @@ build:
   
 
 test:
+  requires:
+    - numpy=1.15 # [py<38]
+    - numpy=1.16 # [py==38]
+
   source_files:
     - ./Wrappers/Python/test # [win]
     - ./ccpi/test # [not win]
@@ -22,13 +26,14 @@ test:
 requirements:
   build:
     - python {{ python }}
-    - setuptools
 
   run:
     - python {{ python }}
-    - numpy
+    - numpy >=1.15 # [py<38]
+    - numpy >=1.16 # [py==38]
+    - scipy<1.6
     - ccpi-framework
-    - astra-toolbox
+    - astra-toolbox==1.9.9.dev4
 	
 about:
   home: http://www.ccpi.ac.uk
