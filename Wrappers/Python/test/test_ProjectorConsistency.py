@@ -128,22 +128,20 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
 
         #comparision foward projection
         fp_flex_0 = flex_fp.subset(vertical=self.cs_ind)
-        #fp_flex_1 = flex_fp.subset(vertical=self.cs_ind+3)
         fp_flex_2 = flex_fp.subset(vertical=self.cs_ind-3)
 
         zeros = self.ag_slice.allocate(0)
-        np.testing.assert_allclose(fp_flex_0.as_array(),fp.as_array(), atol=0.6)
-        #np.testing.assert_allclose(fp_flex_1.as_array(),fp.as_array(), atol=0.6)
-        np.testing.assert_allclose(fp_flex_2.as_array(),zeros.as_array(), atol=0.6)
+        np.testing.assert_allclose(fp_flex_0.as_array(),fp.as_array(), atol=0.8)
+        np.testing.assert_allclose(fp_flex_2.as_array(),zeros.as_array())
 
         #comparision back projection
         bp_flex_0 = flex_bp.subset(vertical=self.cs_ind)
-        #bp_flex_1 = flex_bp.subset(vertical=self.cs_ind+3)
+        bp_flex_1 = flex_bp.subset(vertical=self.cs_ind+3)
         bp_flex_2 = flex_bp.subset(vertical=self.cs_ind-3)
 
         zeros = self.ig_2D.allocate(0)
         np.testing.assert_allclose(bp_flex_0.as_array(),bp.as_array(),atol=12)
-        #np.testing.assert_allclose(bp_flex_1.as_array(),bp.as_array(),atol=12)
+        np.testing.assert_allclose(bp_flex_1.as_array(),bp.as_array(),atol=25)
         np.testing.assert_allclose(bp_flex_2.as_array(),zeros.as_array())
         
     def test_3D(self):
@@ -209,7 +207,7 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         fp_gpu = A.direct(self.golden_data_cs)
         bp_gpu = A.adjoint(fp_gpu)
 
-        np.testing.assert_allclose(fp_gpu.as_array(),fp.as_array(),atol=0.6)
+        np.testing.assert_allclose(fp_gpu.as_array(),fp.as_array(),atol=0.8)
         np.testing.assert_allclose(bp_gpu.as_array(),bp.as_array(),atol=12)
 
         # #%% AstraProjectorFlexible as a 2D
@@ -220,7 +218,7 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         fp_flex = A.direct(self.golden_data_cs)
         bp_flex = A.adjoint(fp_flex)
 
-        np.testing.assert_allclose(fp_flex.as_array(),fp.as_array(),atol=0.6)
+        np.testing.assert_allclose(fp_flex.as_array(),fp.as_array(),atol=0.8)
         np.testing.assert_allclose(bp_flex.as_array(),bp.as_array(),atol=12)
 
 class TestAstraParallelBeamProjectors(unittest.TestCase):
