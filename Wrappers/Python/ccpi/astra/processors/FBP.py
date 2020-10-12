@@ -207,17 +207,7 @@ class FBP(DataProcessor):
                 astra.data2d.delete(sinogram_id)
                 astra.algorithm.delete(alg_id)
                  
-                if self.sinogram_geometry.geom_type == 'parallel':                                       
-                    if self.device == 'cpu':
-                        return IM / (self.volume_geometry.voxel_size_x**2)
-                    else:
-                        scaling = self.volume_geometry.voxel_size_x
-                        return scaling * IM       
-                else:
-                    if self.device == 'cpu':
-                        return IM / (self.volume_geometry.voxel_size_x**2)
-                    else:
-                        return IM
+                return IM
                     
                             
                 

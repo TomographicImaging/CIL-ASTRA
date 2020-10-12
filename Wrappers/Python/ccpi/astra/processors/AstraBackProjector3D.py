@@ -11,19 +11,20 @@ class AstraBackProjector3D(DataProcessor):
     Parameter: proj_geom, vol_geom
     Output: ImageData
     '''
-    
+
+    ASTRA_LABELS_VOL = ['vertical','horizontal_y','horizontal_x']
+    ASTRA_LABELS_PROJ = ['vertical','angle','horizontal']
+
     def __init__(self,
                  volume_geometry=None,
                  sinogram_geometry=None,
                  proj_geom=None,
-                 vol_geom=None,
-                 output_axes_order=None):
+                 vol_geom=None):
         kwargs = {
                   'volume_geometry'  : volume_geometry,
                   'sinogram_geometry'  : sinogram_geometry,
                   'proj_geom'  : proj_geom,
-                  'vol_geom'  : vol_geom,
-                  'output_axes_order'  : output_axes_order
+                  'vol_geom'  : vol_geom
                   }
         
         #DataProcessor.__init__(self, **kwargs)
@@ -41,32 +42,35 @@ class AstraBackProjector3D(DataProcessor):
         self.proj_geom = proj_geom
     
     def check_input(self, dataset):
-        if dataset.number_of_dimensions == 3:
-               return True
-        else:
-            raise ValueError("Expected input dimensions is 3, got {0}"\
+        if dataset.number_of_dimensions != 3:
+            raise ValueError("Expected input dimensions 3, got {0}"\
                              .format(dataset.number_of_dimensions))
-        
+
+        order = [dataset.dimension_labels[0],dataset.dimension_labels[1],dataset.dimension_labels[2]]
+        if order != AstraBackProjector3D.ASTRA_LABELS_PROJ:
+            raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_PROJ_3D, order))  
+
+        return True
+
+
     def set_ImageGeometry(self, volume_geometry):
-        self.volume_geometry = volume_geometry
+        self.volume_geometry = volume_geometry.copy()
+        self.volume_geometry.dimension_labels = AstraBackProjector3D.ASTRA_LABELS_VOL
         
     def set_AcquisitionGeometry(self, sinogram_geometry):
-        self.sinogram_geometry = sinogram_geometry
-    
+        self.sinogram_geometry = sinogram_geometry.copy()
+        self.sinogram_geometry.dimension_labels = AstraBackProjector3D.ASTRA_LABELS_PROJ
+
     def process(self, out=None):
+
         DATA = self.get_input()
-        IM = ImageData(geometry=self.volume_geometry,
-                       dimension_labels=self.output_axes_order)
-        rec_id, IM.array = astra.create_backprojection3d_gpu(DATA.as_array(),
-                            self.proj_geom,
-                            self.vol_geom)
-        astra.data3d.delete(rec_id)
-        
-        # Scaling of 3D ASTRA backprojector, works both parallel and cone.
-        scaling = 1/self.volume_geometry.voxel_size_x**2  
-        ret = scaling*IM
+        data_temp = DATA.as_array()
+
+        rec_id, arr_out = astra.create_backprojection3d_gpu(data_temp, self.proj_geom, self.vol_geom)
+        astra.data2d.delete(rec_id)
         
         if out is None:
-            return ret
+            out = ImageData(arr_out, deep_copy=False, geometry=self.volume_geometry.copy(), suppress_warning=True)
+            return out
         else:
-            out.fill(ret)
+            out.fill(arr_out)
