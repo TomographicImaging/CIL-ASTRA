@@ -27,9 +27,9 @@ requirements:
   run:
     - python {{ python }}
     - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x.x') }}
-    - scipy<1.6
+    - scipy <1.6
     - ccpi-framework
-    - astra-toolbox==1.9.9.dev4
+    - astra-toolbox =1.83
 	
 about:
   home: http://www.ccpi.ac.uk
