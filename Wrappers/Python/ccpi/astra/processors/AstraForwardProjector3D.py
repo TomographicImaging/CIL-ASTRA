@@ -32,7 +32,6 @@ class AstraForwardProjector3D(DataProcessor):
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
         
-        # Set up ASTRA Volume and projection geometry
         self.vol_geom, self.proj_geom = convert_geometry_to_astra(self.volume_geometry,
                                                         self.sinogram_geometry)
          

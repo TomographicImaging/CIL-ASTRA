@@ -50,9 +50,6 @@ class AstraOperator(LinearOperator):
         else:
             self.operator = operator
 
-        # Initialise empty for singular value.
-        self.s1 = None
-
     def direct(self, IM, out=None):
         return self.operator.direct(IM, out=out)
     

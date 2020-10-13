@@ -26,7 +26,7 @@ class AstraForwardProjectorMC(AstraForwardProjector):
         IM = self.get_input()
      
         if out is None:
-            DATA = AcquisitionData(geometry=self.sinogram_geometry)
+            DATA = self.sinogram_geometry.allocate(None)
         else:
             DATA = out
 

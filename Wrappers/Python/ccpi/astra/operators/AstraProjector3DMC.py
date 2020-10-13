@@ -40,8 +40,7 @@ class AstraProjector3DMC(LinearOperator):
         # self.agtmp3D.dimension_labels = ['vertical', 'angle', 'horizontal']      
         
         self.A3D = AstraProjector3DSimple(self.igtmp3D, self.agtmp3D)     
-            
-        self.s1 = None
+
         self.channels = self.domain_geometry().channels
         
     def direct(self, x, out = None):

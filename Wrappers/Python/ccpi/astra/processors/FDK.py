@@ -4,12 +4,30 @@ import astra
 import numpy
 import warnings
 
-class FDK_flex(DataProcessor):
+class FDK(DataProcessor):
+
+    '''FDK Filtered Back Projection is a reconstructor for 2D and 3D cone-beam geometries.
+    It is able to back-project circular trajectories with 2 PI anglar range and equally spaced anglular steps.
+
+    This uses the ram-lak filter
+    This is a GPU version only
     
+    Input: Volume Geometry
+           Sinogram Geometry
+                             
+    Example:  FDK(ig, ag)
+              FDK.set_input(sinogram)
+              reconstruction = FDK.get_ouput()
+                           
+    Output: ImageData                             
+
+    
+    '''
+
     def __init__(self, volume_geometry, 
                        sinogram_geometry): 
         
-        super(FDK_flex, self).__init__( volume_geometry = volume_geometry,
+        super(FDK, self).__init__( volume_geometry = volume_geometry,
                                         sinogram_geometry = sinogram_geometry)   
                           
     def check_input(self, dataset):

@@ -33,9 +33,6 @@ class AstraProjector3DSimple(LinearOperator):
         
         self.bp = AstraBackProjector3D(volume_geometry=geomv,
                                         sinogram_geometry=geomp)
-                      
-        # Initialise empty for singular value.
-        self.s1 = None
     
     def direct(self, IM, out=None):
         self.fp.set_input(IM)

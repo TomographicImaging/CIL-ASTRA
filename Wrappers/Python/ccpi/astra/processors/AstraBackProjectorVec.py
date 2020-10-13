@@ -36,7 +36,6 @@ class AstraBackProjectorVec(DataProcessor):
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
         
-        # Set up ASTRA Volume and projection geometry, not to be stored in self
         self.vol_geom, self.proj_geom = convert_geometry_to_astra_vec(self.volume_geometry, self.sinogram_geometry)
         
     

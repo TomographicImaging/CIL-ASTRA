@@ -39,8 +39,6 @@ class AstraProjectorSimple(LinearOperator):
                                         proj_id = None,
                                         device = device)
                            
-        # Initialise empty for singular value.
-        self.s1 = None
         
     def direct(self, IM, out=None):
         self.fp.set_input(IM)

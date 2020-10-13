@@ -38,7 +38,8 @@ class FBP(DataProcessor):
                        device = 'cpu', 
                        filter_type = 'ram-lak', 
                        **kwargs): 
-        
+
+        print("Warning: FBP will use simple geometry only. Any configuration offsets or rotations will be ignored.")
 
         if sinogram_geometry.dimension == '3D':
             

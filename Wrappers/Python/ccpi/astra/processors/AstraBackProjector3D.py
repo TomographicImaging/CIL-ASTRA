@@ -33,14 +33,9 @@ class AstraBackProjector3D(DataProcessor):
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
         
-                # Set up ASTRA Volume and projection geometry, not to be stored in self
-        vol_geom, proj_geom = convert_geometry_to_astra(self.volume_geometry,
+        self.vol_geom, self.proj_geom = convert_geometry_to_astra(self.volume_geometry,
                                                         self.sinogram_geometry)
-        
-        # Also store ASTRA geometries
-        self.vol_geom = vol_geom
-        self.proj_geom = proj_geom
-    
+            
     def check_input(self, dataset):
         if dataset.number_of_dimensions != 3:
             raise ValueError("Expected input dimensions 3, got {0}"\
