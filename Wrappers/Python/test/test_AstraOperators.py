@@ -42,38 +42,25 @@ except:
 
 class TestAstraSimple(unittest.TestCase):
     def setUp(self): 
-        # Define image geometry.
-        N = 128
 
-        ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1)
-        
-        detectors = N
+        N = 128
         angles = np.linspace(0, np.pi, 180, dtype='float32')
-        ag = AcquisitionGeometry(geom_type='parallel',
-                                 dimension='2D', 
-                                 angles=angles, 
-                                 pixel_num_h=detectors,
-                                 pixel_size_h = 0.1,
-                                 dimension_labels=['angle','horizontal'],
-                                 angle_unit = 'radian')
+
+        ag = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['angle', 'horizontal'])
         
-        ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1,
-                        voxel_size_z = 0.1)
+        ig = ag.get_ImageGeometry()
+
         
-        
-        ag3 = AcquisitionGeometry(geom_type = 'parallel',
-                                 dimension= '3D', 
-                                 angles=angles, 
-                                 pixel_num_h = detectors,
-                                 pixel_num_v = detectors,
-                                 pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1,
-                                 dimension_labels=['vertical','angle','horizontal'],
-                                 angle_unit = 'radian')
+        ag3 = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['vertical', 'angle', 'horizontal'])
+
+        ig3 = ag3.get_ImageGeometry()
+
         self.ig = ig
         self.ag = ag
         self.ig3 = ig3
@@ -114,38 +101,24 @@ class TestAstraSimple(unittest.TestCase):
 
 class TestAstraFlexible(unittest.TestCase):
     def setUp(self): 
-        # Define image geometry.
         N = 128
-
-        ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1)
-        
-        detectors = N
         angles = np.linspace(0, np.pi, 180, dtype='float32')
-        ag = AcquisitionGeometry(geom_type='parallel',
-                                 dimension='2D', 
-                                 angles=angles, 
-                                 pixel_num_h=detectors,
-                                 pixel_size_h = 0.1,
-                                 dimension_labels=['angle','horizontal'],
-                                 angle_unit = 'radian')
+
+        ag = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['angle', 'horizontal'])
         
-        ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1,
-                        voxel_size_z = 0.1)
+        ig = ag.get_ImageGeometry()
+
         
-        
-        ag3 = AcquisitionGeometry(geom_type = 'parallel',
-                                 dimension= '3D', 
-                                 angles=angles, 
-                                 pixel_num_h = detectors,
-                                 pixel_num_v = detectors,
-                                 pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1,
-                                 dimension_labels=['vertical','angle','horizontal'],
-                                 angle_unit = 'radian')
+        ag3 = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['vertical', 'angle', 'horizontal'])
+
+        ig3 = ag3.get_ImageGeometry()
+
         self.ig = ig
         self.ag = ag
         self.ig3 = ig3
@@ -195,67 +168,40 @@ class TestAstraOperator(unittest.TestCase):
     def setUp(self): 
         # Define image geometry.
         N = 128
-
-        ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1)
-        
-        detectors = N
         angles = np.linspace(0, np.pi, 180, dtype='float32')
-        ag = AcquisitionGeometry(geom_type='parallel',
-                                 dimension='2D', 
-                                 angles=angles, 
-                                 pixel_num_h=detectors,
-                                 pixel_size_h = 0.1,
-                                 dimension_labels=['angle','horizontal'],
-                                 angle_unit = 'radian')
 
-        ig_channel = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1,
-                        channels=2)
+        ag = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['angle', 'horizontal'])
         
-        ag_channel = AcquisitionGeometry(geom_type='parallel',
-                                 dimension='2D', 
-                                 angles=angles, 
-                                 pixel_num_h=detectors,
-                                 pixel_size_h = 0.1,
-                                 dimension_labels=['channel','angle','horizontal'],
-                                 angle_unit = 'radian',
-                                 channels=2)
-                                         
-        ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1,
-                        voxel_size_z = 0.1)
-        
-        
-        ag3 = AcquisitionGeometry(geom_type = 'parallel',
-                                 dimension= '3D', 
-                                 angles=angles, 
-                                 pixel_num_h = detectors,
-                                 pixel_num_v = detectors,
-                                 pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1,
-                                 dimension_labels=['vertical','angle','horizontal'],
-                                 angle_unit = 'radian')
+        ig = ag.get_ImageGeometry()
 
-        ig3_channel = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1,
-                        voxel_size_z = 0.1,
-                        channels=2)
         
-        ag3_channel = AcquisitionGeometry(geom_type = 'parallel',
-                                 dimension= '3D', 
-                                 angles=angles, 
-                                 pixel_num_h = detectors,
-                                 pixel_num_v = detectors,
-                                 pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1,
-                                 dimension_labels=['channel','vertical','angle','horizontal'],
-                                 angle_unit = 'radian',
-                                 channels= 2)
+        ag3 = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['vertical', 'angle', 'horizontal'])
+
+        ig3 = ag3.get_ImageGeometry()
+
+  
+        ag_channel = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['channel', 'angle', 'horizontal'])\
+                                .set_channels(2)
+
+        ig_channel = ag_channel.get_ImageGeometry()
+
+        
+        ag3_channel = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['channel','vertical', 'angle', 'horizontal'])\
+                                .set_channels(2)
+
+        ig3_channel = ag3_channel.get_ImageGeometry()
 
         self.ig = ig
         self.ag = ag

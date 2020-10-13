@@ -34,75 +34,46 @@ class TestGeometry(unittest.TestCase):
         # Define image geometry.
         pixels_x = 128
         pixels_y = 3
-
-        ig = ImageGeometry(voxel_num_x = 128, voxel_num_y = 64, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.2)
         
         angles_deg = np.asarray([0,90.0,180.0], dtype='float32')
         angles_rad = angles_deg * np.pi /180.0
 
-        ag = AcquisitionGeometry(geom_type='parallel',
-                                 dimension='2D', 
-                                 angles=angles_rad, 
-                                 pixel_num_h=pixels_x,
-                                 pixel_size_h = 0.1,
-                                 dimension_labels=['angle','horizontal'],
-                                 angle_unit = 'radian')
-
-        ag_deg = AcquisitionGeometry(geom_type='parallel',
-                                 dimension='2D', 
-                                 angles=angles_deg, 
-                                 pixel_num_h=pixels_x,
-                                 pixel_size_h = 0.1,
-                                 dimension_labels=['angle','horizontal'],
-                                 angle_unit = 'degree')
-
-        ag_cone = AcquisitionGeometry(geom_type='cone',
-                                 dimension='2D',
-                                 angles=angles_rad, 
-                                 pixel_num_h=pixels_x,
-                                 pixel_size_h = 0.1,
-                                 dist_source_center=1.0,
-                                 dist_center_detector=2.0,  
-                                 dimension_labels=['angle','horizontal'],
-                                 angle_unit = 'radian')
-
-        ig3 = ImageGeometry(voxel_num_x = 128, voxel_num_y = 64, voxel_num_z=pixels_y, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.2,
-                        voxel_size_z = 0.3)
+        ag = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles_rad, angle_unit='radian')\
+                                .set_labels(['angle','horizontal'])\
+                                .set_panel(pixels_x, 0.1)
         
-        ag3 = AcquisitionGeometry(geom_type = 'parallel',
-                                 dimension= '3D', 
-                                 angles=angles_rad, 
-                                 pixel_num_h = pixels_x,
-                                 pixel_num_v = pixels_y,
-                                 pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1,
-                                 dimension_labels=['vertical','angle','horizontal'],
-                                 angle_unit = 'radian')
+        ig = ag.get_ImageGeometry()
 
 
-        ag3_cone = AcquisitionGeometry(geom_type = 'cone',
-                                 dimension= '3D', 
-                                 angles=angles_rad, 
-                                 pixel_num_h = pixels_x,
-                                 pixel_num_v = pixels_y,
-                                 pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1,
-                                 dist_source_center=1.0,
-                                 dist_center_detector=2.0,                         
-                                 dimension_labels=['vertical','angle','horizontal'],
-                                 angle_unit = 'radian')
+        ag_deg = AcquisitionGeometry.create_Parallel2D()\
+                                    .set_angles(angles_deg, angle_unit='degree')\
+                                    .set_labels(['angle','horizontal'])\
+                                    .set_panel(pixels_x, 0.1)
 
+        ag_cone = AcquisitionGeometry.create_Cone2D([0,-2], [0,1])\
+                                     .set_angles(angles_rad, angle_unit='radian')\
+                                     .set_labels(['angle','horizontal'])\
+                                     .set_panel(pixels_x, 0.1)
+
+
+        
+        ag3 = AcquisitionGeometry.create_Parallel3D()\
+                                 .set_angles(angles_rad, angle_unit='radian')\
+                                 .set_labels(['vertical', 'angle','horizontal'])\
+                                 .set_panel((pixels_x,pixels_y), (0.1,0.1))
+
+        ig3 = ag3.get_ImageGeometry()
+
+        ag3_cone = AcquisitionGeometry.create_Cone3D([0,-2,0], [0,1,0])\
+                                      .set_angles(angles_rad, angle_unit='radian')\
+                                      .set_labels(['vertical', 'angle','horizontal'])\
+                                      .set_panel((pixels_x,pixels_y), (0.1,0.1))
         self.ig = ig
         self.ig3 = ig3
-
         self.ag = ag
         self.ag_deg = ag_deg
         self.ag_cone = ag_cone
-
         self.ag3 = ag3
         self.ag3_cone = ag3_cone
 
@@ -131,8 +102,8 @@ class TestGeometry(unittest.TestCase):
         astra_vol, astra_sino = convert_geometry_to_astra(self.ig, self.ag_cone)
 
         self.assertEqual(astra_sino['type'], 'fanflat')
-        self.assertEqual(astra_sino['DistanceOriginSource'], -self.ag_cone.dist_source_center)
-        self.assertTrue(astra_sino['DistanceOriginDetector'], -self.ag_cone.dist_center_detector)
+        self.assertEqual(astra_sino['DistanceOriginSource'], -1 * self.ag_cone.dist_source_center)
+        self.assertTrue(astra_sino['DistanceOriginDetector'], -1 * self.ag_cone.dist_center_detector)
 
 
         #3D parallel
@@ -213,19 +184,19 @@ class TestGeometry(unittest.TestCase):
 
         vectors = numpy.zeros((3,12),dtype='float64')
 
-        vectors[0][1] = -self.ag_cone.dist_source_center
+        vectors[0][1] = -1 * self.ag_cone.dist_source_center
         vectors[0][4] = self.ag_cone.dist_center_detector
         vectors[0][6] = self.ag_cone.pixel_size_h
         vectors[0][11] = self.ag_cone.pixel_size_h
 
-        vectors[1][0] = -self.ag_cone.dist_source_center
+        vectors[1][0] = -1 * self.ag_cone.dist_source_center
         vectors[1][3] = self.ag_cone.dist_center_detector
         vectors[1][7] = -self.ag_cone.pixel_size_h
         vectors[1][11] = self.ag_cone.pixel_size_h
 
         vectors[2][1] = self.ag_cone.dist_source_center
-        vectors[2][4] = -self.ag_cone.dist_center_detector
-        vectors[2][6] = -self.ag_cone.pixel_size_h
+        vectors[2][4] = -1 * self.ag_cone.dist_center_detector
+        vectors[2][6] = -1 * self.ag_cone.pixel_size_h
         vectors[2][11] = self.ag_cone.pixel_size_h       
 
         numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
@@ -237,19 +208,19 @@ class TestGeometry(unittest.TestCase):
 
         vectors = numpy.zeros((3,12),dtype='float64')
 
-        vectors[0][1] = -self.ag_cone.dist_source_center
+        vectors[0][1] = -1 * self.ag_cone.dist_source_center
         vectors[0][4] = self.ag_cone.dist_center_detector
         vectors[0][6] = self.ag_cone.pixel_size_h
         vectors[0][11] = self.ag_cone.pixel_size_h
 
-        vectors[1][0] = -self.ag_cone.dist_source_center
+        vectors[1][0] = -1 * self.ag_cone.dist_source_center
         vectors[1][3] = self.ag_cone.dist_center_detector
-        vectors[1][7] = -self.ag_cone.pixel_size_h
+        vectors[1][7] = -1 * self.ag_cone.pixel_size_h
         vectors[1][11] = self.ag_cone.pixel_size_h
 
         vectors[2][1] = self.ag_cone.dist_source_center
-        vectors[2][4] = -self.ag_cone.dist_center_detector
-        vectors[2][6] = -self.ag_cone.pixel_size_h
+        vectors[2][4] = -1 * self.ag_cone.dist_center_detector
+        vectors[2][6] = -1 * self.ag_cone.pixel_size_h
         vectors[2][11] = self.ag_cone.pixel_size_h       
 
         numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)

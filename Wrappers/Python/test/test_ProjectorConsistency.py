@@ -45,7 +45,6 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         voxel_num_z = 15
         self.cs_ind = (voxel_num_z-1)//2
 
-        geometry = 'cone'
         mag = 2
         src_to_obj = 50
         src_to_det = src_to_obj * mag
@@ -57,28 +56,15 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         num_projections = 180
         angles = np.linspace(0, np.pi, num=num_projections, endpoint=False)
 
-        self.ag = AcquisitionGeometry(  geom_type=geometry,
-                                        dimension='3D',
-                                        angles=angles, 
-                                        angle_unit='radian', 
-                                        pixel_num_h=det_pix_x,
-                                        pixel_num_v =det_pix_y,
-                                        pixel_size_h=pix_size,
-                                        pixel_size_v=pix_size,
-                                        dist_source_center=src_to_obj,
-                                        dist_center_detector=(src_to_det-src_to_obj),
-                                        dimension_labels=['vertical', 'angle', 'horizontal'])
+        self.ag = AcquisitionGeometry.create_Cone3D([0,-src_to_obj,0],[0,src_to_det-src_to_obj,0])\
+                                     .set_angles(angles, angle_unit='radian')\
+                                     .set_panel((det_pix_x,det_pix_y), (pix_size,pix_size))\
+                                     .set_labels(['vertical','angle','horizontal'])
 
-        self.ag_slice = AcquisitionGeometry( geom_type=geometry,
-                                        dimension='2D',
-                                        angles=angles, 
-                                        angle_unit='radian', 
-                                        pixel_num_h=det_pix_x,
-                                        pixel_size_h=pix_size,
-                                        dist_source_center=src_to_obj,
-                                        dist_center_detector=(src_to_det-src_to_obj),
-                                        dimension_labels=['angle','horizontal']
-                                        )
+        self.ag_slice = AcquisitionGeometry.create_Cone2D([0,-src_to_obj],[0,src_to_det-src_to_obj])\
+                                           .set_angles(angles, angle_unit='radian')\
+                                           .set_panel(det_pix_x, pix_size)\
+                                           .set_labels(['angle','horizontal'])
 
         self.ig_2D = self.ag_slice.get_ImageGeometry()
         self.ig_3D = self.ag.get_ImageGeometry()
@@ -228,8 +214,6 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
         voxel_num_z = 15
         self.cs_ind = (voxel_num_z-1)//2
 
-        geometry = 'parallel'
-
         pix_size = 0.2
         det_pix_x = voxel_num_xy
         det_pix_y = voxel_num_z
@@ -237,24 +221,15 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
         num_projections = 180
         angles = np.linspace(0, np.pi, num=num_projections, endpoint=False)
 
-        self.ag = AcquisitionGeometry(  geom_type=geometry,
-                                        dimension='3D',
-                                        angles=angles, 
-                                        angle_unit='radian', 
-                                        pixel_num_h=det_pix_x,
-                                        pixel_num_v =det_pix_y,
-                                        pixel_size_h=pix_size,
-                                        pixel_size_v=pix_size,
-                                        dimension_labels=['vertical', 'angle', 'horizontal'])
+        self.ag = AcquisitionGeometry.create_Parallel3D()\
+                                     .set_angles(angles, angle_unit='radian')\
+                                     .set_panel((det_pix_x,det_pix_y), (pix_size,pix_size))\
+                                     .set_labels(['vertical','angle','horizontal'])
 
-        self.ag_slice = AcquisitionGeometry( geom_type=geometry,
-                                        dimension='2D',
-                                        angles=angles, 
-                                        angle_unit='radian', 
-                                        pixel_num_h=det_pix_x,
-                                        pixel_size_h=pix_size,
-                                        dimension_labels=['angle','horizontal']
-                                        )
+        self.ag_slice = AcquisitionGeometry.create_Parallel2D()\
+                                           .set_angles(angles, angle_unit='radian')\
+                                           .set_panel(det_pix_x, pix_size)\
+                                           .set_labels(['angle','horizontal'])
 
         self.ig_2D = self.ag_slice.get_ImageGeometry()
         self.ig_3D = self.ag.get_ImageGeometry()
