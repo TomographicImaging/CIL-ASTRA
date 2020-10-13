@@ -55,6 +55,9 @@ class AstraOperator(LinearOperator):
     
     def adjoint(self, DATA, out=None):
         return self.operator.adjoint(DATA, out=out)
+    
+    def calculate_norm(self):
+        return self.operator.norm()    
 
     def domain_geometry(self):
         return self.volume_geometry
