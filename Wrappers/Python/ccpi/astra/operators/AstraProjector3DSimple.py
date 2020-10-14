@@ -27,24 +27,12 @@ class AstraProjector3DSimple(LinearOperator):
         
         super(AstraProjector3DSimple, self).__init__(geomv, 
              range_geometry=geomp)
-        
-        # Store volume and sinogram geometries.
-        # The order of the ouput sinogram is not the default one from the acquistion geometry
-        # The order of the backprojection is the default one from the image geometry
                 
-        geomp.dimension_labels = ['vertical','angle','horizontal']
-        geomp.shape = (geomp.pixel_num_v, len(geomp.angles), geomp.pixel_num_h)  
-        
         self.fp = AstraForwardProjector3D(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        output_axes_order=['vertical','angle','horizontal'])
+                                        sinogram_geometry=geomp)
         
         self.bp = AstraBackProjector3D(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        output_axes_order=['vertical','horizontal_y','horizontal_x'])
-                      
-        # Initialise empty for singular value.
-        self.s1 = None
+                                        sinogram_geometry=geomp)
     
     def direct(self, IM, out=None):
         self.fp.set_input(IM)
@@ -62,12 +50,6 @@ class AstraProjector3DSimple(LinearOperator):
         else:
             out.fill(self.bp.get_output())    
 
-    # def norm(self):
-    #     x0 = self.domain_geometry().allocate('random')
-    #     self.s1, sall, svec = LinearOperator.PowerMethod(self, 50, x0)
-    #     return self.s1
-    
-    
 if __name__  == '__main__':
         
     N = 30
@@ -83,7 +65,3 @@ if __name__  == '__main__':
     
     y = ag.allocate('random_int')
     im = A.adjoint(y)
-    
-    
-    
-    

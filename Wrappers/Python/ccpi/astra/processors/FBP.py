@@ -38,7 +38,8 @@ class FBP(DataProcessor):
                        device = 'cpu', 
                        filter_type = 'ram-lak', 
                        **kwargs): 
-        
+
+        print("Warning: FBP will use simple geometry only. Any configuration offsets or rotations will be ignored.")
 
         if sinogram_geometry.dimension == '3D':
             
@@ -207,17 +208,7 @@ class FBP(DataProcessor):
                 astra.data2d.delete(sinogram_id)
                 astra.algorithm.delete(alg_id)
                  
-                if self.sinogram_geometry.geom_type == 'parallel':                                       
-                    if self.device == 'cpu':
-                        return IM / (self.volume_geometry.voxel_size_x**2)
-                    else:
-                        scaling = self.volume_geometry.voxel_size_x
-                        return scaling * IM       
-                else:
-                    if self.device == 'cpu':
-                        return IM / (self.volume_geometry.voxel_size_x**2)
-                    else:
-                        return IM
+                return IM
                     
                             
                 

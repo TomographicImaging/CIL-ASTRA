@@ -25,7 +25,8 @@ import functools
 from ccpi.optimisation.operators import Gradient, Identity, BlockOperator
 from ccpi.optimisation.operators import LinearOperator
 
-from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple
+from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
+from ccpi.astra.operators import AstraOperator
 
 import astra
 use_cuda = True
@@ -41,34 +42,25 @@ except:
 
 class TestAstraSimple(unittest.TestCase):
     def setUp(self): 
-        # Define image geometry.
-        N = 128
 
-        ig = ImageGeometry(voxel_num_x = N, voxel_num_y = N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1)
-        
-        detectors = N
+        N = 128
         angles = np.linspace(0, np.pi, 180, dtype='float32')
-        ag = AcquisitionGeometry(geom_type='parallel',
-                                 dimension='2D', 
-                                 angles=angles, 
-                                 pixel_num_h=detectors,
-                                 pixel_size_h = 0.1)
+
+        ag = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['angle', 'horizontal'])
         
-        ig3 = ImageGeometry(voxel_num_x = N, voxel_num_y = N, voxel_num_z=N, 
-                        voxel_size_x = 0.1,
-                        voxel_size_y = 0.1,
-                        voxel_size_z = 0.1)
+        ig = ag.get_ImageGeometry()
+
         
-        
-        ag3 = AcquisitionGeometry(geom_type = 'parallel',
-                                 dimension= '3D', 
-                                 angles=angles, 
-                                 pixel_num_h = detectors,
-                                 pixel_num_v = detectors,
-                                 pixel_size_h = 0.1,
-                                 pixel_size_v = 0.1)
+        ag3 = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['vertical', 'angle', 'horizontal'])
+
+        ig3 = ag3.get_ImageGeometry()
+
         self.ig = ig
         self.ag = ag
         self.ig3 = ig3
@@ -106,4 +98,154 @@ class TestAstraSimple(unittest.TestCase):
         print ("norm A3", n)
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
+
+class TestAstraFlexible(unittest.TestCase):
+    def setUp(self): 
+        N = 128
+        angles = np.linspace(0, np.pi, 180, dtype='float32')
+
+        ag = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['angle', 'horizontal'])
+        
+        ig = ag.get_ImageGeometry()
+
+        
+        ag3 = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['vertical', 'angle', 'horizontal'])
+
+        ig3 = ag3.get_ImageGeometry()
+
+        self.ig = ig
+        self.ag = ag
+        self.ig3 = ig3
+        self.ag3 = ag3
+        self.norm = 14.85
+
+    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    def test_norm_flexible2D_gpu(self):
+        # test exists
+        # Create projection operator using Astra-Toolbox. Available CPU/CPU
+        A = AstraProjectorFlexible(self.ig, self.ag)
+        n = A.norm()
+        print ("norm A GPU", n)
+        self.assertTrue(True)
+        self.assertAlmostEqual(n, self.norm, places=2)
     
+        ag_2 = self.ag.copy()
+        ag_2.dimension_labels = ['horizontal','angle']
+        with self.assertRaises(ValueError):
+            A = AstraProjectorFlexible(self.ig, ag_2)
+
+        ig_2 = self.ig3.copy()
+        ig_2.dimension_labels = ['horizontal_x','horizontal_y']
+        with self.assertRaises(ValueError):
+            A = AstraProjectorFlexible(ig_2, self.ag)
+
+    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    def test_norm_flexible3D_gpu(self):
+        # test exists
+        A3 = AstraProjectorFlexible(self.ig3, self.ag3)
+        n = A3.norm()
+        print ("norm A3", n)
+        self.assertTrue(True)
+        self.assertAlmostEqual(n, self.norm, places=2)    
+
+        ag3_2 = self.ag3.copy()
+        ag3_2.dimension_labels = ['angle','vertical','horizontal']
+        with self.assertRaises(ValueError):
+            A3 = AstraProjectorFlexible(self.ig3, ag3_2)
+
+        ig3_2 = self.ig3.copy()
+        ig3_2.dimension_labels = ['horizontal_y','vertical','horizontal_x']
+        with self.assertRaises(ValueError):
+            A3 = AstraProjectorFlexible(ig3_2, self.ag3)
+
+class TestAstraOperator(unittest.TestCase):
+    def setUp(self): 
+        # Define image geometry.
+        N = 128
+        angles = np.linspace(0, np.pi, 180, dtype='float32')
+
+        ag = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['angle', 'horizontal'])
+        
+        ig = ag.get_ImageGeometry()
+
+        
+        ag3 = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['vertical', 'angle', 'horizontal'])
+
+        ig3 = ag3.get_ImageGeometry()
+
+  
+        ag_channel = AcquisitionGeometry.create_Parallel2D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel(N, 0.1)\
+                                .set_labels(['channel', 'angle', 'horizontal'])\
+                                .set_channels(2)
+
+        ig_channel = ag_channel.get_ImageGeometry()
+
+        
+        ag3_channel = AcquisitionGeometry.create_Parallel3D()\
+                                .set_angles(angles, angle_unit='radian')\
+                                .set_panel((N, N), (0.1, 0.1))\
+                                .set_labels(['channel','vertical', 'angle', 'horizontal'])\
+                                .set_channels(2)
+
+        ig3_channel = ag3_channel.get_ImageGeometry()
+
+        self.ig = ig
+        self.ag = ag
+        self.ig_channel = ig_channel
+        self.ag_channel = ag_channel       
+        self.ig3 = ig3
+        self.ag3 = ag3
+        self.ig3_channel = ig3_channel
+        self.ag3_channel = ag3_channel
+        self.norm = 14.85
+
+    def test_cpu(self):
+        A = AstraOperator(self.ig, self.ag, device='cpu')
+        n = A.norm()
+        print ("norm A GPU", n)
+        self.assertAlmostEqual(n, self.norm, places=2)
+
+        A = AstraOperator(self.ig_channel, self.ag_channel, device='cpu')
+        n = A.norm()
+        print ("norm A GPU", n)
+        self.assertAlmostEqual(n, self.norm, places=2)
+
+        with self.assertRaises(NotImplementedError):
+            A = AstraOperator(self.ig3, self.ag3, device='cpu')
+
+    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    def test_gpu(self):
+        A = AstraOperator(self.ig, self.ag)
+        n = A.norm()
+        print ("norm A GPU", n)
+        self.assertAlmostEqual(n, self.norm, places=2)
+
+        A = AstraOperator(self.ig_channel, self.ag_channel)
+        n = A.norm()
+        print ("norm A GPU", n)
+        self.assertAlmostEqual(n, self.norm, places=2)
+
+        A3 = AstraOperator(self.ig3, self.ag3)
+        n = A3.norm()
+        print ("norm A3", n)
+        self.assertAlmostEqual(n, self.norm, places=2)    
+
+        A3_channel = AstraOperator(self.ig3_channel, self.ag3_channel)
+        n = A3_channel.norm()
+        print ("norm A4", n)
+        self.assertAlmostEqual(n, self.norm, places=2)  
+          

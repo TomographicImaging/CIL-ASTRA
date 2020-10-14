@@ -12,19 +12,19 @@ class AstraForwardProjector3D(DataProcessor):
     Parameter: proj_geom, vol_geom
     Output: AcquisitionData
     '''
-    
+    ASTRA_LABELS_VOL = ['vertical','horizontal_y','horizontal_x']
+    ASTRA_LABELS_PROJ = ['vertical','angle','horizontal']
+
     def __init__(self,
                  volume_geometry=None,
                  sinogram_geometry=None,
                  proj_geom=None,
-                 vol_geom=None,
-                 output_axes_order=None):
+                 vol_geom=None):
         kwargs = {
                   'volume_geometry'  : volume_geometry,
                   'sinogram_geometry'  : sinogram_geometry,
                   'proj_geom'  : proj_geom,
                   'vol_geom'  : vol_geom,
-                  'output_axes_order'  : output_axes_order
                   }
         
         super(AstraForwardProjector3D, self).__init__(**kwargs)
@@ -32,26 +32,27 @@ class AstraForwardProjector3D(DataProcessor):
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
         
-        # Set up ASTRA Volume and projection geometry, not to be stored in self
-        vol_geom, proj_geom = convert_geometry_to_astra(self.volume_geometry,
+        self.vol_geom, self.proj_geom = convert_geometry_to_astra(self.volume_geometry,
                                                         self.sinogram_geometry)
-        
-        # Also store ASTRA geometries
-        self.vol_geom = vol_geom
-        self.proj_geom = proj_geom
-    
+         
     def check_input(self, dataset):
-        if dataset.number_of_dimensions == 3:
-               return True
-        else:
+        if dataset.number_of_dimensions != 3:
             raise ValueError("Expected input dimensions 3, got {0}"\
                              .format(dataset.number_of_dimensions))
+
+        order = [dataset.dimension_labels[0],dataset.dimension_labels[1],dataset.dimension_labels[2]]
+        if order != AstraForwardProjector3D.ASTRA_LABELS_VOL:
+            raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraForwardProjector3D.ASTRA_LABELS_PROJ_3D, order))  
+
+        return True       
     
     def set_ImageGeometry(self, volume_geometry):
-        self.volume_geometry = volume_geometry
-    
+        self.volume_geometry = volume_geometry.copy()
+        self.volume_geometry.dimension_labels = AstraForwardProjector3D.ASTRA_LABELS_VOL
+
     def set_AcquisitionGeometry(self, sinogram_geometry):
-        self.sinogram_geometry = sinogram_geometry
+        self.sinogram_geometry = sinogram_geometry.copy()
+        self.sinogram_geometry.dimension_labels = AstraForwardProjector3D.ASTRA_LABELS_PROJ
     
     def set_vol_geom(self, vol_geom):
         self.vol_geom = vol_geom
@@ -59,15 +60,12 @@ class AstraForwardProjector3D(DataProcessor):
     def process(self, out=None):
         
         IM = self.get_input()
-        DATA = AcquisitionData(geometry=self.sinogram_geometry,
-                               dimension_labels=self.output_axes_order)
-        sinogram_id, DATA.array = astra.create_sino3d_gpu(IM.as_array(), 
-                                                           self.proj_geom,
-                                                           self.vol_geom)
+
+        sinogram_id, arr_out = astra.create_sino3d_gpu(IM.as_array(), self.proj_geom, self.vol_geom)
         astra.data3d.delete(sinogram_id)
-        # 3D CUDA FP does not need scaling
         
         if out is None:
-            return DATA
+            out = AcquisitionData(arr_out, deep_copy=False, geometry=self.sinogram_geometry.copy(), suppress_warning=True)
+            return out
         else:
-            out.fill(DATA)
+            out.fill(arr_out)

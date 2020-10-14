@@ -3,12 +3,12 @@ package:
   version: {{ environ['CIL_VERSION'] }}
 
 build:
+  skip: True # [py==38 and np==115]
   preserve_egg_dir: False
   script_env:
     - CIL_VERSION   
 #  number: 0
   
-
 test:
   source_files:
     - ./Wrappers/Python/test # [win]
@@ -22,13 +22,14 @@ test:
 requirements:
   build:
     - python {{ python }}
-    - setuptools
+    - numpy {{ numpy }}
 
   run:
     - python {{ python }}
-    - numpy
+    - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x.x') }}
+    - scipy <1.6
     - ccpi-framework
-    - astra-toolbox
+    - astra-toolbox==1.9.9.dev4
 	
 about:
   home: http://www.ccpi.ac.uk
