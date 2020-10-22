@@ -62,7 +62,7 @@ class AstraBackProjector3D(DataProcessor):
         data_temp = DATA.as_array()
 
         rec_id, arr_out = astra.create_backprojection3d_gpu(data_temp, self.proj_geom, self.vol_geom)
-        astra.data2d.delete(rec_id)
+        astra.data3d.delete(rec_id)
         
         if out is None:
             out = ImageData(arr_out, deep_copy=False, geometry=self.volume_geometry.copy(), suppress_warning=True)
