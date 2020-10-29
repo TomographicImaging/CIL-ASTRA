@@ -15,8 +15,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ccpi.optimisation.operators import LinearOperator
-from ccpi.astra.operators import AstraProjector3DSimple
+from cil.optimisation.operators import LinearOperator
+from cil.plugins.astra.operators import AstraProjector3DSimple
 import numpy as np
 
 

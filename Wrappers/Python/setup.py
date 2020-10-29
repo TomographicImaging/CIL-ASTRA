@@ -30,25 +30,12 @@ cil_version='0.12.0'
 #    sys.exit(1)
 
 setup(
-    name="ccpi-astra",
+    name="cil-astra",
     version=cil_version,
-    packages=['ccpi' , 
-              'ccpi.astra',
-              'ccpi.astra.operators',
-              'ccpi.astra.processors',
-              'ccpi.astra.utils'],
-
-    # Project uses reStructuredText, so ensure that the docutils get
-    # installed or upgraded on the target machine
-    #install_requires=['docutils>=0.3'],
-
-#    package_data={
-#        # If any package contains *.txt or *.rst files, include them:
-#        '': ['*.txt', '*.rst'],
-#        # And include any *.msg files found in the 'hello' package, too:
-#        'hello': ['*.msg'],
-#    },
-    # zip_safe = False,
+    packages=['cil.plugins.astra',
+              'cil.plugins.astra.operators',
+              'cil.plugins.astra.processors',
+              'cil.plugins.astra.utils'],
 
     # metadata for upload to PyPI
     author="Edoardo Pasca",
@@ -56,7 +43,5 @@ setup(
     description='CCPi Core Imaging Library - Astra bindings',
     license="GPL v3",
     keywords="Python Framework",
-    url="http://www.ccpi.ac.uk",   # project home page, if any
-
-    # could also include long_description, download_url, classifiers, etc.
+    url="http://www.ccpi.ac.uk/cil",   # project home page, if any
 )

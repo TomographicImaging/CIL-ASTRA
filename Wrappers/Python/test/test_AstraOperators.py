@@ -17,16 +17,16 @@
 #   limitations under the License.
 import unittest
 import numpy as np
-from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.framework import ImageData, AcquisitionData
-from ccpi.framework import BlockDataContainer, TestData
+from cil.framework import ImageGeometry, AcquisitionGeometry
+from cil.framework import ImageData, AcquisitionData
+from cil.framework import BlockDataContainer
 import functools
 
-from ccpi.optimisation.operators import Gradient, Identity, BlockOperator
-from ccpi.optimisation.operators import LinearOperator
+from cil.optimisation.operators import Gradient, Identity, BlockOperator
+from cil.optimisation.operators import LinearOperator
 
-from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
-from ccpi.astra.operators import AstraOperator
+from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
+from cil.plugins.astra.operators import AstraOperator
 
 import astra
 use_cuda = True

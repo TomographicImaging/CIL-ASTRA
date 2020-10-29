@@ -1,7 +1,7 @@
-from ccpi.framework import  ImageData
+from cil.framework import  ImageData
 
 
-from ccpi.astra.processors import AstraBackProjector
+from cil.plugins.astra.processors import AstraBackProjector
 
 import astra
 

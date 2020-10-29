@@ -1,6 +1,6 @@
-from ccpi.framework import AcquisitionData
+from cil.framework import AcquisitionData
 
-from ccpi.astra.processors import AstraForwardProjector
+from cil.plugins.astra.processors import AstraForwardProjector
 
 import astra
 

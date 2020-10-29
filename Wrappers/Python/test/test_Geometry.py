@@ -17,16 +17,16 @@
 #   limitations under the License.
 import unittest
 import numpy as np
-from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.framework import ImageData, AcquisitionData
-from ccpi.framework import BlockDataContainer, TestData
+from cil.framework import ImageGeometry, AcquisitionGeometry
+from cil.framework import ImageData, AcquisitionData
+from cil.framework import BlockDataContainer
 import functools
 
-from ccpi.optimisation.operators import Gradient, Identity, BlockOperator
-from ccpi.optimisation.operators import LinearOperator
+from cil.optimisation.operators import Gradient, Identity, BlockOperator
+from cil.optimisation.operators import LinearOperator
 
-from ccpi.astra.utils import convert_geometry_to_astra
-from ccpi.astra.utils import convert_geometry_to_astra_vec
+from cil.plugins.astra.utils import convert_geometry_to_astra
+from cil.plugins.astra.utils import convert_geometry_to_astra_vec
 import numpy
 
 class TestGeometry(unittest.TestCase):

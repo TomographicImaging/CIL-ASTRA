@@ -19,9 +19,9 @@
 #
 #=========================================================================
 
-from ccpi.optimisation.operators import LinearOperator, ChannelwiseOperator
-from ccpi.astra.operators import AstraProjectorFlexible
-from ccpi.astra.operators import AstraProjectorSimple
+from cil.optimisation.operators import LinearOperator, ChannelwiseOperator
+from cil.plugins.astra.operators import AstraProjectorFlexible
+from cil.plugins.astra.operators import AstraProjectorSimple
 
 class AstraOperator(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""

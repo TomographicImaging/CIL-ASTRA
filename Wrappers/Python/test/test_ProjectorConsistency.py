@@ -16,12 +16,12 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.framework import ImageData, AcquisitionData
+from cil.framework import ImageGeometry, AcquisitionGeometry
+from cil.framework import ImageData, AcquisitionData
 
-from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
-from ccpi.astra.operators import AstraOperator
-from ccpi.utilities.display import plotter2D
+from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
+from cil.plugins.astra.operators import AstraOperator
+from cil.utilities.display import plotter2D
 
 
 import unittest

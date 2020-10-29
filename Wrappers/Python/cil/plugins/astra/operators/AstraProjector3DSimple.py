@@ -15,9 +15,9 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from ccpi.optimisation.operators import LinearOperator
-from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
+from cil.optimisation.operators import LinearOperator
+from cil.framework import ImageGeometry, AcquisitionGeometry
+from cil.plugins.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
 import numpy as np
 
 class AstraProjector3DSimple(LinearOperator):

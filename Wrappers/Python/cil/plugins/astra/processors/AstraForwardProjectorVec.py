@@ -1,5 +1,5 @@
-from ccpi.framework import DataProcessor, AcquisitionData
-from ccpi.astra.utils import convert_geometry_to_astra_vec
+from cil.framework import DataProcessor, AcquisitionData
+from cil.plugins.astra.utils import convert_geometry_to_astra_vec
 import astra
 import numpy
 
