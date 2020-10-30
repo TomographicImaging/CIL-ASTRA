@@ -25,8 +25,8 @@ import functools
 from cil.optimisation.operators import Gradient, Identity, BlockOperator
 from cil.optimisation.operators import LinearOperator
 
-from cil.plugins.astra.utils import convert_geometry_to_astra
-from cil.plugins.astra.utils import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
 import numpy
 
 class TestGeometry(unittest.TestCase):

@@ -1,5 +1,5 @@
 from cil.framework import DataProcessor, AcquisitionData
-from cil.plugins.astra.utils import convert_geometry_to_astra
+from cil.plugins.astra.utilities import convert_geometry_to_astra
 import astra
 
 class AstraForwardProjector3D(DataProcessor):

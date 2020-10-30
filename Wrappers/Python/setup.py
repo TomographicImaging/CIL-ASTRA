@@ -35,7 +35,7 @@ setup(
     packages=['cil.plugins.astra',
               'cil.plugins.astra.operators',
               'cil.plugins.astra.processors',
-              'cil.plugins.astra.utils'],
+              'cil.plugins.astra.utilities'],
 
     # metadata for upload to PyPI
     author="Edoardo Pasca",
