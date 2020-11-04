@@ -4,9 +4,9 @@ import astra
 import numpy as np
 import warnings
 
-class FBP(DataProcessor):
+class FBP_Simple(DataProcessor):
     
-    '''Filtered Back Projection is a reconstructor
+    '''FBP_Simple Filtered Back Projection is a reconstructor
     
     Input: Volume Geometry
            Sinogram Geometry
@@ -51,7 +51,7 @@ class FBP(DataProcessor):
             if sinogram_geometry.geom_type=='parallel':
                 
                 # By default, we select GPU device
-                super(FBP, self).__init__(volume_geometry = volume_geometry, 
+                super(FBP_Simple, self).__init__(volume_geometry = volume_geometry, 
                                      sinogram_geometry = sinogram_geometry,
                                      device = 'gpu', proj_id = None,
                                      vol_geom2D = None, proj_geom2D = None,
@@ -81,7 +81,7 @@ class FBP(DataProcessor):
             elif sinogram_geometry.geom_type=='cone':
                  
                 # For 3D cone we do not need  ASTRA proj_id
-                super(FBP, self).__init__(volume_geometry = volume_geometry, 
+                super(FBP_Simple, self).__init__(volume_geometry = volume_geometry, 
                      sinogram_geometry = sinogram_geometry,
                      device = 'gpu',
                      filter_type = 'ram-lak')   
@@ -93,7 +93,7 @@ class FBP(DataProcessor):
             
             
             # Setup for 2D case
-            super(FBP, self).__init__(volume_geometry = volume_geometry, 
+            super(FBP_Simple, self).__init__(volume_geometry = volume_geometry, 
                                       sinogram_geometry = sinogram_geometry,
                                       device = device, proj_id = None,
                                       filter_type = filter_type)
@@ -344,8 +344,4 @@ class FBP(DataProcessor):
                     astra.algorithm.delete(alg_id)
                         
                     return IM                        
-        
-        
-
-
- 
+                    
