@@ -113,17 +113,17 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         flex_bp = A.adjoint(flex_fp)
 
         #comparision foward projection
-        fp_flex_0 = flex_fp.subset(vertical=self.cs_ind)
-        fp_flex_2 = flex_fp.subset(vertical=self.cs_ind-3)
+        fp_flex_0 = flex_fp.subset(vertical=self.cs_ind, force=True)
+        fp_flex_2 = flex_fp.subset(vertical=self.cs_ind-3, force=True)
 
         zeros = self.ag_slice.allocate(0)
         np.testing.assert_allclose(fp_flex_0.as_array(),fp.as_array(), atol=0.8)
         np.testing.assert_allclose(fp_flex_2.as_array(),zeros.as_array())
 
         #comparision back projection
-        bp_flex_0 = flex_bp.subset(vertical=self.cs_ind)
-        bp_flex_1 = flex_bp.subset(vertical=self.cs_ind+3)
-        bp_flex_2 = flex_bp.subset(vertical=self.cs_ind-3)
+        bp_flex_0 = flex_bp.subset(vertical=self.cs_ind, force=True)
+        bp_flex_1 = flex_bp.subset(vertical=self.cs_ind+3, force=True)
+        bp_flex_2 = flex_bp.subset(vertical=self.cs_ind-3, force=True)
 
         zeros = self.ig_2D.allocate(0)
         np.testing.assert_allclose(bp_flex_0.as_array(),bp.as_array(),atol=12)
@@ -148,26 +148,26 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         flex_bp = A.adjoint(fp)
 
         #comparision foward projection
-        fp_0 = fp.subset(vertical=self.cs_ind)
-        fp_1 = fp.subset(vertical=self.cs_ind+3)
-        fp_2 = fp.subset(vertical=self.cs_ind-3)
+        fp_0 = fp.subset(vertical=self.cs_ind, force=True)
+        fp_1 = fp.subset(vertical=self.cs_ind+3, force=True)
+        fp_2 = fp.subset(vertical=self.cs_ind-3, force=True)
 
-        fp_flex_0 = flex_fp.subset(vertical=self.cs_ind)
-        fp_flex_1 = flex_fp.subset(vertical=self.cs_ind+3)
-        fp_flex_2 = flex_fp.subset(vertical=self.cs_ind-3)
+        fp_flex_0 = flex_fp.subset(vertical=self.cs_ind, force=True)
+        fp_flex_1 = flex_fp.subset(vertical=self.cs_ind+3, force=True)
+        fp_flex_2 = flex_fp.subset(vertical=self.cs_ind-3, force=True)
 
         np.testing.assert_allclose(fp_flex_0.as_array(),fp_0.as_array())
         np.testing.assert_allclose(fp_flex_1.as_array(),fp_1.as_array())
         np.testing.assert_allclose(fp_flex_2.as_array(),fp_2.as_array())
 
         #comparision back projection
-        bp_0 = bp.subset(vertical=self.cs_ind)
-        bp_1 = bp.subset(vertical=self.cs_ind+3)
-        bp_2 = bp.subset(vertical=self.cs_ind-3)
+        bp_0 = bp.subset(vertical=self.cs_ind, force=True)
+        bp_1 = bp.subset(vertical=self.cs_ind+3, force=True)
+        bp_2 = bp.subset(vertical=self.cs_ind-3, force=True)
 
-        bp_flex_0 = flex_bp.subset(vertical=self.cs_ind)
-        bp_flex_1 = flex_bp.subset(vertical=self.cs_ind+3)
-        bp_flex_2 = flex_bp.subset(vertical=self.cs_ind-3)
+        bp_flex_0 = flex_bp.subset(vertical=self.cs_ind, force=True)
+        bp_flex_1 = flex_bp.subset(vertical=self.cs_ind+3, force=True)
+        bp_flex_2 = flex_bp.subset(vertical=self.cs_ind-3, force=True)
 
         np.testing.assert_allclose(bp_flex_0.as_array(),bp_0.as_array())
         np.testing.assert_allclose(bp_flex_1.as_array(),bp_1.as_array())
