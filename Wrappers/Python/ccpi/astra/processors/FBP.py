@@ -26,6 +26,24 @@ from ccpi.astra.processors.FBP_Simple import FBP_Simple
 
 class FBP(DataProcessor):
 
+    '''FBP Filtered Back Projection is a reconstructor for 2D and 3D parallel and cone-beam geometries.
+    It is able to back-project circular trajectories with 2 PI anglar range and equally spaced anglular steps.
+
+    This uses the ram-lak filter
+    A CPU version is provided for simple 2D parallel-beam geometries only (offsets and rotations will be ignored)
+    
+    Input: Volume Geometry
+           Sinogram Geometry
+                             
+    Example:  fbp = FBP(ig, ag, device)
+              fbp.set_input(data)
+              reconstruction = fbp.get_ouput()
+                           
+    Output: ImageData                             
+
+    
+    '''
+    
     def __init__(self, volume_geometry, sinogram_geometry, device='gpu'): 
         
         super(FBP, self).__init__( volume_geometry=volume_geometry, sinogram_geometry=sinogram_geometry, device=device, processor = False)  
@@ -38,6 +56,10 @@ class FBP(DataProcessor):
             
         else:
             UserWarning("ASTRA back-projector running on CPU will not make use of enhanced geometry parameters")
+
+            if sinogram_geometry.geom_type == 'cone':
+                raise NotImplementedError("Cannot process cone-beam data without a GPU")
+
             if sinogram_geometry.dimension == '2D':
                 processor = FBP_Simple(volume_geometry, sinogram_geometry,  device='cpu') 
             else:
