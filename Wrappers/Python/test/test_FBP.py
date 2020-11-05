@@ -98,15 +98,15 @@ class TestProcessors(unittest.TestCase):
 
         #2D cone
         #foward project
-        ag = self.ag_cone.subset(vertical=self.cs_ind)
+        ag = self.ag_cone.subset(vertical=self.cs_ind, force=True)
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='gpu')
-        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind))
+        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
 
         fbp = FBP(ig, ag, 'gpu')
         fbp.set_input(fp_2D)
         fbp_2D_cone = fbp.get_output()
-        np.testing.assert_allclose(fbp_2D_cone.as_array(),self.golden_data.subset(vertical=self.cs_ind).as_array(),atol=1)
+        np.testing.assert_allclose(fbp_2D_cone.as_array(),self.golden_data.subset(vertical=self.cs_ind, force=True).as_array(),atol=1)
 
         #3D cone
         ag = self.ag_cone
@@ -121,15 +121,15 @@ class TestProcessors(unittest.TestCase):
 
 
         #2D parallel
-        ag = self.ag_parallel.subset(vertical=self.cs_ind)
+        ag = self.ag_parallel.subset(vertical=self.cs_ind, force=True)
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='gpu')
-        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind))
+        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
 
         fbp = FBP(ig, ag, 'gpu')
         fbp.set_input(fp_2D)
         fbp_2D_parallel = fbp.get_output()
-        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data.subset(vertical=self.cs_ind).as_array(), atol=1)
+        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data.subset(vertical=self.cs_ind, force=True).as_array(), atol=1)
 
         #3D parallel
         ag = self.ag_parallel
@@ -144,12 +144,12 @@ class TestProcessors(unittest.TestCase):
 
     def test_FBPcpu(self):
         #2D parallel
-        ag = self.ag_parallel.subset(vertical=self.cs_ind)
+        ag = self.ag_parallel.subset(vertical=self.cs_ind, force=True)
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='cpu')
-        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind))
+        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
 
         fbp = FBP(ig, ag, 'cpu')
         fbp.set_input(fp_2D)
         fbp_2D_parallel = fbp.get_output()
-        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data.subset(vertical=self.cs_ind).as_array(),atol=1)
+        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data.subset(vertical=self.cs_ind, force=True).as_array(),atol=1)
