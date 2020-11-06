@@ -55,8 +55,8 @@ class TestProcessors(unittest.TestCase):
         det_pix_x = voxel_num_xy
         det_pix_y = voxel_num_z
 
-        num_projections = 180
-        angles = np.linspace(0, np.pi, num=num_projections, endpoint=False)
+        num_projections = 360
+        angles = np.linspace(0, 2*np.pi, num=num_projections, endpoint=False)
 
         self.ag_cone = AcquisitionGeometry.create_Cone3D([0,-src_to_obj,0],[0,src_to_det-src_to_obj,0])\
                                      .set_angles(angles, angle_unit='radian')\
@@ -93,20 +93,22 @@ class TestProcessors(unittest.TestCase):
         for i in range(4):
             self.golden_data.fill(array=phantom, vertical=7+i)
 
+        self.golden_data_cs = self.golden_data.subset(vertical=self.cs_ind)
+
+
     @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
     def test_FBPgpu(self):
 
         #2D cone
-        #foward project
         ag = self.ag_cone.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='gpu')
-        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
+        fp_2D = A.direct(self.golden_data_cs)
 
         fbp = FBP(ig, ag, 'gpu')
         fbp.set_input(fp_2D)
         fbp_2D_cone = fbp.get_output()
-        np.testing.assert_allclose(fbp_2D_cone.as_array(),self.golden_data.subset(vertical=self.cs_ind, force=True).as_array(),atol=1)
+        np.testing.assert_allclose(fbp_2D_cone.as_array(),self.golden_data_cs.as_array(),atol=0.6)
 
         #3D cone
         ag = self.ag_cone
@@ -117,19 +119,18 @@ class TestProcessors(unittest.TestCase):
         fbp = FBP(ig, ag, 'gpu')
         fbp.set_input(fp_3D)
         fbp_3D_cone = fbp.get_output()
-        np.testing.assert_allclose(fbp_3D_cone.as_array(),self.golden_data.as_array(),atol=1)
-
+        np.testing.assert_allclose(fbp_3D_cone.as_array(),self.golden_data.as_array(),atol=0.6)
 
         #2D parallel
         ag = self.ag_parallel.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='gpu')
-        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
+        fp_2D = A.direct(self.golden_data_cs)
 
         fbp = FBP(ig, ag, 'gpu')
         fbp.set_input(fp_2D)
         fbp_2D_parallel = fbp.get_output()
-        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data.subset(vertical=self.cs_ind, force=True).as_array(), atol=1)
+        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data_cs.as_array(), atol=0.6)
 
         #3D parallel
         ag = self.ag_parallel
@@ -140,16 +141,18 @@ class TestProcessors(unittest.TestCase):
         fbp = FBP(ig, ag, 'gpu')
         fbp.set_input(fp_3D)
         fbp_3D_parallel = fbp.get_output()
-        np.testing.assert_allclose(fbp_3D_parallel.as_array(),self.golden_data.as_array(),atol=1)
+        np.testing.assert_allclose(fbp_3D_parallel.as_array(),self.golden_data.as_array(),atol=0.6)
 
     def test_FBPcpu(self):
         #2D parallel
         ag = self.ag_parallel.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='cpu')
-        fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
+        fp_2D = A.direct(self.golden_data_cs)
 
         fbp = FBP(ig, ag, 'cpu')
         fbp.set_input(fp_2D)
         fbp_2D_parallel = fbp.get_output()
-        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data.subset(vertical=self.cs_ind, force=True).as_array(),atol=1)
+
+        np.testing.assert_allclose(fbp_2D_parallel.as_array(),self.golden_data_cs.as_array(),atol=0.6)
+
