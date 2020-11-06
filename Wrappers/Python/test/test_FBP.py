@@ -98,7 +98,7 @@ class TestProcessors(unittest.TestCase):
 
         #2D cone
         #foward project
-        ag = self.ag_cone.subset(vertical=self.cs_ind, force=True)
+        ag = self.ag_cone.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='gpu')
         fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
@@ -121,7 +121,7 @@ class TestProcessors(unittest.TestCase):
 
 
         #2D parallel
-        ag = self.ag_parallel.subset(vertical=self.cs_ind, force=True)
+        ag = self.ag_parallel.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='gpu')
         fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
@@ -144,7 +144,7 @@ class TestProcessors(unittest.TestCase):
 
     def test_FBPcpu(self):
         #2D parallel
-        ag = self.ag_parallel.subset(vertical=self.cs_ind, force=True)
+        ag = self.ag_parallel.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
         A = AstraOperator(ig, ag, device='cpu')
         fp_2D = A.direct(self.golden_data.subset(vertical=self.cs_ind, force=True))
