@@ -30,7 +30,7 @@ class FBP_Flexible(FDK_Flexible):
         sino_geom_cone.config.system.update_reference_frame()
 
         #reverse ray direction unit-vector direction and extend to inf
-        cone_source = sino_geom_cone.config.system.ray.direction * -10000000
+        cone_source = -sino_geom_cone.config.system.ray.direction * sino_geom_cone.config.panel.pixel_size[1] * sino_geom_cone.config.panel.num_pixels[1] * 1e6
         detector_position = sino_geom_cone.config.system.detector.position
         detector_direction_row = sino_geom_cone.config.system.detector.direction_row
 
