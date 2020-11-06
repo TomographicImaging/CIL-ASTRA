@@ -46,8 +46,6 @@ class FBP(DataProcessor):
     
     def __init__(self, volume_geometry, sinogram_geometry, device='gpu'): 
         
-        super(FBP, self).__init__( volume_geometry=volume_geometry, sinogram_geometry=sinogram_geometry, device=device, processor = False)  
-
         if device is 'gpu':
             if sinogram_geometry.geom_type == 'parallel':
                 processor = FBP_Flexible(volume_geometry, sinogram_geometry)
@@ -70,7 +68,7 @@ class FBP(DataProcessor):
             #processor_full = ChannelwiseProcessor(processor, self.sinogram_geometry.channels, dimension='prepend')
             #self.processor = operator_full
         
-        self.processor = processor
+        super(FBP, self).__init__( volume_geometry=volume_geometry, sinogram_geometry=sinogram_geometry, device=device, processor=processor)  
 
     def set_input(self, dataset):       
         return self.processor.set_input(dataset)

@@ -25,6 +25,8 @@ class FBP_Flexible(FDK_Flexible):
     def __init__(self, volume_geometry, 
                        sinogram_geometry): 
         
+        super(FBP_Flexible, self).__init__( volume_geometry = volume_geometry, sinogram_geometry = sinogram_geometry)
+
         #convert parallel geomerty to cone with large source to object
         sino_geom_cone = sinogram_geometry.copy()
         sino_geom_cone.config.system.update_reference_frame()
@@ -42,14 +44,8 @@ class FBP_Flexible(FDK_Flexible):
 
         sino_geom_cone.config.system = tmp.config.system.copy()
 
-        vol_geom_astra, proj_geom_astra = convert_geometry_to_astra_vec(volume_geometry, sino_geom_cone)
- 
-
-        super(FDK_Flexible, self).__init__( volume_geometry = volume_geometry,
-                                            sinogram_geometry = sinogram_geometry,
-                                            vol_geom_astra = vol_geom_astra,
-                                            proj_geom_astra = proj_geom_astra)
-                          
+        self.vol_geom_astra, self.proj_geom_astra = convert_geometry_to_astra_vec(volume_geometry, sino_geom_cone)
+                           
     def check_input(self, dataset):
         
         if self.sinogram_geometry.channels != 1:
