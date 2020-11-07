@@ -4,9 +4,9 @@ import astra
 import numpy
 import warnings
 
-class FDK(DataProcessor):
+class FDK_Flexible(DataProcessor):
 
-    '''FDK Filtered Back Projection is a reconstructor for 2D and 3D cone-beam geometries.
+    '''FDK_Flexible Filtered Back Projection is a reconstructor for 2D and 3D cone-beam geometries.
     It is able to back-project circular trajectories with 2 PI anglar range and equally spaced anglular steps.
 
     This uses the ram-lak filter
@@ -15,9 +15,9 @@ class FDK(DataProcessor):
     Input: Volume Geometry
            Sinogram Geometry
                              
-    Example:  FDK(ig, ag)
-              FDK.set_input(sinogram)
-              reconstruction = FDK.get_ouput()
+    Example:  fdk = FDK_Flexible(ig, ag)
+              fdk.set_input(data)
+              reconstruction = fdk.get_ouput()
                            
     Output: ImageData                             
 
@@ -27,8 +27,15 @@ class FDK(DataProcessor):
     def __init__(self, volume_geometry, 
                        sinogram_geometry): 
         
-        super(FDK, self).__init__( volume_geometry = volume_geometry,
-                                        sinogram_geometry = sinogram_geometry)   
+        vol_geom_astra, proj_geom_astra = convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry)
+ 
+
+        super(FDK_Flexible, self).__init__( volume_geometry = volume_geometry,
+                                        sinogram_geometry = sinogram_geometry,
+                                        vol_geom_astra = vol_geom_astra,
+                                        proj_geom_astra = proj_geom_astra)
+
+
                           
     def check_input(self, dataset):
         
@@ -42,20 +49,11 @@ class FDK(DataProcessor):
 
         return True
         
-    def set_projector(self, proj_id):
-        self.proj_id = proj_id
-        
-    def set_ImageGeometry(self, volume_geometry):
-        self.volume_geometry = volume_geometry
-        
-    def set_AcquisitionGeometry(self, sinogram_geometry):
-        self.sinogram_geometry = sinogram_geometry
-        
+
     def process(self, out=None):
            
         # Get DATA
         DATA = self.get_input()
-        vol_geom, proj_geom = convert_geometry_to_astra_vec(self.volume_geometry, self.sinogram_geometry)
 
         pad = False
         if len(DATA.shape) == 2:
@@ -66,8 +64,8 @@ class FDK(DataProcessor):
             data_temp = DATA.as_array()
 
 
-        rec_id = astra.data3d.create('-vol', vol_geom)
-        sinogram_id = astra.data3d.create('-sino', proj_geom, data_temp)
+        rec_id = astra.data3d.create('-vol', self.vol_geom_astra)
+        sinogram_id = astra.data3d.create('-sino', self.proj_geom_astra, data_temp)
         cfg = astra.astra_dict('FDK_CUDA')
         cfg['ReconstructionDataId'] = rec_id
         cfg['ProjectionDataId'] = sinogram_id
