@@ -18,8 +18,8 @@
 import unittest
 
 from cil.framework import ImageGeometry, AcquisitionGeometry
-from cil.plugins.astra.utils import convert_geometry_to_astra
-from cil.plugins.astra.utils import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
 import numpy as np
 
 class TestGeometry(unittest.TestCase):

@@ -1,5 +1,5 @@
 package:
-  name: ccpi-astra
+  name: cil-astra
   version: {{ environ['CIL_VERSION'] }}
 
 build:
@@ -28,10 +28,13 @@ requirements:
     - python {{ python }}
     - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x.x') }}
     - scipy <1.6
-    - ccpi-framework >=20.09
+    - cil >=20.09
     - astra-toolbox==1.9.9.dev4
+    # the minimal version of cudatoolkit that satisfies astra-toolbox binary
+    # and runs on all recent cuda runtime drivers
+    - cudatoolkit>=9.0 
 	
 about:
-  home: http://www.ccpi.ac.uk
+  home: http://www.ccpi.ac.uk/cil
   license:  GPLv3
-  summary: 'CCPi Toolbox'
+  summary: 'Astra-Toolbox wrappers for CCPi CIL'
