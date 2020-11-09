@@ -16,9 +16,9 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import unittest
-from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
-from ccpi.astra.operators import AstraOperator
+from cil.framework import ImageGeometry, AcquisitionGeometry
+from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
+from cil.plugins.astra.operators import ProjectionOperator
 import numpy as np
 import astra
 use_cuda = True
@@ -156,7 +156,7 @@ class TestAstraFlexible(unittest.TestCase):
         with self.assertRaises(ValueError):
             A3 = AstraProjectorFlexible(ig3_2, self.ag3)
 
-class TestAstraOperator(unittest.TestCase):
+class TestProjectionOperator(unittest.TestCase):
     def setUp(self): 
         # Define image geometry.
         N = 128
@@ -206,37 +206,37 @@ class TestAstraOperator(unittest.TestCase):
         self.norm = 14.85
 
     def test_cpu(self):
-        A = AstraOperator(self.ig, self.ag, device='cpu')
+        A = ProjectionOperator(self.ig, self.ag, device='cpu')
         n = A.norm()
         print ("norm A GPU", n)
         self.assertAlmostEqual(n, self.norm, places=2)
 
-        A = AstraOperator(self.ig_channel, self.ag_channel, device='cpu')
+        A = ProjectionOperator(self.ig_channel, self.ag_channel, device='cpu')
         n = A.norm()
         print ("norm A GPU", n)
         self.assertAlmostEqual(n, self.norm, places=2)
 
         with self.assertRaises(NotImplementedError):
-            A = AstraOperator(self.ig3, self.ag3, device='cpu')
+            A = ProjectionOperator(self.ig3, self.ag3, device='cpu')
 
     @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
     def test_gpu(self):
-        A = AstraOperator(self.ig, self.ag)
+        A = ProjectionOperator(self.ig, self.ag)
         n = A.norm()
         print ("norm A GPU", n)
         self.assertAlmostEqual(n, self.norm, places=2)
 
-        A = AstraOperator(self.ig_channel, self.ag_channel)
+        A = ProjectionOperator(self.ig_channel, self.ag_channel)
         n = A.norm()
         print ("norm A GPU", n)
         self.assertAlmostEqual(n, self.norm, places=2)
 
-        A3 = AstraOperator(self.ig3, self.ag3)
+        A3 = ProjectionOperator(self.ig3, self.ag3)
         n = A3.norm()
         print ("norm A3", n)
         self.assertAlmostEqual(n, self.norm, places=2)    
 
-        A3_channel = AstraOperator(self.ig3_channel, self.ag3_channel)
+        A3_channel = ProjectionOperator(self.ig3_channel, self.ag3_channel)
         n = A3_channel.norm()
         print ("norm A4", n)
         self.assertAlmostEqual(n, self.norm, places=2)  

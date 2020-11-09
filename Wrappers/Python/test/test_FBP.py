@@ -16,13 +16,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from ccpi.framework import ImageGeometry, AcquisitionGeometry
-from ccpi.framework import ImageData, AcquisitionData
+from cil.framework import ImageGeometry, AcquisitionGeometry
+from cil.framework import ImageData, AcquisitionData
 
-from ccpi.astra.operators import AstraOperator
-from ccpi.astra.processors import FBP
+from cil.plugins.astra.operators import ProjectionOperator
+from cil.plugins.astra.processors import FBP
 
-from ccpi.utilities.display import plotter2D
+from cil.utilities.display import plotter2D
 
 
 import unittest
@@ -102,7 +102,7 @@ class TestProcessors(unittest.TestCase):
         #2D cone
         ag = self.ag_cone.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
-        A = AstraOperator(ig, ag, device='gpu')
+        A = ProjectionOperator(ig, ag, device='gpu')
         fp_2D = A.direct(self.golden_data_cs)
 
         fbp = FBP(ig, ag, 'gpu')
@@ -113,7 +113,7 @@ class TestProcessors(unittest.TestCase):
         #3D cone
         ag = self.ag_cone
         ig = ag.get_ImageGeometry()
-        A = AstraOperator(ig, ag, device='gpu')
+        A = ProjectionOperator(ig, ag, device='gpu')
         fp_3D = A.direct(self.golden_data)
 
         fbp = FBP(ig, ag, 'gpu')
@@ -124,7 +124,7 @@ class TestProcessors(unittest.TestCase):
         #2D parallel
         ag = self.ag_parallel.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
-        A = AstraOperator(ig, ag, device='gpu')
+        A = ProjectionOperator(ig, ag, device='gpu')
         fp_2D = A.direct(self.golden_data_cs)
 
         fbp = FBP(ig, ag, 'gpu')
@@ -135,7 +135,7 @@ class TestProcessors(unittest.TestCase):
         #3D parallel
         ag = self.ag_parallel
         ig = ag.get_ImageGeometry()
-        A = AstraOperator(ig, ag, device='gpu')
+        A = ProjectionOperator(ig, ag, device='gpu')
         fp_3D = A.direct(self.golden_data)
 
         fbp = FBP(ig, ag, 'gpu')
@@ -147,7 +147,7 @@ class TestProcessors(unittest.TestCase):
         #2D parallel
         ag = self.ag_parallel.subset(vertical='centre')
         ig = ag.get_ImageGeometry()
-        A = AstraOperator(ig, ag, device='cpu')
+        A = ProjectionOperator(ig, ag, device='cpu')
         fp_2D = A.direct(self.golden_data_cs)
 
         fbp = FBP(ig, ag, 'cpu')

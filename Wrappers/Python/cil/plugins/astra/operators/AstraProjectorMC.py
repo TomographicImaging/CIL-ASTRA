@@ -20,9 +20,9 @@
 #=========================================================================
 
 
-from ccpi.optimisation.operators import LinearOperator
-from ccpi.astra.processors import AstraForwardProjectorMC, AstraBackProjectorMC
-from ccpi.astra.operators import AstraProjectorSimple
+from cil.optimisation.operators import LinearOperator
+from cil.plugins.astra.processors import AstraForwardProjectorMC, AstraBackProjectorMC
+from cil.plugins.astra.operators import AstraProjectorSimple
 
 
 class AstraProjectorMC(LinearOperator):

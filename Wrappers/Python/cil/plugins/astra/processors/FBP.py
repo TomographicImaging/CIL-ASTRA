@@ -19,10 +19,10 @@
 #
 #=========================================================================
 
-from ccpi.framework import DataProcessor
-from ccpi.astra.processors.FBP_Flexible import FBP_Flexible
-from ccpi.astra.processors.FDK_Flexible import FDK_Flexible
-from ccpi.astra.processors.FBP_Simple import FBP_Simple
+from cil.framework import DataProcessor
+from cil.plugins.astra.processors.FBP_Flexible import FBP_Flexible
+from cil.plugins.astra.processors.FDK_Flexible import FDK_Flexible
+from cil.plugins.astra.processors.FBP_Simple import FBP_Simple
 
 class FBP(DataProcessor):
 

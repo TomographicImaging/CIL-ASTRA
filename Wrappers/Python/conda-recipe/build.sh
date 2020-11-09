@@ -4,7 +4,7 @@ if [ -z "$CIL_VERSION" ]; then
 fi  
 set -ex
 mkdir ${SRC_DIR}/ccpi
-cp -rv "${RECIPE_DIR}/../ccpi/" ${SRC_DIR}/ccpi
+cp -rv "${RECIPE_DIR}/../cil/" ${SRC_DIR}/ccpi
 cp -rv "${RECIPE_DIR}/../test/" ${SRC_DIR}/ccpi
 cp -v ${RECIPE_DIR}/../setup.py ${SRC_DIR}/ccpi
 

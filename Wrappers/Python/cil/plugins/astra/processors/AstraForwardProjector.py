@@ -1,16 +1,16 @@
-from ccpi.framework import DataProcessor, ImageData
-from ccpi.astra.utils import convert_geometry_to_astra
+from cil.framework import DataProcessor, AcquisitionData
+from cil.plugins.astra.utilities import convert_geometry_to_astra
 import astra
 
 
-class AstraBackProjector(DataProcessor):
-    '''AstraBackProjector
+class AstraForwardProjector(DataProcessor):
+    '''AstraForwardProjector
     
-    Back project AcquisitionData to ImageData using ASTRA proj_id.
+    Forward project ImageData to AcquisitionData using ASTRA proj_id.
     
-    Input: AcquisitionData
+    Input: ImageData
     Parameter: proj_id
-    Output: ImageData
+    Output: AcquisitionData
     '''
     
     def __init__(self,
@@ -26,11 +26,11 @@ class AstraBackProjector(DataProcessor):
                   }
         
         #DataProcessor.__init__(self, **kwargs)
-        super(AstraBackProjector, self).__init__(**kwargs)
+        super(AstraForwardProjector, self).__init__(**kwargs)
         
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
-                
+        
         # Set up ASTRA Volume and projection geometry, not to be stored in self
         vol_geom, proj_geom = convert_geometry_to_astra(self.volume_geometry,
                                                         self.sinogram_geometry)
@@ -43,14 +43,15 @@ class AstraBackProjector(DataProcessor):
             elif self.sinogram_geometry.geom_type == 'cone':
                 self.set_projector(astra.create_projector('line_fanflat', proj_geom, vol_geom) )
             else:
-                NotImplemented 
+                NotImplemented    
         elif device == 'gpu':
             self.set_projector(astra.create_projector('cuda', proj_geom, vol_geom) )
         else:
             NotImplemented
     
     def check_input(self, dataset):
-        if dataset.number_of_dimensions == 3 or dataset.number_of_dimensions == 2:
+        if dataset.number_of_dimensions == 3 or\
+           dataset.number_of_dimensions == 2:
                return True
         else:
             raise ValueError("Expected input dimensions is 2 or 3, got {0}"\
@@ -58,23 +59,21 @@ class AstraBackProjector(DataProcessor):
     
     def set_projector(self, proj_id):
         self.proj_id = proj_id
-        
+    
     def set_ImageGeometry(self, volume_geometry):
         self.volume_geometry = volume_geometry
-        
+    
     def set_AcquisitionGeometry(self, sinogram_geometry):
         self.sinogram_geometry = sinogram_geometry
-    
+        
     def process(self, out=None):
 
-        DATA = self.get_input()
-        data_temp = DATA.as_array()
-
-        rec_id, arr_out = astra.create_backprojection(data_temp, self.proj_id)
-        astra.data2d.delete(rec_id)
+        IM = self.get_input()
+        sinogram_id, arr_out = astra.create_sino(IM.as_array(), self.proj_id)
+        astra.data2d.delete(sinogram_id)
         
         if out is None:
-            out = ImageData(arr_out, deep_copy=False, geometry=self.volume_geometry.copy(), suppress_warning=True)
+            out = AcquisitionData(arr_out, deep_copy=False, geometry=self.sinogram_geometry.copy(), suppress_warning=True)
             return out
         else:
             out.fill(arr_out)

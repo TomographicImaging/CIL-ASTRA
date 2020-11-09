@@ -19,27 +19,21 @@
 #
 #=========================================================================
 
-from ccpi.optimisation.operators import LinearOperator
-from ccpi.astra.processors import AstraForwardProjector, AstraBackProjector
+from cil.optimisation.operators import LinearOperator
+from cil.plugins.astra.processors import AstraForwardProjectorVec, AstraBackProjectorVec
 
-
-
-class AstraProjectorSimple(LinearOperator):
+class AstraProjectorFlexible(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp, device):
-        super(AstraProjectorSimple, self).__init__(geomv, range_geometry=geomp)
+    def __init__(self, geomv, geomp):
         
-        self.fp = AstraForwardProjector(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        proj_id = None,
-                                        device=device)
+        super(AstraProjectorFlexible, self).__init__(domain_geometry=geomv, range_geometry=geomp)
+                    
+        self.sinogram_geometry = geomp 
+        self.volume_geometry = geomv         
         
-        self.bp = AstraBackProjector(volume_geometry = geomv,
-                                        sinogram_geometry = geomp,
-                                        proj_id = None,
-                                        device = device)
-                           
-        
+        self.fp = AstraForwardProjectorVec(volume_geometry=geomv, sinogram_geometry=geomp)       
+        self.bp = AstraBackProjectorVec(volume_geometry=geomv, sinogram_geometry=geomp)
+                      
     def direct(self, IM, out=None):
         self.fp.set_input(IM)
         
@@ -56,18 +50,9 @@ class AstraProjectorSimple(LinearOperator):
         else:
             out.fill(self.bp.get_output())
 
-
-
-if __name__  == '__main__':
+    def domain_geometry(self):
+        return self.volume_geometry
     
-    from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    import numpy as np
-    
-    N = 30
-    angles = np.linspace(0, np.pi, 180)
-    ig = ImageGeometry(N, N)
-    ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h = N)
-    A = AstraProjectorSimple(ig, ag, 'cpu')
-    print(A.norm())
-    
+    def range_geometry(self):
+        return self.sinogram_geometry 
 

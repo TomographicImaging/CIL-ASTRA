@@ -19,15 +19,15 @@
 #
 #=========================================================================
 
-from ccpi.optimisation.operators import LinearOperator, ChannelwiseOperator
-from ccpi.astra.operators import AstraProjectorFlexible
-from ccpi.astra.operators import AstraProjectorSimple
+from cil.optimisation.operators import LinearOperator, ChannelwiseOperator
+from cil.plugins.astra.operators import AstraProjectorFlexible
+from cil.plugins.astra.operators import AstraProjectorSimple
 
-class AstraOperator(LinearOperator):
+class ProjectionOperator(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
     def __init__(self, geomv, geomp, device='gpu'):
         
-        super(AstraOperator, self).__init__(domain_geometry=geomv, range_geometry=geomp)
+        super(ProjectionOperator, self).__init__(domain_geometry=geomv, range_geometry=geomp)
 
         self.volume_geometry = geomv
         self.sinogram_geometry = geomp
@@ -74,20 +74,20 @@ if __name__  == '__main__':
     angles = np.linspace(0, np.pi, 180)
     ig = ImageGeometry(N, N)
     ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h=N)
-    A = AstraOperator(ig, ag, 'cpu')
+    A = ProjectionOperator(ig, ag, 'cpu')
     print(A.norm())
 
     ig = ImageGeometry(N, N, N)
     ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_v=N, pixel_num_h=N,dimension_labels=['vertical', 'angle', 'horizontal'])
-    A = AstraOperator(ig, ag, 'gpu')
+    A = ProjectionOperator(ig, ag, 'gpu')
     print(A.norm())
 
     ig = ImageGeometry(N, N, channels=2)
     ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h=N, channels= 2)
-    A = AstraOperator(ig, ag, 'cpu')
+    A = ProjectionOperator(ig, ag, 'cpu')
     print(A.norm())
 
     ig = ImageGeometry(N, N, N, channels=2)
     ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_v=N, pixel_num_h=N, channels=2,dimension_labels=['vertical', 'angle', 'horizontal'])
-    A = AstraOperator(ig, ag, 'gpu')
+    A = ProjectionOperator(ig, ag, 'gpu')
     print(A.norm())
