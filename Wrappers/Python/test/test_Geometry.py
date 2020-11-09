@@ -16,18 +16,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import unittest
-import numpy as np
+
 from cil.framework import ImageGeometry, AcquisitionGeometry
-from cil.framework import ImageData, AcquisitionData
-from cil.framework import BlockDataContainer
-import functools
-
-from cil.optimisation.operators import Gradient, Identity, BlockOperator
-from cil.optimisation.operators import LinearOperator
-
-from cil.plugins.astra.utilities import convert_geometry_to_astra
-from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
-import numpy
+from cil.plugins.astra.utils import convert_geometry_to_astra
+from cil.plugins.astra.utils import convert_geometry_to_astra_vec
+import numpy as np
 
 class TestGeometry(unittest.TestCase):
     def setUp(self): 
@@ -85,7 +78,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['type'],  'parallel')
         self.assertEqual(astra_sino['DetectorCount'], self.ag.pixel_num_h)
         self.assertEqual(astra_sino['DetectorWidth'], self.ag.pixel_size_h)
-        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag.angles)
+        np.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag.angles)
 
         self.assertEqual(astra_vol['GridColCount'], self.ig.voxel_num_x)
         self.assertEqual(astra_vol['GridRowCount'], self.ig.voxel_num_y)
@@ -96,7 +89,7 @@ class TestGeometry(unittest.TestCase):
 
         #2D parallel degrees
         astra_vol, astra_sino = convert_geometry_to_astra(self.ig, self.ag_deg)
-        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag.angles)
+        np.testing.assert_allclose(astra_sino['ProjectionAngles'], self.ag.angles)
 
         #2D cone
         astra_vol, astra_sino = convert_geometry_to_astra(self.ig, self.ag_cone)
@@ -113,7 +106,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorRowCount'], self.ag3.pixel_num_v)
         self.assertEqual(astra_sino['DetectorSpacingX'], self.ag3.pixel_size_h)
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
-        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles) 
+        np.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles) 
 
         self.assertEqual(astra_vol['GridColCount'], self.ig3.voxel_num_x)
         self.assertEqual(astra_vol['GridRowCount'], self.ig3.voxel_num_y)
@@ -135,7 +128,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorRowCount'], self.ag3.pixel_num_v)
         self.assertEqual(astra_sino['DetectorSpacingX'], self.ag3.pixel_size_h)
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
-        numpy.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles)
+        np.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles)
 
     def test_convert_geometry_to_astra_vec(self):
         #2D parallel radians
@@ -145,7 +138,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorRowCount'], 1.0)
         self.assertEqual(astra_sino['DetectorColCount'], self.ag.pixel_num_h)
 
-        vectors = numpy.zeros((3,12),dtype='float64')
+        vectors = np.zeros((3,12),dtype='float64')
 
         vectors[0][1] = 1.0
         vectors[0][6] = self.ag.pixel_size_h
@@ -159,7 +152,7 @@ class TestGeometry(unittest.TestCase):
         vectors[2][6] = -self.ag.pixel_size_h
         vectors[2][11] = self.ag.pixel_size_h
 
-        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
+        np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
 
         self.assertEqual(astra_vol['GridColCount'], self.ig.voxel_num_x)
@@ -175,14 +168,14 @@ class TestGeometry(unittest.TestCase):
 
         #2D parallel degrees
         astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_deg)
-        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
+        np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #2D cone
         astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_cone)
 
         self.assertEqual(astra_sino['type'], 'cone_vec')
 
-        vectors = numpy.zeros((3,12),dtype='float64')
+        vectors = np.zeros((3,12),dtype='float64')
 
         vectors[0][1] = -1 * self.ag_cone.dist_source_center
         vectors[0][4] = self.ag_cone.dist_center_detector
@@ -199,14 +192,14 @@ class TestGeometry(unittest.TestCase):
         vectors[2][6] = -1 * self.ag_cone.pixel_size_h
         vectors[2][11] = self.ag_cone.pixel_size_h       
 
-        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
+        np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #3D cone
         astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig3, self.ag3_cone)
 
         self.assertEqual(astra_sino['type'], 'cone_vec')
 
-        vectors = numpy.zeros((3,12),dtype='float64')
+        vectors = np.zeros((3,12),dtype='float64')
 
         vectors[0][1] = -1 * self.ag_cone.dist_source_center
         vectors[0][4] = self.ag_cone.dist_center_detector
@@ -223,5 +216,5 @@ class TestGeometry(unittest.TestCase):
         vectors[2][6] = -1 * self.ag_cone.pixel_size_h
         vectors[2][11] = self.ag_cone.pixel_size_h       
 
-        numpy.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
+        np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
         

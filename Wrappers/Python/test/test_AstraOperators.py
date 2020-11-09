@@ -16,18 +16,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 import unittest
-import numpy as np
 from cil.framework import ImageGeometry, AcquisitionGeometry
-from cil.framework import ImageData, AcquisitionData
-from cil.framework import BlockDataContainer
-import functools
-
-from cil.optimisation.operators import Gradient, Identity, BlockOperator
-from cil.optimisation.operators import LinearOperator
-
 from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
-from cil.plugins.astra.operators import ProjectionOperator
-
+from cil.plugins.astra.operators import AstraOperator
+import numpy as np
 import astra
 use_cuda = True
 try:
