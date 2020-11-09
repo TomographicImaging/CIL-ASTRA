@@ -18,7 +18,7 @@
 import unittest
 from cil.framework import ImageGeometry, AcquisitionGeometry
 from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
-from cil.plugins.astra.operators import AstraOperator
+from cil.plugins.astra.operators import ProjectionOperator
 import numpy as np
 import astra
 use_cuda = True

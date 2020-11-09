@@ -1,6 +1,6 @@
-from ccpi.framework import DataProcessor, ImageGeometry, AcquisitionGeometry, ImageData
-from ccpi.astra.processors.FDK_Flexible import FDK_Flexible
-from ccpi.astra.utils import convert_geometry_to_astra_vec
+from cil.framework import DataProcessor, ImageGeometry, AcquisitionGeometry, ImageData
+from cil.plugins.astra.processors.FDK_Flexible import FDK_Flexible
+from cil.plugins.astra.utils import convert_geometry_to_astra_vec
 import astra
 import numpy
 
