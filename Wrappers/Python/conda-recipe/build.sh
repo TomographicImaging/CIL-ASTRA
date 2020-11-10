@@ -10,4 +10,5 @@ cp -v ${RECIPE_DIR}/../setup.py ${SRC_DIR}/ccpi
 
 cd ${SRC_DIR}/ccpi
 echo "Python command is ${PYTHON}"
+nvidia-smi
 ${PYTHON} setup.py install
