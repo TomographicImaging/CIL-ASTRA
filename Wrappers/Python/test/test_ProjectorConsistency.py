@@ -170,7 +170,7 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         np.testing.assert_allclose(bp_flex_2.as_array(),bp_2.as_array())
 
 
-    @unittest.skipIf(has_astra and astra.use_cuda(), "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_2D(self):
         
         # #%% AstraProjectorSimple cpu
@@ -254,7 +254,7 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
             self.golden_data.fill(array=phantom, vertical=7+i)
 
         self.golden_data_cs = self.golden_data.subset(vertical=self.cs_ind, force=True)
-    @unittest.skipIf(has_astra and astra.use_cuda(), "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_consistency(self):
     
         # #%% AstraProjectorSimple cpu
@@ -292,7 +292,7 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
         np.testing.assert_allclose(bp_flex_0.as_array(),bp.as_array(),atol=12)
         np.testing.assert_allclose(bp_flex_1.as_array(),bp.as_array(),atol=12)
         np.testing.assert_allclose(bp_flex_2.as_array(),zeros.as_array())
-    @unittest.skipIf(has_astra and astra.use_cuda(), "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_3D(self):
         #%% AstraProjectorSimple gpu
         ig = self.ig_3D.copy()
@@ -337,7 +337,7 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
         np.testing.assert_allclose(bp_flex_2.as_array(),bp_2.as_array())
 
 
-    @unittest.skipIf(has_astra and astra.use_cuda(), "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_2D(self):
         
         # #%% AstraProjectorSimple cpu

@@ -91,7 +91,7 @@ class TestProcessors(unittest.TestCase):
         self.golden_data_cs = self.golden_data.subset(vertical=self.cs_ind)
 
 
-    @unittest.skipIf(has_astra and astra.use_cuda(), "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_FBPgpu(self):
 
         #2D cone
