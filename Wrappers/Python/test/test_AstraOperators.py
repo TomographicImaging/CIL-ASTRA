@@ -20,17 +20,22 @@ from cil.framework import ImageGeometry, AcquisitionGeometry
 from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
 from cil.plugins.astra.operators import ProjectionOperator
 import numpy as np
-import astra
-use_cuda = True
 try:
-    astra.test_CUDA()
-except RuntimeError as re:
-    print (re)
-    use_cuda = False
-except:
-    use_cuda = False
+    import astra
+    has_astra = True
+except ImportError as re:
+    has_astra = False
 
 
+class BasicAstraTests(unittest.TestCase):
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
+    def test_CUDA(self):
+        astra.test_CUDA()
+        assert True
+    @unittest.skipUnless(has_astra, "Astra not built with CUDA")
+    def test_noCUDA(self):
+        astra.test_noCUDA()
+        assert True
 
 class TestAstraSimple(unittest.TestCase):
     def setUp(self): 
@@ -59,7 +64,7 @@ class TestAstraSimple(unittest.TestCase):
         self.ag3 = ag3
         self.norm = 14.85
 
-    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_norm_simple2D_gpu(self):
         # test exists
         # Create projection operator using Astra-Toolbox. Available CPU/CPU
@@ -70,7 +75,7 @@ class TestAstraSimple(unittest.TestCase):
         print ("norm A GPU", n)
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
-
+    @unittest.skipUnless(has_astra, "Astra not built with CUDA")
     def test_norm_simple2D_cpu(self):
         # test exists
         # Create projection operator using Astra-Toolbox. Available CPU/CPU
@@ -82,7 +87,7 @@ class TestAstraSimple(unittest.TestCase):
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
     
-    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_norm_simple3D_gpu(self):
         # test exists
         A3 = AstraProjector3DSimple(self.ig3, self.ag3)
@@ -117,7 +122,7 @@ class TestAstraFlexible(unittest.TestCase):
         self.ag3 = ag3
         self.norm = 14.85
 
-    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_norm_flexible2D_gpu(self):
         # test exists
         # Create projection operator using Astra-Toolbox. Available CPU/CPU
@@ -137,7 +142,7 @@ class TestAstraFlexible(unittest.TestCase):
         with self.assertRaises(ValueError):
             A = AstraProjectorFlexible(ig_2, self.ag)
 
-    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_norm_flexible3D_gpu(self):
         # test exists
         A3 = AstraProjectorFlexible(self.ig3, self.ag3)
@@ -205,6 +210,7 @@ class TestProjectionOperator(unittest.TestCase):
         self.ag3_channel = ag3_channel
         self.norm = 14.85
 
+    @unittest.skipUnless(has_astra, "Astra not built with CUDA")
     def test_cpu(self):
         A = ProjectionOperator(self.ig, self.ag, device='cpu')
         n = A.norm()
@@ -219,7 +225,7 @@ class TestProjectionOperator(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             A = ProjectionOperator(self.ig3, self.ag3, device='cpu')
 
-    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_gpu(self):
         A = ProjectionOperator(self.ig, self.ag)
         n = A.norm()

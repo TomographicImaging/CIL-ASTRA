@@ -28,17 +28,12 @@ from cil.utilities.display import plotter2D
 import unittest
 import numpy as np
 
-import astra
-
-use_cuda = True
 try:
-    astra.test_CUDA()
-except RuntimeError as re:
+    import astra
+    has_astra = True
+except ImportError as re:
     print (re)
-    use_cuda = False
-except:
-    use_cuda = False
-
+    has_astra = False
 
 class TestProcessors(unittest.TestCase):
     def setUp(self): 
@@ -96,7 +91,7 @@ class TestProcessors(unittest.TestCase):
         self.golden_data_cs = self.golden_data.subset(vertical=self.cs_ind)
 
 
-    @unittest.skipIf(not use_cuda, "Astra not built with CUDA")
+    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_FBPgpu(self):
 
         #2D cone
@@ -142,7 +137,8 @@ class TestProcessors(unittest.TestCase):
         fbp.set_input(fp_3D)
         fbp_3D_parallel = fbp.get_output()
         np.testing.assert_allclose(fbp_3D_parallel.as_array(),self.golden_data.as_array(),atol=0.6)
-
+    
+    @unittest.skipUnless(has_astra, "Astra not built with CUDA")
     def test_FBPcpu(self):
         #2D parallel
         ag = self.ag_parallel.subset(vertical='centre')
