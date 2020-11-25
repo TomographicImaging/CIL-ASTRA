@@ -33,8 +33,11 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
             panel.pixel_size[1] =  panel.pixel_size[0]
 
         row = numpy.zeros((3,1))
-        row[0] = panel.pixel_size[0] * system.detector.direction_row[0]
-        row[1] = panel.pixel_size[0] * system.detector.direction_row[1]
+        row[0] = panel.pixel_size[0] * system.detector.direction_x[0]
+        row[1] = panel.pixel_size[0] * system.detector.direction_x[1]
+
+        if 'right' in panel.origin:
+            row *= -1
 
         col = numpy.zeros((3,1))
         col[2] = panel.pixel_size[1]
@@ -56,9 +59,14 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
     else:
         volume_geometry_temp = volume_geometry.copy()
  
-        row = panel.pixel_size[0] * system.detector.direction_row.reshape(3,1)
-        col = panel.pixel_size[1] * system.detector.direction_col.reshape(3,1)
+        row = panel.pixel_size[0] * system.detector.direction_x.reshape(3,1)
+        col = panel.pixel_size[1] * system.detector.direction_y.reshape(3,1)
         det = system.detector.position.reshape(3, 1)
+
+        if 'right' in panel.origin:
+            row *= -1
+        if 'top' in panel.origin:
+            col *= -1
 
         if sinogram_geometry.geom_type == 'parallel':
             src = system.ray.direction.reshape(3,1)
