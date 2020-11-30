@@ -34,13 +34,13 @@ class FBP_Flexible(FDK_Flexible):
         #reverse ray direction unit-vector direction and extend to inf
         cone_source = -sino_geom_cone.config.system.ray.direction * sino_geom_cone.config.panel.pixel_size[1] * sino_geom_cone.config.panel.num_pixels[1] * 1e6
         detector_position = sino_geom_cone.config.system.detector.position
-        detector_direction_row = sino_geom_cone.config.system.detector.direction_row
+        detector_direction_x = sino_geom_cone.config.system.detector.direction_x
 
         if sinogram_geometry.dimension == '2D':
-            tmp = AcquisitionGeometry.create_Cone2D(cone_source, detector_position, detector_direction_row)
+            tmp = AcquisitionGeometry.create_Cone2D(cone_source, detector_position, detector_direction_x)
         else:
-            detector_direction_col = sino_geom_cone.config.system.detector.direction_col
-            tmp = AcquisitionGeometry.create_Cone3D(cone_source, detector_position, detector_direction_row, detector_direction_col)
+            detector_direction_y = sino_geom_cone.config.system.detector.direction_y
+            tmp = AcquisitionGeometry.create_Cone3D(cone_source, detector_position, detector_direction_x, detector_direction_y)
 
         sino_geom_cone.config.system = tmp.config.system.copy()
 
