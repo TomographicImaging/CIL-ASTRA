@@ -104,7 +104,7 @@ class AstraBackProjectorVec(DataProcessor):
             data_temp = DATA.as_array()
 
         if out is None:
-            rec_id, arr_out = self.create_backprojection3d_gpu(data_temp,
+            rec_id, arr_out = astra.create_backprojection3d_gpu(data_temp,
                             self.proj_geom,
                             self.vol_geom)
         else:
