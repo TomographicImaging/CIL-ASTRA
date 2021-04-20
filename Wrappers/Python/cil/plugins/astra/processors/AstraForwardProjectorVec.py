@@ -1,5 +1,6 @@
 from cil.framework import DataProcessor, AcquisitionData
 from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
+import astra
 from astra import astra_dict, algorithm, data3d
 import numpy as np
 
