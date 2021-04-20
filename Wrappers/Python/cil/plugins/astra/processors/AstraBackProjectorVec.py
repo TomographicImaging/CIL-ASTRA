@@ -1,4 +1,4 @@
-from cil.framework import DataProcessor, ImageData
+from cil.framework import DataProcessor, ImageData, DataOrder
 from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
 import astra
 import numpy
@@ -13,11 +13,6 @@ class AstraBackProjectorVec(DataProcessor):
     Parameter: proj_geom, vol_geom
     Output: ImageData
     '''
-
-    ASTRA_LABELS_VOL_3D = ['vertical','horizontal_y','horizontal_x']
-    ASTRA_LABELS_PROJ_3D = ['vertical','angle','horizontal']
-    ASTRA_LABELS_VOL_2D = ['horizontal_y','horizontal_x']
-    ASTRA_LABELS_PROJ_2D = ['angle','horizontal']
 
     def __init__(self,
                  volume_geometry=None,
@@ -41,52 +36,26 @@ class AstraBackProjectorVec(DataProcessor):
     
     def check_input(self, dataset):
 
-        dim = len(dataset.dimension_labels)
-
-        if dim == 3:
-            order = [dataset.dimension_labels[0],dataset.dimension_labels[1],dataset.dimension_labels[2]]
-            if order != AstraBackProjectorVec.ASTRA_LABELS_PROJ_3D:
-                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_PROJ_3D, order))  
-        elif dim == 2:
-            order = [dataset.dimension_labels[0],dataset.dimension_labels[1]]
-            if order != AstraBackProjectorVec.ASTRA_LABELS_PROJ_2D:
-                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_PROJ_2D, order))  
-        else:
-            raise ValueError("Supports 2D and 3D data only, got {0}".format(dataset.number_of_dimensions))  
-
+        if self.sinogram_geometry.shape != dataset.geometry.shape:
+            raise ValueError("Dataset not compatible with geometry used to create the projector")  
+    
         return True
-        
-
+    
     def set_ImageGeometry(self, volume_geometry):
-        
-        dim = len(volume_geometry.dimension_labels)
-        if dim == 3:
-            order = [volume_geometry.dimension_labels[0],volume_geometry.dimension_labels[1],volume_geometry.dimension_labels[2]]
-            if order != AstraBackProjectorVec.ASTRA_LABELS_VOL_3D:
-                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_VOL_3D, order))  
-        elif dim == 2:
-            order = [volume_geometry.dimension_labels[0],volume_geometry.dimension_labels[1]]
-            if order != AstraBackProjectorVec.ASTRA_LABELS_VOL_2D:
-                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_VOL_2D, order))  
-        else:
+
+        DataOrder.check_order_for_engine('astra', volume_geometry)
+
+        if len(volume_geometry.dimension_labels) > 3:
             raise ValueError("Supports 2D and 3D data only, got {0}".format(volume_geometry.number_of_dimensions))  
 
         self.volume_geometry = volume_geometry.copy()
 
     def set_AcquisitionGeometry(self, sinogram_geometry):
 
-        dim = len(sinogram_geometry.dimension_labels)
+        DataOrder.check_order_for_engine('astra', sinogram_geometry)
 
-        if dim == 3:
-            order = [sinogram_geometry.dimension_labels[0],sinogram_geometry.dimension_labels[1],sinogram_geometry.dimension_labels[2]]
-            if order != AstraBackProjectorVec.ASTRA_LABELS_PROJ_3D:
-                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_PROJ_3D, order))  
-        elif dim == 2:
-            order = [sinogram_geometry.dimension_labels[0],sinogram_geometry.dimension_labels[1]]
-            if order != AstraBackProjectorVec.ASTRA_LABELS_PROJ_2D:
-                raise ValueError("Acquistion geometry expects dimension label order {0} for ASTRA compatibility got {1}".format(AstraBackProjectorVec.ASTRA_LABELS_PROJ_2D, order))  
-        else:
-            raise ValueError("Supports 2D and 3D data only, got {0}".format(sinogram_geometry.number_of_dimensions))  
+        if len(sinogram_geometry.dimension_labels) > 3:
+            raise ValueError("Supports 2D and 3D data only, got {0}".format(volume_geometry.number_of_dimensions))  
 
         self.sinogram_geometry = sinogram_geometry.copy()
 

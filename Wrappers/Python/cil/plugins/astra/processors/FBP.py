@@ -20,6 +20,7 @@
 #=========================================================================
 
 from cil.framework import DataProcessor
+from cil.framework import DataOrder
 from cil.plugins.astra.processors.FBP_Flexible import FBP_Flexible
 from cil.plugins.astra.processors.FDK_Flexible import FDK_Flexible
 from cil.plugins.astra.processors.FBP_Simple import FBP_Simple
@@ -46,7 +47,10 @@ class FBP(DataProcessor):
     
     def __init__(self, volume_geometry, sinogram_geometry, device='gpu'): 
         
-        if device is 'gpu':
+        DataOrder.check_order_for_engine('astra', volume_geometry)
+        DataOrder.check_order_for_engine('astra', sinogram_geometry) 
+
+        if device == 'gpu':
             if sinogram_geometry.geom_type == 'parallel':
                 processor = FBP_Flexible(volume_geometry, sinogram_geometry)
             else:
