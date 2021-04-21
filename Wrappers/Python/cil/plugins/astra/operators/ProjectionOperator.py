@@ -19,6 +19,7 @@
 #
 #=========================================================================
 
+from cil.framework import DataOrder
 from cil.optimisation.operators import LinearOperator, ChannelwiseOperator
 from cil.plugins.astra.operators import AstraProjectorFlexible
 from cil.plugins.astra.operators import AstraProjectorSimple
@@ -29,13 +30,16 @@ class ProjectionOperator(LinearOperator):
         
         super(ProjectionOperator, self).__init__(domain_geometry=geomv, range_geometry=geomp)
 
+        DataOrder.check_order_for_engine('astra', geomv)
+        DataOrder.check_order_for_engine('astra', geomp) 
+
         self.volume_geometry = geomv
         self.sinogram_geometry = geomp
 
         sinogram_geometry_sc = geomp.subset(channel=0)
         volume_geometry_sc = geomv.subset(channel=0)
 
-        if device is 'gpu':
+        if device == 'gpu':
             operator = AstraProjectorFlexible(volume_geometry_sc, sinogram_geometry_sc)
         else:
             UserWarning("ASTRA projectors running on CPU will not make use of enhanced geometry parameters")
