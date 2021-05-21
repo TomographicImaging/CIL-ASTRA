@@ -1,12 +1,10 @@
 package:
   name: cil-astra
-  version: {{ environ['CIL_VERSION'] }}
+  version: {{ GIT_DESCRIBE_TAG }}
 
 build:
   skip: True # [py==38 and np==115]
-  preserve_egg_dir: False
-  script_env:
-    - CIL_VERSION   
+  preserve_egg_dir: False 
 #  number: 0
   
 test:
