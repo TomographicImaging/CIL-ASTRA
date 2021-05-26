@@ -25,11 +25,17 @@ import sys
 
 
 cil_version = os.system('git describe')
-fname = os.path.join(os.getcwd(), 'cil', 'plugins', 'astra', 'version.py')
+
+if os.environ.get('CONDA_BUILD', 0) == 0:
+      cwd = os.getcwd()
+else:
+      cwd = os.path.join(os.environ.get('RECIPE_DIR'),'..')
+
+fname = os.path.join(cwd, 'cil', 'plugins', 'astra', 'version.py')
 
 if os.path.exists(fname):
     os.remove(fname)
-with open(fname, 'w+') as f:
+with open(fname, 'w') as f:
     f.write('version = \'{}\''.format(cil_version))
 
 
