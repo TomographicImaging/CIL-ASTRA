@@ -25,7 +25,7 @@ import sys
 
 
 cil_version = os.system('git describe')
-fname = os.path.join(os.path.getcwd(), 'cil', 'plugins', 'astra', 'version.py')
+fname = os.path.join(os.getcwd(), 'cil', 'plugins', 'astra', 'version.py')
 
 if os.path.exists(fname):
     os.remove(fname)
