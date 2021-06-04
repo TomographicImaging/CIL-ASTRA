@@ -1,5 +1,5 @@
 from cil.framework import DataProcessor, ImageData
-from cil.plugins.astra.utilities import convert_geometry_to_astra
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_2D
 import astra
 
 
@@ -30,10 +30,8 @@ class AstraBackProjector(DataProcessor):
         
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
-                
-        # Set up ASTRA Volume and projection geometry, not to be stored in self
-        vol_geom, proj_geom = convert_geometry_to_astra(self.volume_geometry,
-                                                        self.sinogram_geometry)
+        
+        vol_geom, proj_geom = convert_geometry_to_astra_vec_2D(self.volume_geometry, self.sinogram_geometry)
         
         # ASTRA projector, to be stored
         if device == 'cpu':

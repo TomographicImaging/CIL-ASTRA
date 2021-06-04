@@ -58,16 +58,4 @@ class AstraProjectorSimple(LinearOperator):
 
 
 
-if __name__  == '__main__':
-    
-    from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    import numpy as np
-    
-    N = 30
-    angles = np.linspace(0, np.pi, 180)
-    ig = ImageGeometry(N, N)
-    ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h = N)
-    A = AstraProjectorSimple(ig, ag, 'cpu')
-    print(A.norm())
-    
 
