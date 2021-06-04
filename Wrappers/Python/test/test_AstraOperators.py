@@ -17,7 +17,7 @@
 #   limitations under the License.
 import unittest
 from cil.framework import ImageGeometry, AcquisitionGeometry
-from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjector3DSimple, AstraProjectorFlexible
+from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjectorFlexible
 from cil.plugins.astra.operators import ProjectionOperator
 import numpy as np
 try:
@@ -87,14 +87,7 @@ class TestAstraSimple(unittest.TestCase):
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
     
-    @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
-    def test_norm_simple3D_gpu(self):
-        # test exists
-        A3 = AstraProjector3DSimple(self.ig3, self.ag3)
-        n = A3.norm()
-        print ("norm A3", n)
-        self.assertTrue(True)
-        self.assertAlmostEqual(n, self.norm, places=2)
+
 
 class TestAstraFlexible(unittest.TestCase):
     def setUp(self): 
