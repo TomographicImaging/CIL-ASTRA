@@ -82,7 +82,7 @@ class AstraForwardProjectorVec(DataProcessor):
                 arr_out = out.as_array()
                 
             sinogram_id = astra.data3d.link('-sino', self.proj_geom, arr_out)
-            self.create_backprojection3d_gpu(data_temp, self.proj_geom, self.vol_geom, False, sinogram_id)
+            self.create_sino3d_gpu(data_temp, self.proj_geom, self.vol_geom, False, sino_id=sinogram_id)
 
         #clear the memory on GPU
         astra.data3d.delete(sinogram_id)
@@ -96,7 +96,7 @@ class AstraForwardProjectorVec(DataProcessor):
         else:
             out.fill(arr_out)
 
-    def create_sino3d_gpu(data, proj_geom, vol_geom, returnData=True, gpuIndex=None, sino_id=None):
+    def create_sino3d_gpu(self, data, proj_geom, vol_geom, returnData=True, gpuIndex=None, sino_id=None):
         """Create a forward projection of an image (3D).
     :param data: Image data or ID.
     :type data: :class:`numpy.ndarray` or :class:`int`

@@ -96,7 +96,7 @@ class AstraBackProjectorVec(DataProcessor):
         else:
             out.fill(arr_out)
 
-    def create_backprojection3d_gpu(data, proj_geom, vol_geom, returnData=True, vol_id=None):
+    def create_backprojection3d_gpu(self, data, proj_geom, vol_geom, returnData=True, vol_id=None):
         """Create a backprojection of a sinogram (3D) using CUDA.
             :param data: Sinogram data or ID.
             :type data: :class:`numpy.ndarray` or :class:`int`
