@@ -6,5 +6,3 @@ from .AstraBackProjectorMC import AstraBackProjectorMC
 from .AstraForwardProjector3D import AstraForwardProjector3D
 from .AstraBackProjector3D import AstraBackProjector3D
 from .FBP import FBP
-from .AstraForwardProjector3D import AstraForwardProjector3D
-from .AstraBackProjector3D import AstraBackProjector3D
