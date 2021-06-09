@@ -20,26 +20,20 @@
 #=========================================================================
 
 from cil.optimisation.operators import LinearOperator
-from cil.plugins.astra.processors import AstraForwardProjector, AstraBackProjector
+from cil.plugins.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
 
-
-
-class AstraProjectorSimple(LinearOperator):
+class AstraProjector3D(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp, device):
-        super(AstraProjectorSimple, self).__init__(geomv, range_geometry=geomp)
+    def __init__(self, geomv, geomp):
         
-        self.fp = AstraForwardProjector(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        proj_id = None,
-                                        device=device)
+        super(AstraProjector3D, self).__init__(domain_geometry=geomv, range_geometry=geomp)
+                    
+        self.sinogram_geometry = geomp 
+        self.volume_geometry = geomv         
         
-        self.bp = AstraBackProjector(volume_geometry = geomv,
-                                        sinogram_geometry = geomp,
-                                        proj_id = None,
-                                        device = device)
-                           
-        
+        self.fp = AstraForwardProjector3D(volume_geometry=geomv, sinogram_geometry=geomp)       
+        self.bp = AstraBackProjector3D(volume_geometry=geomv, sinogram_geometry=geomp)
+                      
     def direct(self, IM, out=None):
         self.fp.set_input(IM)
         
@@ -56,6 +50,9 @@ class AstraProjectorSimple(LinearOperator):
         else:
             out.fill(self.bp.get_output())
 
-
-
+    def domain_geometry(self):
+        return self.volume_geometry
+    
+    def range_geometry(self):
+        return self.sinogram_geometry 
 

@@ -19,7 +19,7 @@ import unittest
 
 from cil.framework import ImageGeometry, AcquisitionGeometry
 from cil.plugins.astra.utilities import convert_geometry_to_astra
-from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_3D
 import numpy as np
 
 class TestGeometry(unittest.TestCase):
@@ -130,9 +130,9 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
         np.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles)
 
-    def test_convert_geometry_to_astra_vec(self):
+    def test_convert_geometry_to_astra_vec_3D(self):
         #2D parallel radians
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig, self.ag)
 
         self.assertEqual(astra_sino['type'],  'parallel3d_vec')
         self.assertEqual(astra_sino['DetectorRowCount'], 1.0)
@@ -167,11 +167,11 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_vol['option']['WindowMaxZ'], + self.ig.voxel_size_x * 0.5)
 
         #2D parallel degrees
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_deg)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig, self.ag_deg)
         np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #2D cone
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_cone)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig, self.ag_cone)
 
         self.assertEqual(astra_sino['type'], 'cone_vec')
 
@@ -195,7 +195,7 @@ class TestGeometry(unittest.TestCase):
         np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #3D cone
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig3, self.ag3_cone)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig3, self.ag3_cone)
 
         self.assertEqual(astra_sino['type'], 'cone_vec')
 

@@ -1,6 +1,6 @@
 from cil.framework import DataProcessor, ImageGeometry, AcquisitionGeometry, ImageData
 from cil.plugins.astra.processors.FDK_Flexible import FDK_Flexible
-from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_3D
 import astra
 import numpy
 
@@ -44,7 +44,7 @@ class FBP_Flexible(FDK_Flexible):
 
         sino_geom_cone.config.system = tmp.config.system.copy()
 
-        self.vol_geom_astra, self.proj_geom_astra = convert_geometry_to_astra_vec(volume_geometry, sino_geom_cone)
+        self.vol_geom_astra, self.proj_geom_astra = convert_geometry_to_astra_vec_3D(volume_geometry, sino_geom_cone)
                            
     def check_input(self, dataset):
         

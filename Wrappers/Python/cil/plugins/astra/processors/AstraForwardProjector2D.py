@@ -3,8 +3,8 @@ from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_2D
 import astra
 
 
-class AstraForwardProjector(DataProcessor):
-    '''AstraForwardProjector
+class AstraForwardProjector2D(DataProcessor):
+    '''AstraForwardProjector2D
     
     Forward project ImageData to AcquisitionData using ASTRA proj_id.
     
@@ -26,7 +26,7 @@ class AstraForwardProjector(DataProcessor):
                   }
         
         #DataProcessor.__init__(self, **kwargs)
-        super(AstraForwardProjector, self).__init__(**kwargs)
+        super(AstraForwardProjector2D, self).__init__(**kwargs)
         
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)

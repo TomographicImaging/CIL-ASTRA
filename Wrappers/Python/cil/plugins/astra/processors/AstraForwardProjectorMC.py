@@ -1,11 +1,11 @@
 from cil.framework import AcquisitionData
 
-from cil.plugins.astra.processors import AstraForwardProjector
+from cil.plugins.astra.processors import AstraForwardProjector2D
 
 import astra
 
-class AstraForwardProjectorMC(AstraForwardProjector):
-    '''AstraForwardProjector Multi channel
+class AstraForwardProjectorMC(AstraForwardProjector2D):
+    '''AstraForwardProjector2D Multi channel
     
     Forward project ImageData to AcquisitionDataSet using ASTRA proj_id.
     

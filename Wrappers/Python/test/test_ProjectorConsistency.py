@@ -18,7 +18,7 @@
 
 from cil.framework import ImageGeometry, AcquisitionGeometry
 
-from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjectorFlexible
+from cil.plugins.astra.operators import AstraProjector2D, AstraProjector3D
 from cil.plugins.astra.operators import ProjectionOperator
 from cil.utilities.display import show2D
 import unittest
@@ -91,35 +91,35 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
     @unittest.skipUnless(has_astra, "Astra not available")
     def test_consistency(self):
     
-        # #%% AstraProjectorSimple cpu
+        # #%% AstraProjector2D cpu
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
-        A = AstraProjectorSimple(ig, ag, device='cpu')
+        A = AstraProjector2D(ig, ag, device='cpu')
         fp = A.direct(self.golden_data_cs)
         bp = A.adjoint(fp)
 
-        # #%% AstraProjectorSimple gpu
+        # #%% AstraProjector2D gpu
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
-        A = AstraProjectorSimple(ig, ag, device='gpu')
+        A = AstraProjector2D(ig, ag, device='gpu')
         fp_gpu = A.direct(self.golden_data_cs)
         bp_gpu = A.adjoint(fp_gpu)
 
-        # #%% AstraProjectorFlexible as 2D
+        # #%% AstraProjector3D as 2D
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
-        A = AstraProjectorFlexible(ig, ag)
+        A = AstraProjector3D(ig, ag)
         fp_flex_2D = A.direct(self.golden_data_cs)
         bp_flex_2D = A.adjoint(fp_flex_2D)
 
-        # #%% AstraProjectorFlexible
+        # #%% AstraProjector3D
         ig = self.ig_3D.copy()
         ag = self.ag.copy()
 
-        A = AstraProjectorFlexible(ig, ag)
+        A = AstraProjector3D(ig, ag)
         fp_flex_3D = A.direct(self.golden_data)
         bp_flex_3D = A.adjoint(fp_flex_3D)
 
@@ -151,7 +151,7 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
     @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_ProjectionOperator(self):
         
-        # #%% AstraProjectorSimple cpu
+        # #%% AstraProjector2D cpu
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
@@ -159,7 +159,7 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         fp = A.direct(self.golden_data_cs)
         bp = A.adjoint(fp)
 
-        # #%% AstraProjectorSimple gpu
+        # #%% AstraProjector2D gpu
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
@@ -167,7 +167,7 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         fp_gpu = A.direct(self.golden_data_cs)
         bp_gpu = A.adjoint(fp_gpu)
 
-        # #%% AstraProjectorFlexible
+        # #%% AstraProjector3D
         ig = self.ig_3D.copy()
         ag = self.ag.copy()
 
@@ -177,7 +177,7 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         except NotImplementedError:
             assert True
 
-        # #%% AstraProjectorFlexible
+        # #%% AstraProjector3D
         ig = self.ig_3D.copy()
         ag = self.ag.copy()
 
@@ -259,19 +259,19 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
     @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_consistency(self):
     
-        # #%% AstraProjectorSimple cpu
+        # #%% AstraProjector2D cpu
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
-        A = AstraProjectorSimple(ig, ag, device='cpu')
+        A = AstraProjector2D(ig, ag, device='cpu')
         fp = A.direct(self.golden_data_cs)
         bp = A.adjoint(fp)
 
-        # #%% AstraProjectorFlexible
+        # #%% AstraProjector3D
         ig = self.ig_3D.copy()
         ag = self.ag.copy()
 
-        A = AstraProjectorFlexible(ig, ag)
+        A = AstraProjector3D(ig, ag)
         flex_fp = A.direct(self.golden_data)
         flex_bp = A.adjoint(flex_fp)
 
@@ -298,7 +298,7 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
     @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
     def test_ProjectionOperator(self):
         
-        # #%% AstraProjectorSimple cpu
+        # #%% AstraProjector2D cpu
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
@@ -306,7 +306,7 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
         fp = A.direct(self.golden_data_cs)
         bp = A.adjoint(fp)
 
-        # #%% AstraProjectorSimple gpu
+        # #%% AstraProjector2D gpu
         ig = self.ig_2D.copy()
         ag = self.ag_slice.copy()
 
@@ -314,7 +314,7 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
         fp_gpu = A.direct(self.golden_data_cs)
         bp_gpu = A.adjoint(fp_gpu)
 
-        # #%% AstraProjectorFlexible
+        # #%% AstraProjector3D
         ig = self.ig_3D.copy()
         ag = self.ag.copy()
 
@@ -324,7 +324,7 @@ class TestAstraParallelBeamProjectors(unittest.TestCase):
         except NotImplementedError:
             assert True
 
-        # #%% AstraProjectorFlexible
+        # #%% AstraProjector3D
         ig = self.ig_3D.copy()
         ag = self.ag.copy()
 

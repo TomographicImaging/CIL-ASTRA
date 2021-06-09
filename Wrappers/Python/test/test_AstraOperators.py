@@ -17,7 +17,7 @@
 #   limitations under the License.
 import unittest
 from cil.framework import ImageGeometry, AcquisitionGeometry
-from cil.plugins.astra.operators import AstraProjectorSimple, AstraProjectorFlexible
+from cil.plugins.astra.operators import AstraProjector2D, AstraProjector3D
 from cil.plugins.astra.operators import ProjectionOperator
 import numpy as np
 try:
@@ -37,7 +37,7 @@ class BasicAstraTests(unittest.TestCase):
         astra.test_noCUDA()
         assert True
 
-class TestAstraSimple(unittest.TestCase):
+class TestAstra2D(unittest.TestCase):
     def setUp(self): 
 
         N = 128
@@ -65,22 +65,22 @@ class TestAstraSimple(unittest.TestCase):
         self.norm = 14.85
 
     @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
-    def test_norm_simple2D_gpu(self):
+    def test_norm_2D_gpu(self):
         # test exists
         # Create projection operator using Astra-Toolbox. Available CPU/CPU
         device = 'gpu'
-        A = AstraProjectorSimple(self.ig, self.ag, device = device)
+        A = AstraProjector2D(self.ig, self.ag, device = device)
 
         n = A.norm()
         print ("norm A GPU", n)
         self.assertTrue(True)
         self.assertAlmostEqual(n, self.norm, places=2)
     @unittest.skipUnless(has_astra, "Astra not built with CUDA")
-    def test_norm_simple2D_cpu(self):
+    def test_norm_2D_cpu(self):
         # test exists
         # Create projection operator using Astra-Toolbox. Available CPU/CPU
         device = 'cpu'
-        A = AstraProjectorSimple(self.ig, self.ag, device = device)
+        A = AstraProjector2D(self.ig, self.ag, device = device)
 
         n = A.norm()
         print ("norm A CPU", n)
@@ -89,7 +89,7 @@ class TestAstraSimple(unittest.TestCase):
     
 
 
-class TestAstraFlexible(unittest.TestCase):
+class TestAstra3D(unittest.TestCase):
     def setUp(self): 
         N = 128
         angles = np.linspace(0, np.pi, 180, dtype='float32')
@@ -116,10 +116,10 @@ class TestAstraFlexible(unittest.TestCase):
         self.norm = 14.85
 
     @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
-    def test_norm_flexible2D_gpu(self):
+    def test_norm_as2D_gpu(self):
         # test exists
         # Create projection operator using Astra-Toolbox. Available CPU/CPU
-        A = AstraProjectorFlexible(self.ig, self.ag)
+        A = AstraProjector3D(self.ig, self.ag)
         n = A.norm()
         print ("norm A GPU", n)
         self.assertTrue(True)
@@ -128,17 +128,17 @@ class TestAstraFlexible(unittest.TestCase):
         ag_2 = self.ag.copy()
         ag_2.dimension_labels = ['horizontal','angle']
         with self.assertRaises(ValueError):
-            A = AstraProjectorFlexible(self.ig, ag_2)
+            A = AstraProjector3D(self.ig, ag_2)
 
         ig_2 = self.ig3.copy()
         ig_2.dimension_labels = ['horizontal_x','horizontal_y']
         with self.assertRaises(ValueError):
-            A = AstraProjectorFlexible(ig_2, self.ag)
+            A = AstraProjector3D(ig_2, self.ag)
 
     @unittest.skipUnless(has_astra and astra.use_cuda(), "Astra not built with CUDA")
-    def test_norm_flexible3D_gpu(self):
+    def test_norm_3D_gpu(self):
         # test exists
-        A3 = AstraProjectorFlexible(self.ig3, self.ag3)
+        A3 = AstraProjector3D(self.ig3, self.ag3)
         n = A3.norm()
         print ("norm A3", n)
         self.assertTrue(True)
@@ -147,12 +147,12 @@ class TestAstraFlexible(unittest.TestCase):
         ag3_2 = self.ag3.copy()
         ag3_2.dimension_labels = ['angle','vertical','horizontal']
         with self.assertRaises(ValueError):
-            A3 = AstraProjectorFlexible(self.ig3, ag3_2)
+            A3 = AstraProjector3D(self.ig3, ag3_2)
 
         ig3_2 = self.ig3.copy()
         ig3_2.dimension_labels = ['horizontal_y','vertical','horizontal_x']
         with self.assertRaises(ValueError):
-            A3 = AstraProjectorFlexible(ig3_2, self.ag3)
+            A3 = AstraProjector3D(ig3_2, self.ag3)
 
 class TestProjectionOperator(unittest.TestCase):
     def setUp(self): 

@@ -21,8 +21,8 @@
 
 from cil.framework import DataOrder
 from cil.optimisation.operators import LinearOperator, ChannelwiseOperator
-from cil.plugins.astra.operators import AstraProjectorFlexible
-from cil.plugins.astra.operators import AstraProjectorSimple
+from cil.plugins.astra.operators import AstraProjector3D
+from cil.plugins.astra.operators import AstraProjector2D
 
 class ProjectionOperator(LinearOperator):
     """ASTRA projector modified to use DataSet and geometry."""
@@ -39,11 +39,11 @@ class ProjectionOperator(LinearOperator):
         sinogram_geometry_sc = acquisition_geometry.subset(channel=0)
         volume_geometry_sc = image_geometry.subset(channel=0)
 
-        if device == 'gpu':
-            operator = AstraProjectorFlexible(volume_geometry_sc, sinogram_geometry_sc)
+        if self.sinogram_geometry.dimension == '2D':
+            operator = AstraProjector2D(volume_geometry_sc, sinogram_geometry_sc,  device=device)
         else:
-            if self.sinogram_geometry.dimension == '2D':
-                operator = AstraProjectorSimple(volume_geometry_sc, sinogram_geometry_sc,  device='cpu') 
+            if device == 'gpu':
+                operator = AstraProjector3D(volume_geometry_sc, sinogram_geometry_sc)
             else:
                 raise NotImplementedError("Cannot process 3D data without a GPU")
 

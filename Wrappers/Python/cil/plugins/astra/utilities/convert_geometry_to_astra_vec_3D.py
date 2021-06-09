@@ -1,7 +1,7 @@
 import astra
 import numpy
 
-def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
+def convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry_in):
 
     '''Set up ASTRA Volume and projection geometry, not stored
 

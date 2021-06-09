@@ -1,11 +1,11 @@
 from cil.framework import DataProcessor, AcquisitionData, DataOrder
-from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_3D
 import astra
 from astra import astra_dict, algorithm, data3d
 import numpy as np
 
-class AstraForwardProjectorVec(DataProcessor):
-    '''AstraForwardProjectorVec
+class AstraForwardProjector3D(DataProcessor):
+    '''AstraForwardProjector3D
     
     Forward project ImageData to AcquisitionData using ASTRA projector.
     
@@ -25,12 +25,12 @@ class AstraForwardProjectorVec(DataProcessor):
                   'vol_geom'  : vol_geom,
                   }
         
-        super(AstraForwardProjectorVec, self).__init__(**kwargs)
+        super(AstraForwardProjector3D, self).__init__(**kwargs)
         
         self.set_ImageGeometry(volume_geometry)
         self.set_AcquisitionGeometry(sinogram_geometry)
         
-        self.vol_geom, self.proj_geom = convert_geometry_to_astra_vec(self.volume_geometry, self.sinogram_geometry)
+        self.vol_geom, self.proj_geom = convert_geometry_to_astra_vec_3D(self.volume_geometry, self.sinogram_geometry)
         
     def check_input(self, dataset):
 
