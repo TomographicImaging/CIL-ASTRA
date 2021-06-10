@@ -74,4 +74,4 @@ class ProjectionOperator(LinearOperator):
         return self.volume_geometry
     
     def range_geometry(self):
-        return self.sinogram_geometry 
+        return self.sinogram_geometry
