@@ -25,17 +25,25 @@ from cil.plugins.astra.processors import AstraForwardProjector2D, AstraBackProje
 
 
 class AstraProjector2D(LinearOperator):
-    """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp, device):
-        super(AstraProjector2D, self).__init__(geomv, range_geometry=geomp)
+    r'''AstraProjector22D wraps ASTRA 2D Projectors for CPU and GPU.
+    
+    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+    :type image_geometry: ImageGeometry
+    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+    :type acquisition_geometry: AcquisitionGeometry
+    :param device: The device to run on 'gpu' or 'cpu'
+    :type device: string
+    '''
+    def __init__(self, image_geometry, acquisition_geometry, device):
+        super(AstraProjector2D, self).__init__(image_geometry, range_geometry=acquisition_geometry)
         
-        self.fp = AstraForwardProjector2D(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
+        self.fp = AstraForwardProjector2D(volume_geometry=image_geometry,
+                                        sinogram_geometry=acquisition_geometry,
                                         proj_id = None,
                                         device=device)
         
-        self.bp = AstraBackProjector2D(volume_geometry = geomv,
-                                        sinogram_geometry = geomp,
+        self.bp = AstraBackProjector2D(volume_geometry = image_geometry,
+                                        sinogram_geometry = acquisition_geometry,
                                         proj_id = None,
                                         device = device)
                            

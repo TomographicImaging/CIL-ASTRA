@@ -23,16 +23,22 @@ from cil.optimisation.operators import LinearOperator
 from cil.plugins.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
 
 class AstraProjector3D(LinearOperator):
-    """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp):
+    r'''AstraProjector3D wraps ASTRA 3D Projectors for GPU.
+    
+    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+    :type image_geometry: ImageGeometry
+    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+    :type acquisition_geometry: AcquisitionGeometry
+    '''
+    def __init__(self, image_geometry, acquisition_geometry):
         
-        super(AstraProjector3D, self).__init__(domain_geometry=geomv, range_geometry=geomp)
+        super(AstraProjector3D, self).__init__(domain_geometry=image_geometry, range_geometry=acquisition_geometry)
                     
-        self.sinogram_geometry = geomp 
-        self.volume_geometry = geomv         
+        self.sinogram_geometry = acquisition_geometry 
+        self.volume_geometry = image_geometry         
         
-        self.fp = AstraForwardProjector3D(volume_geometry=geomv, sinogram_geometry=geomp)       
-        self.bp = AstraBackProjector3D(volume_geometry=geomv, sinogram_geometry=geomp)
+        self.fp = AstraForwardProjector3D(volume_geometry=image_geometry, sinogram_geometry=acquisition_geometry)       
+        self.bp = AstraBackProjector3D(volume_geometry=image_geometry, sinogram_geometry=acquisition_geometry)
                       
     def direct(self, IM, out=None):
         self.fp.set_input(IM)

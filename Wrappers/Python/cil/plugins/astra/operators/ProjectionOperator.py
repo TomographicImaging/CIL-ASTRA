@@ -25,7 +25,16 @@ from cil.plugins.astra.operators import AstraProjector3D
 from cil.plugins.astra.operators import AstraProjector2D
 
 class ProjectionOperator(LinearOperator):
-    """ASTRA projector modified to use DataSet and geometry."""
+    r'''ProjectionOperator wraps ASTRA 3D Projector for GPU, and ASTRA 2D Projectors for CPU. Broadcasts the operator accross all channels.
+    
+    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+    :type image_geometry: ImageGeometry
+    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+    :type acquisition_geometry: AcquisitionGeometry
+    :param device: The device to run on 'gpu' or 'cpu'. 'gpu' will use the ASTRA 3D Projectors, 'cpu' will use the ASTRA 2D Projectors
+    :type device: string, default='gpu'
+    '''
+
     def __init__(self, image_geometry, acquisition_geometry, device='gpu'):
         
         super(ProjectionOperator, self).__init__(domain_geometry=image_geometry, range_geometry=acquisition_geometry)
@@ -39,13 +48,12 @@ class ProjectionOperator(LinearOperator):
         sinogram_geometry_sc = acquisition_geometry.subset(channel=0)
         volume_geometry_sc = image_geometry.subset(channel=0)
 
-        if self.sinogram_geometry.dimension == '2D':
+        if device == 'gpu':
+            operator = AstraProjector3D(volume_geometry_sc, sinogram_geometry_sc)
+        elif self.sinogram_geometry.dimension == '2D':
             operator = AstraProjector2D(volume_geometry_sc, sinogram_geometry_sc,  device=device)
         else:
-            if device == 'gpu':
-                operator = AstraProjector3D(volume_geometry_sc, sinogram_geometry_sc)
-            else:
-                raise NotImplementedError("Cannot process 3D data without a GPU")
+            raise NotImplementedError("Cannot process 3D data without a GPU")
 
         if acquisition_geometry.channels > 1: 
             operator_full = ChannelwiseOperator(operator, self.sinogram_geometry.channels, dimension='prepend')

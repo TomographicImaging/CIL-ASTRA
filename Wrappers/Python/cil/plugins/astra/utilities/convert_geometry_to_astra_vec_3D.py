@@ -24,10 +24,9 @@ def convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry_in):
         #create a 3D astra geom from 2D CIL geometry
         volume_geometry_temp = volume_geometry.copy()
         volume_geometry_temp.voxel_num_z = 1
+
         volume_geometry_temp.voxel_size_z = volume_geometry_temp.voxel_size_x
-            
-        if panel.pixel_size[1] != panel.pixel_size[0]:
-            panel.pixel_size[1] =  panel.pixel_size[0]
+        panel.pixel_size[1] =  volume_geometry_temp.voxel_size_z * sinogram_geometry.magnification
 
         row = numpy.zeros((3,1))
         row[0] = panel.pixel_size[0] * system.detector.direction_x[0]

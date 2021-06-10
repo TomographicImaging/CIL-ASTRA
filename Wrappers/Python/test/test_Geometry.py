@@ -177,20 +177,21 @@ class TestGeometry(unittest.TestCase):
 
         vectors = np.zeros((3,12),dtype='float64')
 
+        pixel_size_v = self.ig.voxel_size_x * self.ag_cone.magnification
         vectors[0][1] = -1 * self.ag_cone.dist_source_center
         vectors[0][4] = self.ag_cone.dist_center_detector
         vectors[0][6] = self.ag_cone.pixel_size_h
-        vectors[0][11] = self.ag_cone.pixel_size_h
+        vectors[0][11] = pixel_size_v
 
         vectors[1][0] = -1 * self.ag_cone.dist_source_center
         vectors[1][3] = self.ag_cone.dist_center_detector
         vectors[1][7] = -self.ag_cone.pixel_size_h
-        vectors[1][11] = self.ag_cone.pixel_size_h
+        vectors[1][11] = pixel_size_v
 
         vectors[2][1] = self.ag_cone.dist_source_center
         vectors[2][4] = -1 * self.ag_cone.dist_center_detector
         vectors[2][6] = -1 * self.ag_cone.pixel_size_h
-        vectors[2][11] = self.ag_cone.pixel_size_h       
+        vectors[2][11] = pixel_size_v     
 
         np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
