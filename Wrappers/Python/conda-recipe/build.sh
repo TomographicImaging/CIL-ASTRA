@@ -1,7 +1,3 @@
-if [ -z "$CIL_VERSION" ]; then
-    echo "Need to set CIL_VERSION"
-    exit 1
-fi  
 set -x
 mkdir ${SRC_DIR}/ccpi
 cp -rv "${RECIPE_DIR}/../cil/" ${SRC_DIR}/ccpi
