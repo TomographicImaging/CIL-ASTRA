@@ -22,7 +22,7 @@
 
 from cil.optimisation.operators import LinearOperator
 from cil.plugins.astra.processors import AstraForwardProjectorMC, AstraBackProjectorMC
-from cil.plugins.astra.operators import AstraProjectorSimple
+from cil.plugins.astra.operators import AstraProjector2D
 
 
 class AstraProjectorMC(LinearOperator):
@@ -72,7 +72,7 @@ class AstraProjectorMC(LinearOperator):
         # agtmp.dimension_labels = ['angle', 'horizontal']
         # agtmp.channels = 1        
         
-        Atmp = AstraProjectorSimple(igtmp, agtmp, device = self.device)
+        Atmp = AstraProjector2D(igtmp, agtmp, device = self.device)
                   
         return Atmp.norm()    
     

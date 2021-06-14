@@ -20,26 +20,26 @@
 #=========================================================================
 
 from cil.optimisation.operators import LinearOperator
-from cil.plugins.astra.processors import AstraForwardProjector, AstraBackProjector
+from cil.plugins.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
 
-
-
-class AstraProjectorSimple(LinearOperator):
-    """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp, device):
-        super(AstraProjectorSimple, self).__init__(geomv, range_geometry=geomp)
+class AstraProjector3D(LinearOperator):
+    r'''AstraProjector3D wraps ASTRA 3D Projectors for GPU.
+    
+    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+    :type image_geometry: ImageGeometry
+    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+    :type acquisition_geometry: AcquisitionGeometry
+    '''
+    def __init__(self, image_geometry, acquisition_geometry):
         
-        self.fp = AstraForwardProjector(volume_geometry=geomv,
-                                        sinogram_geometry=geomp,
-                                        proj_id = None,
-                                        device=device)
+        super(AstraProjector3D, self).__init__(domain_geometry=image_geometry, range_geometry=acquisition_geometry)
+                    
+        self.sinogram_geometry = acquisition_geometry 
+        self.volume_geometry = image_geometry         
         
-        self.bp = AstraBackProjector(volume_geometry = geomv,
-                                        sinogram_geometry = geomp,
-                                        proj_id = None,
-                                        device = device)
-                           
-        
+        self.fp = AstraForwardProjector3D(volume_geometry=image_geometry, sinogram_geometry=acquisition_geometry)       
+        self.bp = AstraBackProjector3D(volume_geometry=image_geometry, sinogram_geometry=acquisition_geometry)
+                      
     def direct(self, IM, out=None):
         self.fp.set_input(IM)
         
@@ -56,18 +56,9 @@ class AstraProjectorSimple(LinearOperator):
         else:
             out.fill(self.bp.get_output())
 
-
-
-if __name__  == '__main__':
+    def domain_geometry(self):
+        return self.volume_geometry
     
-    from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    import numpy as np
-    
-    N = 30
-    angles = np.linspace(0, np.pi, 180)
-    ig = ImageGeometry(N, N)
-    ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h = N)
-    A = AstraProjectorSimple(ig, ag, 'cpu')
-    print(A.norm())
-    
+    def range_geometry(self):
+        return self.sinogram_geometry 
 

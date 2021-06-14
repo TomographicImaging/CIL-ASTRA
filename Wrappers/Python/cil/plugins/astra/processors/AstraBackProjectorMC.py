@@ -1,12 +1,12 @@
 from cil.framework import  ImageData
 
 
-from cil.plugins.astra.processors import AstraBackProjector
+from cil.plugins.astra.processors import AstraBackProjector2D
 
 import astra
 
-class AstraBackProjectorMC(AstraBackProjector):
-    '''AstraBackProjector Multi channel
+class AstraBackProjectorMC(AstraBackProjector2D):
+    '''AstraBackProjector2D Multi channel
     
     Back project AcquisitionData to ImageData using ASTRA proj_id.
     

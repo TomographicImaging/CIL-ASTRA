@@ -20,20 +20,34 @@
 #=========================================================================
 
 from cil.optimisation.operators import LinearOperator
-from cil.plugins.astra.processors import AstraForwardProjectorVec, AstraBackProjectorVec
+from cil.plugins.astra.processors import AstraForwardProjector2D, AstraBackProjector2D
 
-class AstraProjectorFlexible(LinearOperator):
-    """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp):
+
+
+class AstraProjector2D(LinearOperator):
+    r'''AstraProjector22D wraps ASTRA 2D Projectors for CPU and GPU.
+    
+    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+    :type image_geometry: ImageGeometry
+    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+    :type acquisition_geometry: AcquisitionGeometry
+    :param device: The device to run on 'gpu' or 'cpu'
+    :type device: string
+    '''
+    def __init__(self, image_geometry, acquisition_geometry, device):
+        super(AstraProjector2D, self).__init__(image_geometry, range_geometry=acquisition_geometry)
         
-        super(AstraProjectorFlexible, self).__init__(domain_geometry=geomv, range_geometry=geomp)
-                    
-        self.sinogram_geometry = geomp 
-        self.volume_geometry = geomv         
+        self.fp = AstraForwardProjector2D(volume_geometry=image_geometry,
+                                        sinogram_geometry=acquisition_geometry,
+                                        proj_id = None,
+                                        device=device)
         
-        self.fp = AstraForwardProjectorVec(volume_geometry=geomv, sinogram_geometry=geomp)       
-        self.bp = AstraBackProjectorVec(volume_geometry=geomv, sinogram_geometry=geomp)
-                      
+        self.bp = AstraBackProjector2D(volume_geometry = image_geometry,
+                                        sinogram_geometry = acquisition_geometry,
+                                        proj_id = None,
+                                        device = device)
+                           
+        
     def direct(self, IM, out=None):
         self.fp.set_input(IM)
         
@@ -50,9 +64,6 @@ class AstraProjectorFlexible(LinearOperator):
         else:
             out.fill(self.bp.get_output())
 
-    def domain_geometry(self):
-        return self.volume_geometry
-    
-    def range_geometry(self):
-        return self.sinogram_geometry 
+
+
 
