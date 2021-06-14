@@ -5,4 +5,4 @@
 
 # CCPi-astra
 
-A collection of Python binding for the Astra-Toolbox in the CCPi chain.
+The [Astra-Toolbox](https://github.com/astra-toolbox/astra-toolbox) plugin for [CIL](https://github.com/TomographicImaging/CIL.git).

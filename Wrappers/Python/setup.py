@@ -22,12 +22,22 @@ from distutils.core import setup
 import os
 import sys
 
-cil_version='0.12.0'
 
-#cil_version=os.environ['CIL_VERSION']
-#if  cil_version == '':
-#    print("Please set the environmental variable CIL_VERSION")
-#    sys.exit(1)
+
+cil_version = os.system('git describe')
+
+if os.environ.get('CONDA_BUILD', 0) == 0:
+      cwd = os.getcwd()
+else:
+      cwd = os.path.join(os.environ.get('RECIPE_DIR'),'..')
+
+fname = os.path.join(cwd, 'cil', 'plugins', 'astra', 'version.py')
+
+if os.path.exists(fname):
+    os.remove(fname)
+with open(fname, 'w') as f:
+    f.write('version = \'{}\''.format(cil_version))
+
 
 setup(
     name="cil-astra",
