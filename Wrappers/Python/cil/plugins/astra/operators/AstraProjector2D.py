@@ -25,16 +25,18 @@ from cil.plugins.astra.processors import AstraForwardProjector2D, AstraBackProje
 
 
 class AstraProjector2D(LinearOperator):
-    r'''AstraProjector22D wraps ASTRA 2D Projectors for CPU and GPU.
+    r'''AstraProjector22D wraps ASTRA 2D Projectors for CPU and GPU'''
     
-    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
-    :type image_geometry: ImageGeometry
-    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
-    :type acquisition_geometry: AcquisitionGeometry
-    :param device: The device to run on 'gpu' or 'cpu'
-    :type device: string
-    '''
     def __init__(self, image_geometry, acquisition_geometry, device):
+        '''creator
+        
+        :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+        :type image_geometry: ImageGeometry
+        :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+        :type acquisition_geometry: AcquisitionGeometry
+        :param device: The device to run on 'gpu' or 'cpu'
+        :type device: string
+        '''
         super(AstraProjector2D, self).__init__(image_geometry, range_geometry=acquisition_geometry)
         
         self.fp = AstraForwardProjector2D(volume_geometry=image_geometry,
@@ -48,12 +50,14 @@ class AstraProjector2D(LinearOperator):
                                         device = device)
                            
         
-    def direct(self, IM, out=None):
-        self.fp.set_input(IM)
+    def direct(self, x, out=None):
+        '''Applies the direct of the operator, i.e. the forward projection'''
+        self.fp.set_input(x)
         return self.fp.get_output(out = out)
 
-    def adjoint(self, DATA, out=None):
-        self.bp.set_input(DATA)
+    def adjoint(self, x, out=None):
+        '''Applies the adjoint of the operator, i.e. the backward projection'''
+        self.bp.set_input(x)
         return self.bp.get_output(out = out)
 
 
