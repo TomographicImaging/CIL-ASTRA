@@ -20,11 +20,11 @@
 
 from distutils.core import setup
 import os
-import sys
+import subprocess
 
 
+cil_version = subprocess.check_output('git describe', shell=True).decode("utf-8").rstrip()
 
-cil_version = os.system('git describe')
 
 if os.environ.get('CONDA_BUILD', 0) == 0:
       cwd = os.getcwd()
