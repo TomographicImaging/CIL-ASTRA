@@ -50,19 +50,12 @@ class AstraProjector2D(LinearOperator):
         
     def direct(self, IM, out=None):
         self.fp.set_input(IM)
-        
-        if out is None:
-            return self.fp.get_output()
-        else:
-            out.fill(self.fp.get_output())
-    
+        return self.fp.get_output(out = out)
+
     def adjoint(self, DATA, out=None):
         self.bp.set_input(DATA)
-        
-        if out is None:
-            return self.bp.get_output()
-        else:
-            out.fill(self.bp.get_output())
+        return self.bp.get_output(out = out)
+
 
 
 
