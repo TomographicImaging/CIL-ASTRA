@@ -25,7 +25,7 @@ from cil.plugins.astra.processors import AstraForwardProjector2D, AstraBackProje
 
 
 class AstraProjector2D(LinearOperator):
-    r'''AstraProjector22D wraps ASTRA 2D Projectors for CPU and GPU'''
+    r'''AstraProjector2D wraps ASTRA 2D Projectors for CPU and GPU'''
     
     def __init__(self, image_geometry, acquisition_geometry, device):
         '''creator
