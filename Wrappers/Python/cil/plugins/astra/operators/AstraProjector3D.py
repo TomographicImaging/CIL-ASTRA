@@ -23,14 +23,17 @@ from cil.optimisation.operators import LinearOperator
 from cil.plugins.astra.processors import AstraForwardProjector3D, AstraBackProjector3D
 
 class AstraProjector3D(LinearOperator):
-    r'''AstraProjector3D wraps ASTRA 3D Projectors for GPU.
+    r'''AstraProjector3D wraps ASTRA 3D Projectors for GPU.'''
     
-    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
-    :type image_geometry: ImageGeometry
-    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
-    :type acquisition_geometry: AcquisitionGeometry
-    '''
     def __init__(self, image_geometry, acquisition_geometry):
+        '''creator
+        
+            
+        :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+        :type image_geometry: ImageGeometry
+        :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+        :type acquisition_geometry: AcquisitionGeometry
+        '''
         
         super(AstraProjector3D, self).__init__(domain_geometry=image_geometry, range_geometry=acquisition_geometry)
                     
@@ -40,25 +43,12 @@ class AstraProjector3D(LinearOperator):
         self.fp = AstraForwardProjector3D(volume_geometry=image_geometry, sinogram_geometry=acquisition_geometry)       
         self.bp = AstraBackProjector3D(volume_geometry=image_geometry, sinogram_geometry=acquisition_geometry)
                       
-    def direct(self, IM, out=None):
-        self.fp.set_input(IM)
-        
-        if out is None:
-            return self.fp.get_output()
-        else:
-            out.fill(self.fp.get_output())
+    def direct(self, x, out=None):
+        '''Applies the direct of the operator, i.e. the forward projection'''
+        self.fp.set_input(x)
+        return self.fp.get_output(out = out)
     
-    def adjoint(self, DATA, out=None):
-        self.bp.set_input(DATA)
-        
-        if out is None:
-            return self.bp.get_output()
-        else:
-            out.fill(self.bp.get_output())
-
-    def domain_geometry(self):
-        return self.volume_geometry
-    
-    def range_geometry(self):
-        return self.sinogram_geometry 
-
+    def adjoint(self, x, out=None):
+        '''Applies the adjoint of the operator, i.e. the backward projection'''
+        self.bp.set_input(x)  
+        return self.bp.get_output(out = out)
