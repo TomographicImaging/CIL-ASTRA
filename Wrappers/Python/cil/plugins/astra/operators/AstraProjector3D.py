@@ -47,12 +47,12 @@ class AstraProjector3D(LinearOperator):
         '''Applies the direct of the operator, i.e. the forward projection'''
         self.fp.set_input(x)
         temp= self.fp.get_output(out = out)
-        self.fp.clear_input()
+        self.fp.__dict__['input']= None
         return temp
     
     def adjoint(self, x, out=None):
         '''Applies the adjoint of the operator, i.e. the backward projection'''
         self.bp.set_input(x)  
         temp= self.bp.get_output(out = out)
-        self.bp.clear_input()
+        self.bp.__dict__['input']= None
         return temp
