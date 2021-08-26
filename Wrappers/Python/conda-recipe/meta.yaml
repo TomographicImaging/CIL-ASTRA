@@ -6,7 +6,6 @@ source:
   path: ../../../
 
 build:
-  skip: True # [py==38 and np==115]
   preserve_egg_dir: False 
   number: {{ GIT_DESCRIBE_NUMBER }}
   
@@ -23,13 +22,11 @@ test:
 requirements:
   build:
     - python {{ python }}
-    - numpy {{ numpy }}
-
   run:
     - python {{ python }}
-    - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x.x') }}
+    - numpy >=1.16
     - cil >=21.1
-    - astra-toolbox==1.9.9.dev4
+    - astra-toolbox=1.9.9
     # the minimal version of cudatoolkit that satisfies astra-toolbox binary
     # and runs on all recent cuda runtime drivers
     - cudatoolkit>=9.0
