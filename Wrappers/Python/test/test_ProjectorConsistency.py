@@ -20,7 +20,7 @@ from cil.framework import ImageGeometry, AcquisitionGeometry
 
 from cil.plugins.astra.operators import AstraProjector2D, AstraProjector3D
 from cil.plugins.astra.operators import ProjectionOperator
-from cil.utilities.display import show2D
+#from cil.utilities.display import show2D
 import unittest
 import numpy as np
 
@@ -123,8 +123,8 @@ class TestAstraConeBeamProjectors(unittest.TestCase):
         fp_flex_3D = A.direct(self.golden_data)
         bp_flex_3D = A.adjoint(fp_flex_3D)
 
-        show2D([fp,fp_gpu,fp_flex_2D,fp_flex_3D.get_slice(vertical='centre')])
-        show2D([bp,bp_gpu,bp_flex_2D,fp_flex_3D.get_slice(vertical='centre')])
+        #show2D([fp,fp_gpu,fp_flex_2D,fp_flex_3D.get_slice(vertical='centre')])
+        #show2D([bp,bp_gpu,bp_flex_2D,fp_flex_3D.get_slice(vertical='centre')])
 
         #comparision foward projection
         fp_flex_0 = fp_flex_3D.subset(vertical=self.cs_ind, force=True)
