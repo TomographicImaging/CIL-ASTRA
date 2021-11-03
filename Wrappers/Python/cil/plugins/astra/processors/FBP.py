@@ -81,10 +81,10 @@ class FBP(DataProcessor):
         return self.processor.get_input()
 
     def get_output(self, out=None):       
-        return self.processor.get_output(out=None)
+        return self.processor.get_output(out=out)
 
     def check_input(self, dataset):       
         return self.processor.check_input(dataset)
         
     def process(self, out=None):
-        return self.processor.process(out=None)
+        return self.processor.process(out=out)
