@@ -1,3 +1,6 @@
+## v21.3.0
+  - Bug fix where FBP out parameter was ignored
+  - remove build dependencies on python and numpy versions
 ## v21.2.1
   - AstraProjector3D processors clean up memory use after call
 ## v21.2.0
