@@ -1,6 +1,6 @@
 from cil.framework import DataProcessor, ImageGeometry, AcquisitionGeometry, ImageData
 from cil.plugins.astra.processors.FDK_Flexible import FDK_Flexible
-from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_3D
 import astra
 import numpy
 
@@ -34,17 +34,17 @@ class FBP_Flexible(FDK_Flexible):
         #reverse ray direction unit-vector direction and extend to inf
         cone_source = -sino_geom_cone.config.system.ray.direction * sino_geom_cone.config.panel.pixel_size[1] * sino_geom_cone.config.panel.num_pixels[1] * 1e6
         detector_position = sino_geom_cone.config.system.detector.position
-        detector_direction_row = sino_geom_cone.config.system.detector.direction_row
+        detector_direction_x = sino_geom_cone.config.system.detector.direction_x
 
         if sinogram_geometry.dimension == '2D':
-            tmp = AcquisitionGeometry.create_Cone2D(cone_source, detector_position, detector_direction_row)
+            tmp = AcquisitionGeometry.create_Cone2D(cone_source, detector_position, detector_direction_x)
         else:
-            detector_direction_col = sino_geom_cone.config.system.detector.direction_col
-            tmp = AcquisitionGeometry.create_Cone3D(cone_source, detector_position, detector_direction_row, detector_direction_col)
+            detector_direction_y = sino_geom_cone.config.system.detector.direction_y
+            tmp = AcquisitionGeometry.create_Cone3D(cone_source, detector_position, detector_direction_x, detector_direction_y)
 
         sino_geom_cone.config.system = tmp.config.system.copy()
 
-        self.vol_geom_astra, self.proj_geom_astra = convert_geometry_to_astra_vec(volume_geometry, sino_geom_cone)
+        self.vol_geom_astra, self.proj_geom_astra = convert_geometry_to_astra_vec_3D(volume_geometry, sino_geom_cone)
                            
     def check_input(self, dataset):
         

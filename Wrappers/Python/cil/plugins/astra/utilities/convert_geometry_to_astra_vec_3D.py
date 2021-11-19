@@ -1,8 +1,7 @@
 import astra
 import numpy
-from scipy.spatial.transform import Rotation
 
-def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
+def convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry_in):
 
     '''Set up ASTRA Volume and projection geometry, not stored
 
@@ -19,22 +18,22 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
     panel = sinogram_geometry.config.panel
 
     #get units
-    degrees = False
-    if angles.angle_unit == sinogram_geometry.DEGREE:
-        degrees = True
-
+    degrees = angles.angle_unit == sinogram_geometry.DEGREE
+    
     if sinogram_geometry.dimension == '2D':
         #create a 3D astra geom from 2D CIL geometry
         volume_geometry_temp = volume_geometry.copy()
         volume_geometry_temp.voxel_num_z = 1
+
         volume_geometry_temp.voxel_size_z = volume_geometry_temp.voxel_size_x
-            
-        if panel.pixel_size[1] != panel.pixel_size[0]:
-            panel.pixel_size[1] =  panel.pixel_size[0]
+        panel.pixel_size[1] =  volume_geometry_temp.voxel_size_z * sinogram_geometry.magnification
 
         row = numpy.zeros((3,1))
-        row[0] = panel.pixel_size[0] * system.detector.direction_row[0]
-        row[1] = panel.pixel_size[0] * system.detector.direction_row[1]
+        row[0] = panel.pixel_size[0] * system.detector.direction_x[0]
+        row[1] = panel.pixel_size[0] * system.detector.direction_x[1]
+
+        if 'right' in panel.origin:
+            row *= -1
 
         col = numpy.zeros((3,1))
         col[2] = panel.pixel_size[1]
@@ -56,9 +55,14 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
     else:
         volume_geometry_temp = volume_geometry.copy()
  
-        row = panel.pixel_size[0] * system.detector.direction_row.reshape(3,1)
-        col = panel.pixel_size[1] * system.detector.direction_col.reshape(3,1)
+        row = panel.pixel_size[0] * system.detector.direction_x.reshape(3,1)
+        col = panel.pixel_size[1] * system.detector.direction_y.reshape(3,1)
         det = system.detector.position.reshape(3, 1)
+
+        if 'right' in panel.origin:
+            row *= -1
+        if 'top' in panel.origin:
+            col *= -1
 
         if sinogram_geometry.geom_type == 'parallel':
             src = system.ray.direction.reshape(3,1)
@@ -72,7 +76,8 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
 
     for i, theta in enumerate(angles.angle_data):
         ang = - angles.initial_angle - theta
-        rotation_matrix = Rotation.from_euler('z', ang, degrees=degrees).as_dcm()
+
+        rotation_matrix = rotation_matrix_z_from_euler(ang, degrees=degrees)
 
         vectors[i, :3]  = rotation_matrix.dot(src).reshape(3)
         vectors[i, 3:6] = rotation_matrix.dot(det).reshape(3)
@@ -93,3 +98,25 @@ def convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry_in):
 
 
     return vol_geom, proj_geom
+
+def rotation_matrix_z_from_euler(angle, degrees):
+    '''Returns 3D rotation matrix for z axis using direction cosine
+
+    :param angle: angle or rotation around z axis
+    :type angle: float
+    :param degrees: if radian or degrees
+    :type bool: defines the unit measure of the angle
+    '''
+    if degrees:
+        alpha = angle / 180. * numpy.pi
+    else:
+        alpha = angle
+
+    rot_matrix = numpy.zeros((3,3), dtype=numpy.float64)
+    rot_matrix[0][0] = numpy.cos(alpha)
+    rot_matrix[0][1] = - numpy.sin(alpha)
+    rot_matrix[1][0] = numpy.sin(alpha)
+    rot_matrix[1][1] = numpy.cos(alpha)
+    rot_matrix[2][2] = 1
+    
+    return rot_matrix

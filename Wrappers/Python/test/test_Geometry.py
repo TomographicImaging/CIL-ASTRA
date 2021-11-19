@@ -19,7 +19,7 @@ import unittest
 
 from cil.framework import ImageGeometry, AcquisitionGeometry
 from cil.plugins.astra.utilities import convert_geometry_to_astra
-from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_3D
 import numpy as np
 
 class TestGeometry(unittest.TestCase):
@@ -130,9 +130,9 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_sino['DetectorSpacingY'], self.ag3.pixel_size_h)
         np.testing.assert_allclose(astra_sino['ProjectionAngles'], -self.ag3.angles)
 
-    def test_convert_geometry_to_astra_vec(self):
+    def test_convert_geometry_to_astra_vec_3D(self):
         #2D parallel radians
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig, self.ag)
 
         self.assertEqual(astra_sino['type'],  'parallel3d_vec')
         self.assertEqual(astra_sino['DetectorRowCount'], 1.0)
@@ -167,35 +167,36 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(astra_vol['option']['WindowMaxZ'], + self.ig.voxel_size_x * 0.5)
 
         #2D parallel degrees
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_deg)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig, self.ag_deg)
         np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #2D cone
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig, self.ag_cone)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig, self.ag_cone)
 
         self.assertEqual(astra_sino['type'], 'cone_vec')
 
         vectors = np.zeros((3,12),dtype='float64')
 
+        pixel_size_v = self.ig.voxel_size_x * self.ag_cone.magnification
         vectors[0][1] = -1 * self.ag_cone.dist_source_center
         vectors[0][4] = self.ag_cone.dist_center_detector
         vectors[0][6] = self.ag_cone.pixel_size_h
-        vectors[0][11] = self.ag_cone.pixel_size_h
+        vectors[0][11] = pixel_size_v
 
         vectors[1][0] = -1 * self.ag_cone.dist_source_center
         vectors[1][3] = self.ag_cone.dist_center_detector
         vectors[1][7] = -self.ag_cone.pixel_size_h
-        vectors[1][11] = self.ag_cone.pixel_size_h
+        vectors[1][11] = pixel_size_v
 
         vectors[2][1] = self.ag_cone.dist_source_center
         vectors[2][4] = -1 * self.ag_cone.dist_center_detector
         vectors[2][6] = -1 * self.ag_cone.pixel_size_h
-        vectors[2][11] = self.ag_cone.pixel_size_h       
+        vectors[2][11] = pixel_size_v     
 
         np.testing.assert_allclose(astra_sino['Vectors'], vectors, atol=1e-6)
 
         #3D cone
-        astra_vol, astra_sino = convert_geometry_to_astra_vec(self.ig3, self.ag3_cone)
+        astra_vol, astra_sino = convert_geometry_to_astra_vec_3D(self.ig3, self.ag3_cone)
 
         self.assertEqual(astra_sino['type'], 'cone_vec')
 

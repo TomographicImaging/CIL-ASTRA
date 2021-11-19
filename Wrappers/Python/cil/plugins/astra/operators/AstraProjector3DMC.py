@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from cil.optimisation.operators import LinearOperator
-from cil.plugins.astra.operators import AstraProjector3DSimple
+from cil.plugins.astra.operators import AstraProjector3D
 import numpy as np
 
 

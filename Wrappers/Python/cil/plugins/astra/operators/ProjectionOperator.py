@@ -19,32 +19,43 @@
 #
 #=========================================================================
 
+from cil.framework import DataOrder
 from cil.optimisation.operators import LinearOperator, ChannelwiseOperator
-from cil.plugins.astra.operators import AstraProjectorFlexible
-from cil.plugins.astra.operators import AstraProjectorSimple
+from cil.plugins.astra.operators import AstraProjector3D
+from cil.plugins.astra.operators import AstraProjector2D
 
 class ProjectionOperator(LinearOperator):
-    """ASTRA projector modified to use DataSet and geometry."""
-    def __init__(self, geomv, geomp, device='gpu'):
+    r'''ProjectionOperator wraps ASTRA 3D Projector for GPU, and ASTRA 2D Projectors for CPU. Broadcasts the operator accross all channels.
+    
+    :param image_geometry: The CIL ImageGeometry object describing your reconstruction volume
+    :type image_geometry: ImageGeometry
+    :param acquisition_geometry: The CIL AcquisitionGeometry object describing your sinogram data
+    :type acquisition_geometry: AcquisitionGeometry
+    :param device: The device to run on 'gpu' or 'cpu'. 'gpu' will use the ASTRA 3D Projectors, 'cpu' will use the ASTRA 2D Projectors
+    :type device: string, default='gpu'
+    '''
+
+    def __init__(self, image_geometry, acquisition_geometry, device='gpu'):
         
-        super(ProjectionOperator, self).__init__(domain_geometry=geomv, range_geometry=geomp)
+        super(ProjectionOperator, self).__init__(domain_geometry=image_geometry, range_geometry=acquisition_geometry)
 
-        self.volume_geometry = geomv
-        self.sinogram_geometry = geomp
+        DataOrder.check_order_for_engine('astra', image_geometry)
+        DataOrder.check_order_for_engine('astra', acquisition_geometry) 
 
-        sinogram_geometry_sc = geomp.subset(channel=0)
-        volume_geometry_sc = geomv.subset(channel=0)
+        self.volume_geometry = image_geometry
+        self.sinogram_geometry = acquisition_geometry
 
-        if device is 'gpu':
-            operator = AstraProjectorFlexible(volume_geometry_sc, sinogram_geometry_sc)
+        sinogram_geometry_sc = acquisition_geometry.subset(channel=0)
+        volume_geometry_sc = image_geometry.subset(channel=0)
+
+        if device == 'gpu':
+            operator = AstraProjector3D(volume_geometry_sc, sinogram_geometry_sc)
+        elif self.sinogram_geometry.dimension == '2D':
+            operator = AstraProjector2D(volume_geometry_sc, sinogram_geometry_sc,  device=device)
         else:
-            UserWarning("ASTRA projectors running on CPU will not make use of enhanced geometry parameters")
-            if self.sinogram_geometry.dimension == '2D':
-                operator = AstraProjectorSimple(volume_geometry_sc, sinogram_geometry_sc,  device='cpu') 
-            else:
-                raise NotImplementedError("Cannot process 3D data without a GPU")
+            raise NotImplementedError("Cannot process 3D data without a GPU")
 
-        if geomp.channels > 1: 
+        if acquisition_geometry.channels > 1: 
             operator_full = ChannelwiseOperator(operator, self.sinogram_geometry.channels, dimension='prepend')
             self.operator = operator_full
         else:
@@ -63,31 +74,4 @@ class ProjectionOperator(LinearOperator):
         return self.volume_geometry
     
     def range_geometry(self):
-        return self.sinogram_geometry 
-
-if __name__  == '__main__':
-    
-    from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    import numpy as np
-    
-    N = 30
-    angles = np.linspace(0, np.pi, 180)
-    ig = ImageGeometry(N, N)
-    ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h=N)
-    A = ProjectionOperator(ig, ag, 'cpu')
-    print(A.norm())
-
-    ig = ImageGeometry(N, N, N)
-    ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_v=N, pixel_num_h=N,dimension_labels=['vertical', 'angle', 'horizontal'])
-    A = ProjectionOperator(ig, ag, 'gpu')
-    print(A.norm())
-
-    ig = ImageGeometry(N, N, channels=2)
-    ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h=N, channels= 2)
-    A = ProjectionOperator(ig, ag, 'cpu')
-    print(A.norm())
-
-    ig = ImageGeometry(N, N, N, channels=2)
-    ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_v=N, pixel_num_h=N, channels=2,dimension_labels=['vertical', 'angle', 'horizontal'])
-    A = ProjectionOperator(ig, ag, 'gpu')
-    print(A.norm())
+        return self.sinogram_geometry

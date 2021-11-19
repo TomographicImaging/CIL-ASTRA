@@ -1,5 +1,5 @@
 from cil.framework import DataProcessor, ImageGeometry, AcquisitionGeometry,ImageData
-from cil.plugins.astra.utilities import convert_geometry_to_astra_vec
+from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_3D
 import astra
 import numpy
 import warnings
@@ -27,7 +27,7 @@ class FDK_Flexible(DataProcessor):
     def __init__(self, volume_geometry, 
                        sinogram_geometry): 
         
-        vol_geom_astra, proj_geom_astra = convert_geometry_to_astra_vec(volume_geometry, sinogram_geometry)
+        vol_geom_astra, proj_geom_astra = convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry)
  
 
         super(FDK_Flexible, self).__init__( volume_geometry = volume_geometry,
