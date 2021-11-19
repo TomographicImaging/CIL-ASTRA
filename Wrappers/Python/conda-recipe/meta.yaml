@@ -12,12 +12,12 @@ build:
   
 test:
   source_files:
-    - ./Wrappers/Python/test # [win]
+    - ./test # [win]
     - ./ccpi/test # [not win]
 
   commands:
     - python -c "import os; print ('TESTING IN THIS DIRECTORY' , os.getcwd())"
-    - python -m unittest discover Wrappers/Python/test # [win]
+    - python -m unittest discover test # [win]
     - python -m unittest discover -s ccpi/test # [not win]
     
 requirements:
@@ -25,7 +25,7 @@ requirements:
     - python
   run:
     - python >3.6
-    - numpy >=1.16
+    - numpy >=1.15
     - cil >=21.1
     - astra-toolbox=1.9.9
     # the minimal version of cudatoolkit that satisfies astra-toolbox binary
