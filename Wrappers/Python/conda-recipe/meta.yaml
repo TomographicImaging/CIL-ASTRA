@@ -8,6 +8,7 @@ source:
 build:
   preserve_egg_dir: False 
   number: {{ GIT_DESCRIBE_NUMBER }}
+  noarch: python 
   
 test:
   source_files:
@@ -21,9 +22,9 @@ test:
     
 requirements:
   build:
-    - python {{ python }}
+    - python
   run:
-    - python {{ python }}
+    - python >3.6
     - numpy >=1.16
     - cil >=21.1
     - astra-toolbox=1.9.9
