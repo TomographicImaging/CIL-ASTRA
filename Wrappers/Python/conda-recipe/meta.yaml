@@ -24,8 +24,8 @@ requirements:
   build:
     - python
   run:
-    - python >=3.6
-    - numpy >=1.15
+    - python
+    - numpy
     - cil >=21.1
     - astra-toolbox=1.9.9
     # the minimal version of cudatoolkit that satisfies astra-toolbox binary
