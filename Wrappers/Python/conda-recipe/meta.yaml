@@ -24,7 +24,7 @@ requirements:
   build:
     - python
   run:
-    - python >3.6
+    - python >=3.6
     - numpy >=1.15
     - cil >=21.1
     - astra-toolbox=1.9.9
