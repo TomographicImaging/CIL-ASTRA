@@ -29,7 +29,7 @@ class FBP_Flexible(FDK_Flexible):
 
         #convert parallel geomerty to cone with large source to object
         sino_geom_cone = sinogram_geometry.copy()
-        sino_geom_cone.config.system.update_reference_frame()
+        sino_geom_cone.config.system.align_reference_frame()
 
         #reverse ray direction unit-vector direction and extend to inf
         cone_source = -sino_geom_cone.config.system.ray.direction * sino_geom_cone.config.panel.pixel_size[1] * sino_geom_cone.config.panel.num_pixels[1] * 1e6
