@@ -11,7 +11,13 @@ def convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry_in):
        :returns ASTRA volume and sinogram geometry'''
  
     sinogram_geometry = sinogram_geometry_in.copy()
-    sinogram_geometry.config.system.align_reference_frame()
+    
+    #this catches behaviour modified in CIL 22.0.0
+    try:
+        sinogram_geometry.config.system.align_reference_frame('cil')
+    except:
+        sinogram_geometry.config.system.update_reference_frame()
+        
 
     angles = sinogram_geometry.config.angles
     system = sinogram_geometry.config.system
