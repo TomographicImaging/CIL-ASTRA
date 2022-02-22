@@ -18,13 +18,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from distutils.core import setup
+from setuptools import setup
 import os
 import subprocess
 
-
 cil_version = subprocess.check_output('git describe', shell=True).decode("utf-8").rstrip()
 
+print("CIL VERSION = {}".format(cil_version))
 
 if os.environ.get('CONDA_BUILD', 0) == 0:
       cwd = os.getcwd()
