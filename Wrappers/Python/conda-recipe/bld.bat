@@ -1,4 +1,4 @@
 ROBOCOPY /E "%RECIPE_DIR%\.." "%SRC_DIR%"
 
-%PYTHON% setup.py install
+pip install .
 if errorlevel 1 exit 1
