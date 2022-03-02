@@ -29,7 +29,8 @@ class FBP_Flexible(FDK_Flexible):
 
         #convert parallel geomerty to cone with large source to object
         sino_geom_cone = sinogram_geometry.copy()
-        #this catches behaviour modified in CIL 22.0.0
+        
+        #this catches behaviour modified after CIL 21.3.1 
         try:
             sinogram_geometry.config.system.align_reference_frame('cil')
         except:
