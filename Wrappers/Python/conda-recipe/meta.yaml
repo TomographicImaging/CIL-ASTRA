@@ -23,6 +23,8 @@ requirements:
   build:
     - python
     - numpy {{ numpy }}
+    - pip
+    - setuptools
   run:
     - python
     - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x.x') }}
