@@ -32,16 +32,16 @@ class FBP_Flexible(FDK_Flexible):
         
         #this catches behaviour modified after CIL 21.3.1 
         try:
-            sinogram_geometry.config.system.align_reference_frame('cil')
+            sino_geom_cone.config.system.align_reference_frame('cil')
         except:
-            sinogram_geometry.config.system.update_reference_frame()
+            sino_geom_cone.config.system.update_reference_frame()
 
         #reverse ray direction unit-vector direction and extend to inf
         cone_source = -sino_geom_cone.config.system.ray.direction * sino_geom_cone.config.panel.pixel_size[1] * sino_geom_cone.config.panel.num_pixels[1] * 1e6
         detector_position = sino_geom_cone.config.system.detector.position
         detector_direction_x = sino_geom_cone.config.system.detector.direction_x
 
-        if sinogram_geometry.dimension == '2D':
+        if sino_geom_cone.dimension == '2D':
             tmp = AcquisitionGeometry.create_Cone2D(cone_source, detector_position, detector_direction_x)
         else:
             detector_direction_y = sino_geom_cone.config.system.detector.direction_y
