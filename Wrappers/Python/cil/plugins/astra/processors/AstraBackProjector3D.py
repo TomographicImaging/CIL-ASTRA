@@ -1,4 +1,4 @@
-from cil.framework import DataProcessor, ImageData, DataOrder
+from cil.framework import DataProcessor, ImageData, DataOrder, AcquisitionGeometry
 from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_3D
 import astra
 from astra import astra_dict, algorithm, data3d
@@ -56,7 +56,7 @@ class AstraBackProjector3D(DataProcessor):
         DataOrder.check_order_for_engine('astra', sinogram_geometry)
 
         if len(sinogram_geometry.dimension_labels) > 3:
-            raise ValueError("Supports 2D and 3D data only, got {0}".format(volume_geometry.number_of_dimensions))  
+            raise ValueError("Supports 2D and 3D data only, got {0}".format(sinogram_geometry.number_of_dimensions))  
 
         self.sinogram_geometry = sinogram_geometry.copy()
 
@@ -64,31 +64,26 @@ class AstraBackProjector3D(DataProcessor):
 
         DATA = self.get_input()
 
-        pad = False
-        if len(DATA.shape) == 2:
-            #for 2D cases
-            pad = True
-            data_temp = np.expand_dims(DATA.as_array(),axis=0)
-        else:
-            data_temp = DATA.as_array()
+        #ASTRA expects a 3D array with shape 1, CIL removes dimensions of len 1
+        new_shape_ag = [self.sinogram_geometry.pixel_num_v,self.sinogram_geometry.num_projections,self.sinogram_geometry.pixel_num_h]
+        data_temp = DATA.as_array().reshape(new_shape_ag)
 
         if out is None:
             rec_id, arr_out = astra.create_backprojection3d_gpu(data_temp,
                             self.proj_geom,
                             self.vol_geom)
         else:
-            if pad:
-                arr_out = np.expand_dims(out.as_array(), axis=0)
-            else:
-                arr_out = out.as_array()
+            new_shape_ig = [self.volume_geometry.voxel_num_z,self.volume_geometry.voxel_num_y,self.volume_geometry.voxel_num_x]
+            new_shape_ig = [x if x>0 else 1 for x in new_shape_ig]
+            arr_out = out.as_array().reshape(new_shape_ig)
+
             rec_id = astra.data3d.link('-vol', self.vol_geom, arr_out)
             self.create_backprojection3d_gpu( data_temp, self.proj_geom, self.vol_geom, False, rec_id)
 
         # delete the GPU copy
         astra.data3d.delete(rec_id)
         
-        if pad is True:
-            arr_out = np.squeeze(arr_out, axis=0)
+        arr_out = np.squeeze(arr_out)
 
         if out is None:
             out = ImageData(arr_out, deep_copy=False, geometry=self.volume_geometry.copy(), suppress_warning=True)

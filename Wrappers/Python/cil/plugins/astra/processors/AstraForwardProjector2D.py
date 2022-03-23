@@ -1,7 +1,7 @@
 from cil.framework import DataProcessor, AcquisitionData
 from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_2D
 import astra
-
+import numpy as np
 
 class AstraForwardProjector2D(DataProcessor):
     '''AstraForwardProjector2D
@@ -48,11 +48,11 @@ class AstraForwardProjector2D(DataProcessor):
             NotImplemented
     
     def check_input(self, dataset):
-        if dataset.number_of_dimensions == 3 or\
+        if dataset.number_of_dimensions == 1 or\
            dataset.number_of_dimensions == 2:
                return True
         else:
-            raise ValueError("Expected input dimensions is 2 or 3, got {0}"\
+            raise ValueError("Expected input dimensions is 1 or 2, got {0}"\
                              .format(dataset.number_of_dimensions))
     
     def set_projector(self, proj_id):
@@ -67,9 +67,17 @@ class AstraForwardProjector2D(DataProcessor):
     def process(self, out=None):
 
         IM = self.get_input()
-        sinogram_id, arr_out = astra.create_sino(IM.as_array(), self.proj_id)
+
+        #ASTRA expects a 2D array with shape 1, CIL removes dimensions of len 1
+        new_shape_ig = [self.volume_geometry.voxel_num_y,self.volume_geometry.voxel_num_x]
+        new_shape_ig = [x if x>0 else 1 for x in new_shape_ig]
+
+        IM_data_temp = IM.as_array().reshape(new_shape_ig)
+
+        sinogram_id, arr_out = astra.create_sino(IM_data_temp, self.proj_id)
         astra.data2d.delete(sinogram_id)
         
+        arr_out = np.squeeze(arr_out)
         if out is None:
             out = AcquisitionData(arr_out, deep_copy=False, geometry=self.sinogram_geometry.copy(), suppress_warning=True)
             return out
