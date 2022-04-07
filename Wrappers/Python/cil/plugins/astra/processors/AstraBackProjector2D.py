@@ -1,6 +1,7 @@
 from cil.framework import DataProcessor, ImageData
 from cil.plugins.astra.utilities import convert_geometry_to_astra_vec_2D
 import astra
+import numpy as np
 
 
 class AstraBackProjector2D(DataProcessor):
@@ -48,10 +49,10 @@ class AstraBackProjector2D(DataProcessor):
             NotImplemented
     
     def check_input(self, dataset):
-        if dataset.number_of_dimensions == 3 or dataset.number_of_dimensions == 2:
+        if dataset.number_of_dimensions == 1 or dataset.number_of_dimensions == 2:
                return True
         else:
-            raise ValueError("Expected input dimensions is 2 or 3, got {0}"\
+            raise ValueError("Expected input dimensions is 1 or 2, got {0}"\
                              .format(dataset.number_of_dimensions))
     
     def set_projector(self, proj_id):
@@ -66,11 +67,15 @@ class AstraBackProjector2D(DataProcessor):
     def process(self, out=None):
 
         DATA = self.get_input()
-        data_temp = DATA.as_array()
+
+        #ASTRA expects a 3D array with shape 1, CIL removes dimensions of len 1
+        new_shape_ag = [self.sinogram_geometry.num_projections,self.sinogram_geometry.pixel_num_h]
+        data_temp = DATA.as_array().reshape(new_shape_ag)
 
         rec_id, arr_out = astra.create_backprojection(data_temp, self.proj_id)
         astra.data2d.delete(rec_id)
-        
+
+        arr_out = np.squeeze(arr_out)
         if out is None:
             out = ImageData(arr_out, deep_copy=False, geometry=self.volume_geometry.copy(), suppress_warning=True)
             return out

@@ -1,3 +1,6 @@
+## v2x.x.x
+  - Update alignment to use new CIL definition
+  - Allow single projection foward/back projections
 ## v21.3.0
   - Bug fix where FBP out parameter was ignored
   - remove build dependencies on python and numpy versions
