@@ -30,9 +30,7 @@ requirements:
     - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x.x') }}
     - cil >=21.3,<22.0
     - astra-toolbox >=1.9.9,<=2.1.0
-    # the minimal version of cudatoolkit that satisfies astra-toolbox binary
-    # and runs on all recent cuda runtime drivers
-    - cudatoolkit>=9.0
+    - cudatoolkit x.x
 	
 about:
   home: http://www.ccpi.ac.uk/cil
