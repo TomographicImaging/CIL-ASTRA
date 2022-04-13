@@ -19,10 +19,6 @@ numpy:
   - 1.19
   - 1.20
   - 1.20 # [linux]
-cudatoolkit:
-  # the minimal version of cudatoolkit that satisfies astra-toolbox binary
-  # and runs on all recent cuda runtime drivers
-  - 9.2
 zip_keys:
   - python
   - numpy
