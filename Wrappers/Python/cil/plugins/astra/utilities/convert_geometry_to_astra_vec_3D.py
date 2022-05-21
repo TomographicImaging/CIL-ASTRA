@@ -16,7 +16,7 @@
 
 
 import astra
-import numpy
+import numpy as np
 
 def convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry_in):
 
@@ -51,21 +51,21 @@ def convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry_in):
         volume_geometry_temp.voxel_size_z = volume_geometry_temp.voxel_size_x
         panel.pixel_size[1] =  volume_geometry_temp.voxel_size_z * sinogram_geometry.magnification
 
-        row = numpy.zeros((3,1))
+        row = np.zeros((3,1))
         row[0] = panel.pixel_size[0] * system.detector.direction_x[0]
         row[1] = panel.pixel_size[0] * system.detector.direction_x[1]
 
         if 'right' in panel.origin:
             row *= -1
 
-        col = numpy.zeros((3,1))
+        col = np.zeros((3,1))
         col[2] = panel.pixel_size[1]
 
-        det = numpy.zeros((3,1))
+        det = np.zeros((3,1))
         det[0] = system.detector.position[0]
         det[1] = system.detector.position[1]
 
-        src = numpy.zeros((3,1))
+        src = np.zeros((3,1))
         if sinogram_geometry.geom_type == 'parallel':
             src[0] = system.ray.direction[0]
             src[1] = system.ray.direction[1]
@@ -95,7 +95,7 @@ def convert_geometry_to_astra_vec_3D(volume_geometry, sinogram_geometry_in):
             projector = 'cone_vec'
 
     #Build for astra 3D only
-    vectors = numpy.zeros((angles.num_positions, 12))
+    vectors = np.zeros((angles.num_positions, 12))
 
     for i, theta in enumerate(angles.angle_data):
         ang = - angles.initial_angle - theta
@@ -131,15 +131,15 @@ def rotation_matrix_z_from_euler(angle, degrees):
     :type bool: defines the unit measure of the angle
     '''
     if degrees:
-        alpha = angle / 180. * numpy.pi
+        alpha = angle / 180. * np.pi
     else:
         alpha = angle
 
-    rot_matrix = numpy.zeros((3,3), dtype=numpy.float64)
-    rot_matrix[0][0] = numpy.cos(alpha)
-    rot_matrix[0][1] = - numpy.sin(alpha)
-    rot_matrix[1][0] = numpy.sin(alpha)
-    rot_matrix[1][1] = numpy.cos(alpha)
+    rot_matrix = np.zeros((3,3), dtype=np.float64)
+    rot_matrix[0][0] = np.cos(alpha)
+    rot_matrix[0][1] = - np.sin(alpha)
+    rot_matrix[1][0] = np.sin(alpha)
+    rot_matrix[1][1] = np.cos(alpha)
     rot_matrix[2][2] = 1
     
     return rot_matrix
