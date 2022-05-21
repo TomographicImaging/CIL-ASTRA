@@ -1,28 +1,24 @@
 # -*- coding: utf-8 -*-
-#  CCP in Tomographic Imaging (CCPi) Core Imaging Library (CIL).
+#  Copyright 2018 - 2022 United Kingdom Research and Innovation
+#  Copyright 2018 - 2022 The University of Manchester
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
 
-#   Copyright 2017 UKRI-STFC
-#   Copyright 2017 University of Manchester
 
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
-
-#   http://www.apache.org/licenses/LICENSE-2.0
-
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
-
-from cil.framework import ImageGeometry, AcquisitionGeometry
-from cil.framework import ImageData, AcquisitionData
-
+from cil.framework import AcquisitionGeometry
 from cil.plugins.astra.operators import ProjectionOperator
 from cil.plugins.astra.processors import FBP
 
-from cil.utilities.display import plotter2D
 
 
 import unittest
