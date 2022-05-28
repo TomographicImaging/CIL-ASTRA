@@ -55,8 +55,3 @@ class AstraProjector2D(LinearOperator):
         '''Applies the adjoint of the operator, i.e. the backward projection'''
         self.bp.set_input(x)
         return self.bp.get_output(out = out)
-
-
-
-
-

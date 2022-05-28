@@ -103,6 +103,3 @@ class FDK_Flexible(DataProcessor):
             return out
         else:
             out.fill(arr_out)
-        
-
-

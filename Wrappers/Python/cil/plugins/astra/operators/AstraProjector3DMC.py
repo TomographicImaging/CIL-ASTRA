@@ -82,31 +82,3 @@ class AstraProjector3DMC(LinearOperator):
     def calculate_norm(self):
 
         return self.A3D.norm()
-    
-    
-    
-if __name__  == '__main__':
-    
-    from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    
-    N = 30
-    channels = 5
-    angles = np.linspace(0, np.pi, 180)
-    ig = ImageGeometry(N, N, N, channels = channels)
-    ag = AcquisitionGeometry('parallel','3D', angles, pixel_num_h = N, pixel_num_v=5, channels = channels)
-    
-    A3DMC = AstraProjector3DMC(ig, ag)
-    z = A3DMC.norm()
-    
-#    igtmp3D = A3DMC.volume_geometry.clone()
-#    igtmp3D.channels = 1
-#    igtmp3D.shape = A3DMC.volume_geometry.shape[1:]
-#    igtmp3D.dimension_labels = ['vertical', 'horizontal_y', 'horizontal_x']
-#    
-#    agtmp3D = A3DMC.sinogram_geometry.clone()
-#    agtmp3D.channels = 1
-#    agtmp3D.shape = A3DMC.sinogram_geometry.shape[1:]
-#    agtmp3D.dimension_labels = ['vertical', 'angle', 'horizontal']      
-#    
-#    A3D = AstraProjector3DSimple(igtmp3D, agtmp3D)     
-#    z = A3D.norm()   

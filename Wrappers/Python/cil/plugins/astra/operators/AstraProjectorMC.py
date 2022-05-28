@@ -71,22 +71,3 @@ class AstraProjectorMC(LinearOperator):
                   
         return Atmp.norm()    
     
-
-
-if __name__  == '__main__':
-    
-    from ccpi.framework import ImageGeometry, AcquisitionGeometry
-    import numpy as np
-    
-    N = 30
-    angles = np.linspace(0, np.pi, 180)
-    ig = ImageGeometry(N, N, channels = 5)
-    ag = AcquisitionGeometry('parallel','2D', angles, pixel_num_h = N, channels = 5)
-    
-    A = AstraProjectorMC(ig, ag, 'gpu')
-    print(A.norm())
-    
-    
-    
-    
-
