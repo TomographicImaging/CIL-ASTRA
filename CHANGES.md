@@ -1,3 +1,5 @@
+## v22.0.0
+  - Relicensed code to Apache-2.0
 ## v21.4.0
   - Update alignment to use new CIL definition
   - Allow single projection foward/back projections

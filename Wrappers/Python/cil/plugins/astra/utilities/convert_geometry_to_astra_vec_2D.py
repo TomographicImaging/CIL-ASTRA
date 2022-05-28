@@ -1,5 +1,22 @@
+# -*- coding: utf-8 -*-
+#  Copyright 2018 - 2022 United Kingdom Research and Innovation
+#  Copyright 2018 - 2022 The University of Manchester
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+
+
 import astra
-import numpy
+import numpy as np
 
 def convert_geometry_to_astra_vec_2D(volume_geometry, sinogram_geometry_in):
 
@@ -28,18 +45,18 @@ def convert_geometry_to_astra_vec_2D(volume_geometry, sinogram_geometry_in):
     #create a 2D astra geom from 2D CIL geometry, 2D astra geometry has axis flipped compared to 3D
     volume_geometry_temp = volume_geometry.copy()
 
-    row = numpy.zeros((2,1))
+    row = np.zeros((2,1))
     row[0] = panel.pixel_size[0] * system.detector.direction_x[0]
     row[1] = panel.pixel_size[0] * system.detector.direction_x[1]
 
     if 'right' in panel.origin:
         row *= -1
 
-    det = numpy.zeros((2,1))
+    det = np.zeros((2,1))
     det[0] = system.detector.position[0]
     det[1] = -system.detector.position[1]
 
-    src = numpy.zeros((2,1))
+    src = np.zeros((2,1))
     if sinogram_geometry.geom_type == 'parallel':
         src[0] = system.ray.direction[0]
         src[1] = -system.ray.direction[1]
@@ -49,7 +66,7 @@ def convert_geometry_to_astra_vec_2D(volume_geometry, sinogram_geometry_in):
         src[1] = -system.source.position[1]
         projector = 'fanflat_vec'
 
-    vectors = numpy.zeros((angles.num_positions, 6))
+    vectors = np.zeros((angles.num_positions, 6))
 
     for i, theta in enumerate(angles.angle_data):
         ang = + angles.initial_angle + theta
@@ -81,14 +98,14 @@ def rotation_matrix_z_from_euler(angle, degrees):
     :type bool: defines the unit measure of the angle
     '''
     if degrees:
-        alpha = angle / 180. * numpy.pi
+        alpha = angle / 180. * np.pi
     else:
         alpha = angle
 
-    rot_matrix = numpy.zeros((2,2), dtype=numpy.float64)
-    rot_matrix[0][0] = numpy.cos(alpha)
-    rot_matrix[0][1] = -numpy.sin(alpha)
-    rot_matrix[1][0] = numpy.sin(alpha)
-    rot_matrix[1][1] = numpy.cos(alpha)
+    rot_matrix = np.zeros((2,2), dtype=np.float64)
+    rot_matrix[0][0] = np.cos(alpha)
+    rot_matrix[0][1] = -np.sin(alpha)
+    rot_matrix[1][0] = np.sin(alpha)
+    rot_matrix[1][1] = np.cos(alpha)
     
     return rot_matrix
